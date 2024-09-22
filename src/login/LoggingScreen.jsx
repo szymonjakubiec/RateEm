@@ -1,10 +1,16 @@
+import { useRoute } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native';
 
-export default function LoggingScreen({ navigation }){
+
+export default function LoggingScreen({ navigation }) {
+  
+  const _title = "Rate'Em";
+  // const route = useRoute();
+    
     return(
         <View style={styles.container}>
-            <Text style={styles.title}>PoliTica</Text>
+        <Text style={styles.title}>{_title}</Text>
             <Text style={styles.subTitle}>Twój polityczny pomocnik</Text>
 
             <TextInput 
@@ -19,7 +25,7 @@ export default function LoggingScreen({ navigation }){
             <TouchableHighlight
                 style={styles.button}
                 onPress={() =>{
-                  navigation.navigate('HomeNav', {screen: 'Home'});
+                  navigation.navigate('HomeNav', {screen: 'Home', _title}); // domyślny ekran, parametry
                 }}
             >
                 <Text style={styles.buttonText}>Zaloguj</Text>

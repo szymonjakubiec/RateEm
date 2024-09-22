@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "../HomeScreen";
@@ -8,15 +9,20 @@ import SearchNavigation from "../../search/nav/SearchNavigation";
 
 const Tab = createBottomTabNavigator();
 
-export default function HomeNavigation(){
+export default function HomeNavigation() {
+  
+  const route = useRoute();
+  const _title = route.params?._title;
+  
     return(
       <Tab.Navigator>
         <Tab.Screen
           name='SearchNav'
           component={SearchNavigation}
+          initialParams={{_title}} 
           options={() => ({
             headerShown: false,
-            headerLeft: () => null,
+            // headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
           })}
         />
@@ -24,7 +30,7 @@ export default function HomeNavigation(){
           name='Home'
           component={HomeScreen}
           options={() => ({
-            headerTitle: 'PoliTica',
+            headerTitle: _title,
             headerTitleAlign: 'center',
             headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
@@ -34,7 +40,7 @@ export default function HomeNavigation(){
           name='Election'
           component={ElectionScreen}
           options={() => ({
-            headerTitle: 'PoliTica',
+            headerTitle: _title,
             headerTitleAlign: 'center',
             headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
@@ -44,7 +50,7 @@ export default function HomeNavigation(){
           name='Options'
           component={OptionsScreen}
           options={() => ({
-            headerTitle: 'PoliTica',
+            headerTitle: _title,
             headerTitleAlign: 'center',
             headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
