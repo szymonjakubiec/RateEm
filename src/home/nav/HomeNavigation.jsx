@@ -21,6 +21,7 @@ export default function HomeNavigation() {
           component={SearchNavigation}
           initialParams={{_title}} 
           options={() => ({
+            title: 'Wyszukaj', // tytuł na dole ekranu
             headerShown: false,
             // headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
@@ -30,6 +31,7 @@ export default function HomeNavigation() {
           name='Home'
           component={HomeScreen}
           options={() => ({
+            title: 'Strona główna',
             headerTitle: _title,
             headerTitleAlign: 'center',
             headerLeft: () => null,
@@ -40,6 +42,7 @@ export default function HomeNavigation() {
           name='Election'
           component={ElectionScreen}
           options={() => ({
+            title: 'Wybory',
             headerTitle: _title,
             headerTitleAlign: 'center',
             headerLeft: () => null,
@@ -50,6 +53,7 @@ export default function HomeNavigation() {
           name='Options'
           component={OptionsScreen}
           options={() => ({
+            title: 'Opcje',
             headerTitle: _title,
             headerTitleAlign: 'center',
             headerLeft: () => null,
