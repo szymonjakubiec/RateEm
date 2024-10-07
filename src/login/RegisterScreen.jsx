@@ -10,11 +10,11 @@ import {
 import { useState } from 'react';
 import CheckBox from 'react-native-check-box';
 
-export default function LoggingScreen({ navigation }) {
+export default function RegisterScreen({ navigation }) {
   const _title = "Rate'Em";
   // const route = useRoute();
-
-  const [toggleCheckBox, setToggleCheckBox] = useState(true);
+  
+//   const [toggleCheckBox, setToggleCheckBox] = useState(true);
 
   return (
     <View style={styles.container}>
@@ -34,20 +34,6 @@ export default function LoggingScreen({ navigation }) {
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
       
-      {/* Nie wiem jak naprawić tekst */}
-      <CheckBox isChecked={!toggleCheckBox} style={{/* flex: 1, */ padding: 10}} rightText='rawr' rightTextStyle={{color: '#000000'}} onClick={() => {
-        setToggleCheckBox(!toggleCheckBox);
-        console.log(toggleCheckBox);
-      }} />
-
-      <TouchableHighlight
-        style={styles.button}
-        onPress={() => {
-          navigation.navigate('Register', { screen: 'Register', _title }); // domyślny ekran, parametry
-        }}
-      >
-        <Text style={styles.buttonText}>Zarejestruj (do naprawy)</Text>
-      </TouchableHighlight>
         
       <StatusBar style="auto" />
     </View>

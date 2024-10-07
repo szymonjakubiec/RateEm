@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import LoggingScreen from './src/login/LoggingScreen';
 import HomeScreen from './src/home/HomeScreen';
 import HomeNavigation from './src/home/nav/HomeNavigation';
+import RegisterScreen from './src/login/RegisterScreen';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,15 @@ export default function App() {
         <Stack.Screen
           name='HomeNav'
           component={HomeNavigation}
+          options={() => ({
+            headerShown: false,
+            headerLeft: () => null,
+            gestureEnabled: false, 
+          })}
+        />
+        <Stack.Screen
+          name='Register'
+          component={RegisterScreen}
           options={() => ({
             headerShown: false,
             headerLeft: () => null,
