@@ -1,10 +1,8 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import LoggingScreen from './src/login/LoggingScreen';
-import HomeScreen from './src/home/HomeScreen';
-import HomeNavigation from './src/home/nav/HomeNavigation';
+import LoggingScreen from './src/main/login/LoggingScreen';
+import MainNavigation from './src/main/nav/MainNavigation';
 
 const Stack = createStackNavigator();
 
@@ -20,8 +18,8 @@ export default function App() {
           })}
         />
         <Stack.Screen
-          name='HomeNav'
-          component={HomeNavigation}
+          name='MainNav'
+          component={MainNavigation}
           options={() => ({
             headerShown: false,
             headerLeft: () => null,

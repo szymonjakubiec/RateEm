@@ -1,15 +1,15 @@
 import { useRoute } from '@react-navigation/native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
-import HomeScreen from "../HomeScreen";
-import SearchScreen from "../../search/SearchScreen";
-import ElectionScreen from "../../election/ElectionScreen";
-import OptionsScreen from "../../options/OptionsScreen";
-import SearchNavigation from "../../search/nav/SearchNavigation";
+import HomeScreen from "../home/HomeScreen";
+import SearchScreen from "../search/SearchScreen";
+import ElectionScreen from "../election/ElectionScreen";
+import OptionsScreen from "../options/OptionsScreen";
+import SearchNavigation from "../search/nav/SearchNavigation";
 
 const Tab = createBottomTabNavigator();
 
-export default function HomeNavigation() {
+export default function MainNavigation() {
   
   const route = useRoute();
   const _title = route.params?._title;

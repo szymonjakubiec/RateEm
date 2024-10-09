@@ -25,7 +25,7 @@ export default function LoggingScreen({ navigation }) {
             <TouchableHighlight
                 style={styles.button}
                 onPress={() =>{
-                  navigation.navigate('HomeNav', {screen: 'Home', _title}); // domyślny ekran, parametry
+                  navigation.navigate('MainNav', {screen: 'Home', _title}); // domyślny ekran, parametry
                 }}
             >
                 <Text style={styles.buttonText}>Zaloguj</Text>
