@@ -15,7 +15,7 @@ export default function SearchScreen({ navigation }) {
             // Przefiltruj wyniki (zmień 'nazwa' na odpowiednie pole w danych)
             const filteredResults = data.filter(item => item.nazwa.includes('polityk')); // Przykład filtracji
             setSearchResults(filteredResults); // Zaktualizuj stan wyników
-
+            
             // Przekaż wyniki do ekranu Profile
             navigation.navigate('Profile', { results: filteredResults });
         } catch (error) {
