@@ -2,10 +2,12 @@ import { StyleSheet, Text, View } from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from "@react-navigation/native";
 
-export default function OptionsScreen(){
+const BottomTab = createBottomTabNavigator();
+
+export default function TrendingScreen(){
     return(
         <View style={styles.container}>
-            <Text>To jest strona dodatkowych opcji.</Text>
+            <Text>Tosą politycy na topce.</Text>
         </View>
     );
 }
