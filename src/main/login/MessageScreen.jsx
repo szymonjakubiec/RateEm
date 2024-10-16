@@ -8,37 +8,31 @@ import {
   View,
 } from "react-native";
 
-export default function LoggingScreen({ navigation }) {
-  const _title = "Rate'Em";
+export default function MessageScreen({ navigation }) {
   // const route = useRoute();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{_title}</Text>
-      <Text style={styles.subTitle}>Twój polityczny pomocnik</Text>
+      <Text style={styles.subTitle}>Wiadomość</Text>
 
-      <TextInput style={styles.textInput} placeholder="email" />
-      <TextInput style={styles.textInput} placeholder="hasło" />
-
-      <TouchableHighlight
-        style={styles.button}
-        onPress={() => {
-          navigation.navigate("MainNav", { screen: "Home", _title }); // domyślny ekran, parametry
-        }}
-      >
-        <Text style={styles.buttonText}>Zaloguj</Text>
-      </TouchableHighlight>
+      {/* <TextInput 
+          style={styles.textInput}
+          placeholder='email'
+      />
+      <TextInput 
+          style={styles.textInput}
+          placeholder='hasło'
+      />
 
       <TouchableHighlight
-        style={styles.button}
-        onPress={() => {
-          navigation.navigate("RegisterNav", { _title }); // domyślny ekran, parametry
-        }}
+          style={styles.button}
+          onPress={() =>{
+            navigation.navigate('MainNav', {screen: 'Home', _title}); // domyślny ekran, parametry
+          }}
       >
-        <Text style={styles.buttonText}>Zarejestruj</Text>
+          <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
-
-      <StatusBar style="auto" />
+      <StatusBar style="auto" /> */}
     </View>
   );
 }

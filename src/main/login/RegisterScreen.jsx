@@ -8,37 +8,41 @@ import {
   View,
 } from "react-native";
 
-export default function LoggingScreen({ navigation }) {
+export default function RegisterScreen({ navigation }) {
   const _title = "Rate'Em";
   // const route = useRoute();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{_title}</Text>
-      <Text style={styles.subTitle}>Twój polityczny pomocnik</Text>
-
-      <TextInput style={styles.textInput} placeholder="email" />
-      <TextInput style={styles.textInput} placeholder="hasło" />
+      <Text style={styles.subTitle}>Rejestracja</Text>
 
       <TouchableHighlight
         style={styles.button}
         onPress={() => {
-          navigation.navigate("MainNav", { screen: "Home", _title }); // domyślny ekran, parametry
+          navigation.navigate("Message", { _title }); // domyślny ekran, parametry
         }}
       >
-        <Text style={styles.buttonText}>Zaloguj</Text>
+        <Text style={styles.buttonText}>Wyślij wiadomość</Text>
       </TouchableHighlight>
+
+      {/* <TextInput 
+          style={styles.textInput}
+          placeholder='email'
+      />
+      <TextInput 
+          style={styles.textInput}
+          placeholder='hasło'
+      />
 
       <TouchableHighlight
-        style={styles.button}
-        onPress={() => {
-          navigation.navigate("RegisterNav", { _title }); // domyślny ekran, parametry
-        }}
+          style={styles.button}
+          onPress={() =>{
+            navigation.navigate('MainNav', {screen: 'Home', _title}); // domyślny ekran, parametry
+          }}
       >
-        <Text style={styles.buttonText}>Zarejestruj</Text>
+          <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
-
-      <StatusBar style="auto" />
+      <StatusBar style="auto" /> */}
     </View>
   );
 }
