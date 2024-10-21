@@ -11,7 +11,6 @@ export default function SearchScreen({ navigation }) {
         try {
             const response = await fetch('http://192.168.137.1:3000/api/dane'); // Upewnij się, że adres URL jest poprawny
             const data = await response.json();
-            console.log('Dane z API:', data); // Zobacz, co zwraca API
             // Przefiltruj wyniki (zmień 'nazwa' na odpowiednie pole w danych)
             const filteredResults = data.filter(item => item.nazwa.includes('polityk')); // Przykład filtracji
             setSearchResults(filteredResults); // Zaktualizuj stan wyników

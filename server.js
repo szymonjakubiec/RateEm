@@ -14,15 +14,29 @@ const config = {
   }
 };
 
+
 // Endpoint API
 app.get('/api/dane', async (req, res) => {
+  let connection;
   try {
     // Połączenie z bazą danych
-    const connection = await mysql.createConnection(config);
+    connection = await mysql.createConnection(config);
     const [rows, fields] = await connection.execute('SELECT * FROM oceny');
+    
+    // Zwracanie danych do klienta
     res.json(rows);
   } catch (err) {
+    // Obsługa błędów
     res.status(500).send(err.message);
+  } finally {
+    // Upewnij się, że połączenie zostało zamknięte
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+        console.error('Błąd podczas zamykania połączenia:', err.message);
+      }
+    }
   }
 });
 
