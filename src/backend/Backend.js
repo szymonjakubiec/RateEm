@@ -5,11 +5,11 @@ const mysql = require('mysql2');
 const port = 3000;
 const fs = require('fs');
 
-require('dotenv').config();
-const { BlobServiceClient } = require('@azure/storage-blob');
-const storageAccountConnectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-const multer = require('multer');
-const upload = multer({ dest: 'uploads' });
+// require('dotenv').config();
+// const { BlobServiceClient } = require('@azure/storage-blob');
+// const storageAccountConnectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+// const multer = require('multer');
+// const upload = multer({ dest: 'uploads' });
 
 app.use(cors());
 app.use(express.json());
@@ -24,7 +24,7 @@ const connection = mysql.createConnection({
     password: 'ZAQ!2wsx',
     port: 3306,
     database: 'ratem',
-    ssl: {ca: fs.readFileSync(".\\src\\backend\\DigiCertGlobalRootG2.crt.pem","utf-8"), rejectUnauthorized: false}
+    ssl: {ca: fs.readFileSync("src/backend/DigiCertGlobalRootCA.crt.pem","utf-8"), rejectUnauthorized: false},
 });
 
 connection.connect((e) =>{
@@ -41,6 +41,42 @@ app.get('/', (req, res) => {
 
 app.get('/uzytkownicy', (req, res) => {
     const statement = "SELECT email,haslo FROM uzytkownicy;";
+    connection.query(statement, (err, data) => {
+        if (err) {
+            console.error('Error querying database:', err.message);
+            res.status(500).send('Error querying database: ', err.message);
+        } else {
+            res.json(data);
+        }
+    });
+});
+
+app.get('/wyborysejm', (req, res) => {
+    const statement = "SELECT * FROM wybory_sejm WHERE przyszle=1;";
+    connection.query(statement, (err, data) => {
+        if (err) {
+            console.error('Error querying database:', err.message);
+            res.status(500).send('Error querying database: ', err.message);
+        } else {
+            res.json(data);
+        }
+    });
+});
+
+app.get('/wyboryprezydent', (req, res) => {
+    const statement = "SELECT * FROM wybory_prezydent WHERE przyszle=1;";
+    connection.query(statement, (err, data) => {
+        if (err) {
+            console.error('Error querying database:', err.message);
+            res.status(500).send('Error querying database: ', err.message);
+        } else {
+            res.json(data);
+        }
+    });
+});
+
+app.get('/wyboryeu', (req, res) => {
+    const statement = "SELECT * FROM wybory_eu WHERE przyszle=1;";
     connection.query(statement, (err, data) => {
         if (err) {
             console.error('Error querying database:', err.message);

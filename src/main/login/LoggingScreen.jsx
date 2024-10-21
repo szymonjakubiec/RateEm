@@ -34,25 +34,25 @@ export default function LoggingScreen({ navigation }) {
    */
    async function getUsers(){
     try{
-      const data = (await axios.get('http://192.168.0.208:3000/uzytkownicy')).data;
+      const data = (await axios.get('http://10.0.2.2:3000/uzytkownicy')).data;
       return data;
     }
     catch(error) {
-    console.log(error);
-      if (error.response){
-        console.log('RESPONSE ERROR');
-        console.log(error.response.headers);
-      }
-      else if (error.request){
-        console.log('REQUEST ERROR');
-        console.log(error.request);
-        console.log(error.message);
-      }
-      else{
-        console.log('sth else');
-        console.log(error.config);
-        console.log(error)
-      }
+      console.log(error);
+        if (error.response){
+          console.log('RESPONSE ERROR');
+          console.log(error.response.headers);
+        }
+        else if (error.request){
+          console.log('REQUEST ERROR');
+          console.log(error.request);
+          console.log(error.message);
+        }
+        else{
+          console.log('sth else');
+          console.log(error.config);
+          console.log(error)
+        }
     };
   };
 
@@ -121,33 +121,33 @@ export default function LoggingScreen({ navigation }) {
   },[userData]);
 
   return(
-      <View style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>{_title}</Text>
-          <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
+        <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
 
-          <TextInput 
-              style={styles.textInput}
-              placeholder='email'
-              onChangeText={(email) => setEmail(email.trim())}
-              onBlur={() => emailApproved(email)}
-          />
-          <Text style={styles.wrongInputText}>{wrongEmailInfo}</Text>
-          <TextInput 
-              style={styles.textInput}
-              placeholder='hasło'
-              onChangeText={(email) => setPassword(email.trim())}
-              ref={input => {this.textInput = input}}
-          />
-          <Text style={styles.wrongInputText}>{wrongPasswordInfo}</Text>
+        <TextInput 
+            style={styles.textInput}
+            placeholder='email'
+            onChangeText={(email) => setEmail(email.trim())}
+            onBlur={() => emailApproved(email)}
+        />
+        <Text style={styles.wrongInputText}>{wrongEmailInfo}</Text>
+        <TextInput 
+            style={styles.textInput}
+            placeholder='hasło'
+            onChangeText={(email) => setPassword(email.trim())}
+            ref={input => {this.textInput = input}}
+        />
+        <Text style={styles.wrongInputText}>{wrongPasswordInfo}</Text>
 
-          <TouchableHighlight
-              style={styles.button}
-              onPress={() => handleLogin() }
-          >
-              <Text style={styles.buttonText}>Zaloguj</Text>
-          </TouchableHighlight>
-          <StatusBar style="auto" />
-      </View>
+        <TouchableHighlight
+            style={styles.button}
+            onPress={() => handleLogin() }
+        >
+            <Text style={styles.buttonText}>Zaloguj</Text>
+        </TouchableHighlight>
+        <StatusBar style="auto" />
+    </View>
   );
 }
 
