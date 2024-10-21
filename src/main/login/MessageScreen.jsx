@@ -23,7 +23,7 @@ export default function MessageScreen({ navigation }) {
           style={styles.textInput}
           placeholder='hasło'
       />
-
+      
       <TouchableHighlight
           style={styles.button}
           onPress={() =>{

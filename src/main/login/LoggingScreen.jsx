@@ -5,12 +5,15 @@ import {
   Text,
   TextInput,
   TouchableHighlight,
-  View,
+  View
 } from "react-native";
+import { useState } from 'react';
+import CheckBox from 'react-native-check-box';
 
 export default function LoggingScreen({ navigation }) {
   const _title = "Rate'Em";
   // const route = useRoute();
+  const [toggleCheckBox, setToggleCheckBox] = useState(true);
 
   return (
     <View style={styles.container}>
@@ -28,6 +31,17 @@ export default function LoggingScreen({ navigation }) {
       >
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
+      
+      <View style={{ flexDirection: "row", left: -25 }}>
+        <CheckBox isChecked={!toggleCheckBox} style={{/* flex: 1, */ padding: 5/* , justifyContent: "flex-start" */}} /* rightText='Zapamiętaj' rightTextStyle={{color: '#000000'}} */ onClick={() => {
+          setToggleCheckBox(!toggleCheckBox);
+          console.log(toggleCheckBox);
+        }} />
+        <Text style={{ alignSelf: "center" }}>Zapamiętaj</Text>
+      </View>
+      
+      
+      <Text style={{ marginTop: 15, marginBottom: 5 }}>Nie masz jeszcze konta?</Text>
 
       <TouchableHighlight
         style={styles.button}
