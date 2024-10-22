@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "scripts": {
-    "server": "cd .\\src\\backend\\ && npx nodemon server.js",
+    "server": "cd .\\src\\backend\\ && npx nodemon Server.js",
     "start": "npx expo start --tunnel",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "dev": "concurrently --kill-others 'node .\\src\\backend\\Backend.js' 'npx expo start --android'"
+    "dev": "concurrently --kill-others 'node .\\src\\backend\\Server.js' 'npx expo start --android'"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^6.6.1",
