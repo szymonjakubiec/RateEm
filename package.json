@@ -3,28 +3,34 @@
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "scripts": {
+    "server": "cd .\\src\\backend\\ && npx nodemon server.js",
     "start": "npx expo start --tunnel",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "dev": "concurrently --kill-others \"node .\\src\\backend\\Backend.js\" \"npx expo start --android\""
+    "dev": "concurrently --kill-others 'node .\\src\\backend\\Backend.js' 'npx expo start --android'"
   },
   "dependencies": {
-    "@expo/metro-runtime": "~3.2.3",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.7",
-    "expo": "^51.0.37",
+    "expo": "^51.0.38",
     "expo-status-bar": "~1.12.1",
+    "express": "^4.21.1",
+    "mssql": "^11.0.1",
+    "mysql2": "^3.11.3",
+    "nodemon": "^3.1.7",
     "react": "18.2.0",
-    "react-dom": "^18.2.0",
     "react-native": "0.74.5",
-    "react-native-web": "^0.19.12"
+    "react-native-check-box": "^2.1.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "concurrently": "^9.0.1"
+    "@babel/core": "^7.20.0"
   },
-  "private": true
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

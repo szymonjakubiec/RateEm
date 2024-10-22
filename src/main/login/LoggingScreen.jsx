@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native';
-import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 
 
@@ -34,7 +33,9 @@ export default function LoggingScreen({ navigation }) {
    */
    async function getUsers(){
     try{
-      const data = (await axios.get('http://192.168.0.208:3000/uzytkownicy')).data;
+      // TODO
+      // get data using fetch
+      
       return data;
     }
     catch(error) {
@@ -103,8 +104,8 @@ export default function LoggingScreen({ navigation }) {
    * Gets userData from getUsers() and sets it which triggers the useEffect hook with checkCredentials() function.
    */
   async function handleLogin(){
-    const data = await getUsers();
-    setUserData(data);
+    // const data = await getUsers();
+    // setUserData(data);
   };
 
   /** 
@@ -142,7 +143,7 @@ export default function LoggingScreen({ navigation }) {
 
           <TouchableHighlight
               style={styles.button}
-              onPress={() => handleLogin() }
+              onPress={() => navigation.navigate('MainNav', {screen: 'Home', _title}) }
           >
               <Text style={styles.buttonText}>Zaloguj</Text>
           </TouchableHighlight>
