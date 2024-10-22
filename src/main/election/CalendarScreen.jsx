@@ -11,11 +11,11 @@ export default function ElectionScreen(){
     }, []);
 
     async function showYears() {
-        var years = []
+        var yearsTemp = []
         const data = await getWybory()
         
         for(let year = currentYear+5; year >= 2010; year--) {
-            years.push(
+            yearsTemp.push(
                 <View>
                     <View style={styles.yearDiv}>
                         <Text style={styles.yearTileText}>{year}</Text>
@@ -35,12 +35,11 @@ export default function ElectionScreen(){
                             }
                         })}
                     </View>
-                    
                 </View>
             )
         }
 
-        setYears(years)
+        setYears(yearsTemp)
     }
 
     async function getWybory() {
@@ -59,20 +58,20 @@ export default function ElectionScreen(){
             <View style={{width: '100%', paddingBottom: 10, borderBottomWidth: 3}}>
                 <View style={styles.colorsMeaningDiv}>
                     <View style={styles.circleSejm}/>
-                    <Text style={styles.colorsMeaningText} >Sejm</Text>
+                    <Text style={styles.colorsMeaningText}>wybory do sejmu i senatu</Text>
                 </View>
                 <View style={styles.colorsMeaningDiv}>
                     <View style={styles.circlePrezydent}/>
-                    <Text style={styles.colorsMeaningText} >Prezydent</Text>
+                    <Text style={styles.colorsMeaningText}>wybory prezydenckie</Text>
                 </View>
                 <View style={styles.colorsMeaningDiv}>
                     <View style={styles.circleEu}/>
-                    <Text style={styles.colorsMeaningText} >Parlament Europejski</Text>
+                    <Text style={styles.colorsMeaningText}>wybory do parlamentu europejskiego</Text>
                 </View>
             </View>
             <ScrollView style={styles.scrollView}>
                 {years.map((yearItem, index) => (
-                    <View key={index} style={styles.yearItemContainer}>
+                    <View key={index}>
                         <TouchableHighlight
                             style={styles.yearTile} 
                             onPress={ () => { console.log(yearItem) } }
@@ -100,7 +99,7 @@ const styles = StyleSheet.create({
     },
     colorsMeaningText: {
         color: 'black',
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: '700',
         marginLeft: 10
     },
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
     },
 
     yearDiv: {
-        alignSelf: 'center',
+        marginLeft: '40%',
         flexDirection: 'row',
     },
       
