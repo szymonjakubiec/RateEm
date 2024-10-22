@@ -1,39 +1,43 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, Button, TouchableHighlight } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableHighlight } from "react-native";
 import axios from 'axios';
 
 export default function ElectionScreen(){
-
     const [years, setYears] = useState([]);
 
     useEffect( () => {
         currentYear = new Date().getFullYear()
-        
         showYears()
     }, []);
 
     async function showYears() {
         var years = []
-
         const data = await getWybory()
-
-        const futureWyborySejm = new Date(data.sejm[0].data)
-        const futureWyboryPrezydent = new Date(data.prezydent[0].data)
-        const futureWyboryEu = new Date(data.eu[0].data)
         
-        for(let year = currentYear; year < currentYear+11; year++) {
-            let wyboryThisYear = ''
-            if (futureWyborySejm.getFullYear() == year) {
-                wyboryThisYear += ', sejm'
-            }
-            if (futureWyboryPrezydent.getFullYear() == year) {
-                wyboryThisYear += ', prezydent'
-            }
-            if (futureWyboryEu.getFullYear() == year) {
-                wyboryThisYear += ', eu'
-            }
-
-            years.push( year + wyboryThisYear )
+        for(let year = currentYear+5; year >= 2010; year--) {
+            years.push(
+                <View>
+                    <View style={styles.yearDiv}>
+                        <Text style={styles.yearTileText}>{year}</Text>
+                        {data.sejm.map((oneYear) => {
+                            if (year == new Date(oneYear.data).getFullYear()) {
+                                return (<View key={oneYear.nazwa} style={styles.circleSejm}/>)
+                            }
+                        })}
+                        {data.prezydent.map((oneYear) => {
+                            if (year == new Date(oneYear.data).getFullYear()) {
+                                return (<View key={oneYear.nazwa} style={styles.circlePrezydent}/>)
+                            }
+                        })}
+                        {data.eu.map((oneYear) => {
+                            if (year == new Date(oneYear.data).getFullYear()) {
+                                return (<View key={oneYear.nazwa} style={styles.circleEu}/>)
+                            }
+                        })}
+                    </View>
+                    
+                </View>
+            )
         }
 
         setYears(years)
@@ -52,17 +56,31 @@ export default function ElectionScreen(){
 
     return(
         <View style={styles.container}>
-            <ScrollView style={styles.scrollView}>
-            {years.map((yearItem, index) => (
-                <View key={index} style={styles.yearItemContainer}>
-                    <TouchableHighlight
-                        style={styles.yearTile} 
-                        onPress={ () => { console.log(yearItem) } }
-                        >
-                        <Text style={styles.yearTileText}>{yearItem}</Text>
-                    </TouchableHighlight>
+            <View style={{width: '100%', paddingBottom: 10, borderBottomWidth: 3}}>
+                <View style={styles.colorsMeaningDiv}>
+                    <View style={styles.circleSejm}/>
+                    <Text style={styles.colorsMeaningText} >Sejm</Text>
                 </View>
-            ))}
+                <View style={styles.colorsMeaningDiv}>
+                    <View style={styles.circlePrezydent}/>
+                    <Text style={styles.colorsMeaningText} >Prezydent</Text>
+                </View>
+                <View style={styles.colorsMeaningDiv}>
+                    <View style={styles.circleEu}/>
+                    <Text style={styles.colorsMeaningText} >Parlament Europejski</Text>
+                </View>
+            </View>
+            <ScrollView style={styles.scrollView}>
+                {years.map((yearItem, index) => (
+                    <View key={index} style={styles.yearItemContainer}>
+                        <TouchableHighlight
+                            style={styles.yearTile} 
+                            onPress={ () => { console.log(yearItem) } }
+                            >
+                            {yearItem}
+                        </TouchableHighlight>
+                    </View>
+                ))}
             </ScrollView>
         </View>
     );
@@ -74,6 +92,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         padding: "4%",
+    },
+
+    colorsMeaningDiv: {
+        alignSelf: 'left',
+        flexDirection: 'row',
+    },
+    colorsMeaningText: {
+        color: 'black',
+        fontSize: 25,
+        fontWeight: '700',
+        marginLeft: 10
     },
 
     scrollView: {
@@ -93,11 +122,40 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
     },
+
+    yearDiv: {
+        alignSelf: 'center',
+        flexDirection: 'row',
+    },
       
     yearTileText: {
-        alignSelf: 'center',
         color: '#fff',
         fontSize: 25,
         fontWeight: '700',
     },
+
+    circleSejm: {
+        width: 20,
+        height: 20,
+        borderRadius: 20,
+        marginLeft: 10,
+        marginVertical: 7,
+        backgroundColor: '#12cdd4',
+    },
+    circlePrezydent: {
+        width: 20,
+        height: 20,
+        borderRadius: 20,
+        marginLeft: 10,
+        marginVertical: 7,
+        backgroundColor: '#f24726',
+    },
+    circleEu: {
+        width: 20,
+        height: 20,
+        borderRadius: 20,
+        marginLeft: 10,
+        marginVertical: 7,
+        backgroundColor: '#8fd14f',
+    }
 });

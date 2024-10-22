@@ -52,7 +52,7 @@ app.get('/uzytkownicy', (req, res) => {
 });
 
 app.get('/wyborysejm', (req, res) => {
-    const statement = "SELECT * FROM wybory_sejm WHERE przyszle=1;";
+    const statement = "SELECT * FROM wybory_sejm;";
     connection.query(statement, (err, data) => {
         if (err) {
             console.error('Error querying database:', err.message);
@@ -64,7 +64,7 @@ app.get('/wyborysejm', (req, res) => {
 });
 
 app.get('/wyboryprezydent', (req, res) => {
-    const statement = "SELECT * FROM wybory_prezydent WHERE przyszle=1;";
+    const statement = "SELECT * FROM wybory_prezydent;";
     connection.query(statement, (err, data) => {
         if (err) {
             console.error('Error querying database:', err.message);
@@ -76,7 +76,7 @@ app.get('/wyboryprezydent', (req, res) => {
 });
 
 app.get('/wyboryeu', (req, res) => {
-    const statement = "SELECT * FROM wybory_eu WHERE przyszle=1;";
+    const statement = "SELECT * FROM wybory_eu;";
     connection.query(statement, (err, data) => {
         if (err) {
             console.error('Error querying database:', err.message);
