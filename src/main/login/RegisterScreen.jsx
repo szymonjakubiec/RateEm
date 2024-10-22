@@ -21,43 +21,43 @@ export default function RegisterScreen({ navigation }) {
 
   // ===== METHODS ================================================================ //
   const validateFields = () => {
-    // if (!name.trim()) {
-    //   alert("Podaj imię.");
-    //   return false;
-    // }
+    if (!name.trim()) {
+      alert("Podaj imię.");
+      return false;
+    }
     if (
       !email.trim() ||
-      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/.test(email.trim())
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email.trim())
     ) {
       alert("Podaj prawidłowy email.");
       return false;
     }
-    // if (!phone.trim()) {
-    //   alert("Podaj numer telefonu.");
-    //   return false;
-    // }
-    // if (!password.trim()) {
-    //   alert("Podaj hasło.");
-    //   return false;
-    // }
-    // if (password.includes(" ")) {
-    //   alert("Hasło nie może zawierać spacji");
-    //   return false;
-    // }
-    // if (password.length < 8 || !/^[a-zA-Z]$/.test(password[0])) {
-    //   alert(
-    //     "Hasło powinno mieć minimum 8 znaków.\nPowinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (#, !, $, -, _, .)."
-    //   );
-    //   return false;
-    // }
-    // if (!repeatPassword.trim()) {
-    //   alert("Powtórz hasło");
-    //   return false;
-    // }
-    // if (password !== repeatPassword) {
-    //   alert("Podane hasła są różne.");
-    //   return false;
-    // }
+    if (!phone.trim()) {
+      alert("Podaj numer telefonu.");
+      return false;
+    }
+    if (!password.trim()) {
+      alert("Podaj hasło.");
+      return false;
+    }
+    if (password.includes(" ")) {
+      alert("Hasło nie może zawierać spacji");
+      return false;
+    }
+    if (password.length < 8 || !/^[a-zA-Z]$/.test(password[0])) {
+      alert(
+        "Hasło powinno mieć minimum 8 znaków.\nPowinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (#, !, $, -, _, .)."
+      );
+      return false;
+    }
+    if (!repeatPassword.trim()) {
+      alert("Powtórz hasło");
+      return false;
+    }
+    if (password !== repeatPassword) {
+      alert("Podane hasła są różne.");
+      return false;
+    }
     return true;
   };
 
