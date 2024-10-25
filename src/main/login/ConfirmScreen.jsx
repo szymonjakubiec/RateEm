@@ -1,12 +1,6 @@
 import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 
 export default function ConfirmScreen({ navigation, route }) {
   // const route = useRoute();
@@ -16,8 +10,7 @@ export default function ConfirmScreen({ navigation, route }) {
     <View style={styles.container}>
       <Text style={styles.subTitle}>Potwierdź</Text>
       <Text style={styles.subTitle}>
-        Na twój telefon {phone} został wysłany kod sms z kodem weryfikacyjnym.
-        Wpisz go w oknie poniżej.
+        Na twój telefon +48 {phone} został wysłany SMS z kodem weryfikacyjnym. Wpisz go w oknie poniżej.
       </Text>
 
       {/* <TextInput 

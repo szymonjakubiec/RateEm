@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { getAllUsers } from "../../backend/database/Users";
 
 export default function RegisterScreen({ navigation }) {
@@ -39,49 +32,44 @@ export default function RegisterScreen({ navigation }) {
       ],
       {
         cancelable: true,
-        onDismiss: () =>
-          console.log("RegisterScreen.jsx:38 ~ Kliknięto poza alert."),
+        onDismiss: () => console.log("RegisterScreen.jsx:38 ~ Kliknięto poza alert."),
       }
     );
   };
 
   const validateFields = async () => {
-    if (!name.trim()) {
+    if (!name) {
       alert("Podaj imię.");
       return false;
     }
-    if (
-      !email.trim() ||
-      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email.trim())
-    ) {
+    if (!email || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
       alert("Podaj prawidłowy e-mail.");
       return false;
     }
-    if (await emailExists(email.trim())) {
-      alert(
-        "Użytkownik o podanym adresie e-mail już istnieje.\nSpróbuj podać inny adres e-mail."
-      );
+    if (await emailExists(email)) {
+      alert("Użytkownik o podanym adresie e-mail już istnieje.\nSpróbuj podać inny adres e-mail.");
       return false;
     }
-    if (!phone.trim()) {
-      alert("Podaj numer telefonu.");
+    if (!phone || /* !/^(?:\+?\d{1,3}[-\s.]?)?(?:\(\d{1,3}\)|\d{1,3})[-\s.]?\d{1,9}$/ */ phone.length !== 9) {
+      alert("Podaj prawidłowy polski numer telefonu.");
       return false;
     }
-    if (!password.trim()) {
+    if (!password) {
       alert("Podaj hasło.");
       return false;
     }
-    if (password.includes(" ")) {
-      alert("Hasło nie może zawierać spacji");
-      return false;
-    }
-    if (password.length < 8 || !/^[a-zA-Z]$/.test(password[0])) {
+    if (
+      password.length < 8 ||
+      !/^[a-zA-Z]/.test(password) ||
+      !/^[a-zA-Z0-9!#$._@-]+$/.test(password) ||
+      !/[!#$._@]/.test(password)
+    ) {
       alert(
-        "Hasło powinno mieć minimum 8 znaków.\nPowinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (#, !, $, -, _, .)."
+        "Hasło powinno mieć minimum 8 znaków.\nPowinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
       );
       return false;
     }
-    if (!repeatPassword.trim()) {
+    if (!repeatPassword) {
       alert("Powtórz hasło");
       return false;
     }
@@ -97,9 +85,12 @@ export default function RegisterScreen({ navigation }) {
       <TextInput
         style={styles.textInput}
         autoComplete="name"
-        placeholder="imie"
+        placeholder="imię"
         value={name}
-        onChangeText={(text) => setName(text)}
+        onChangeText={(text) => {
+          if (text.includes(" ")) return;
+          setName(text.trim());
+        }}
       />
       <TextInput
         style={styles.textInput}
@@ -108,16 +99,27 @@ export default function RegisterScreen({ navigation }) {
         autoCapitalize="none"
         placeholder="e-mail"
         value={email}
-        onChangeText={(text) => setEmail(text)}
+        onChangeText={(text) => {
+          if (text.includes(" ")) return;
+          setEmail(text.trim());
+        }}
       />
-      <TextInput
-        style={styles.textInput}
-        autoComplete="tel"
-        keyboardType="phone-pad"
-        placeholder="numer telefonu"
-        value={phone}
-        onChangeText={(text) => setPhone(text)}
-      />
+      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+        <Text style={{ alignSelf: "center", left: 10, fontSize: 13, fontWeight: 300, position: "absolute" }}>+48 | </Text>
+        <TextInput
+          style={[styles.textInput, { paddingLeft: 42 }]}
+          autoComplete="tel"
+          keyboardType="phone-pad"
+          placeholder="numer telefonu"
+          value={phone}
+          onChangeText={(text) => {
+            text = text.trim().replace(/[^0-9]/g, "");
+            text.slice(0, 3) === "+48" && setPhone(text.slice(3));
+            if (text.length > 9) return;
+            setPhone(text.trim());
+          }}
+        />
+      </View>
       <TextInput
         style={styles.textInput}
         autoCapitalize="none"
@@ -126,7 +128,10 @@ export default function RegisterScreen({ navigation }) {
         placeholder="hasło"
         secureTextEntry
         value={password}
-        onChangeText={(text) => setPassword(text)}
+        onChangeText={(text) => {
+          text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
+          setPassword(text);
+        }}
       />
       <TextInput
         style={styles.textInput}
@@ -136,7 +141,10 @@ export default function RegisterScreen({ navigation }) {
         placeholder="powtórz hasło"
         secureTextEntry
         value={repeatPassword}
-        onChangeText={(text) => setRepeatPassword(text)}
+        onChangeText={(text) => {
+          if (text.includes(" ")) return;
+          setRepeatPassword(text);
+        }}
       />
 
       <TouchableHighlight
@@ -202,7 +210,8 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     width: "90%",
-    marginBottom: 15,
+    marginTop: 7,
+    marginBottom: 7,
   },
   button: {
     backgroundColor: "#000",

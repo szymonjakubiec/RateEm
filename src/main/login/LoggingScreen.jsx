@@ -1,12 +1,6 @@
 import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import CheckBox from "react-native-check-box";
 import { getAllUsers } from "../../backend/database/Users";
@@ -97,14 +91,19 @@ export default function LoggingScreen({ navigation }) {
 
       <TextInput
         style={styles.textInput}
-        placeholder="email"
+        autoComplete="email"
+        autoCapitalize="none"
+        placeholder="e-mail"
         onChangeText={(email) => setEmail(email.trim())}
         onBlur={() => emailApproved(email)}
       />
       <Text style={styles.wrongInputText}>{wrongEmailInfo}</Text>
       <TextInput
         style={styles.textInput}
+        autoComplete="current-password"
+        autoCapitalize="none"
         placeholder="hasło"
+        secureTextEntry
         onChangeText={(email) => setPassword(email.trim())}
         ref={(input) => {
           this.textInput = input;
@@ -112,10 +111,7 @@ export default function LoggingScreen({ navigation }) {
       />
       <Text style={styles.wrongInputText}>{wrongPasswordInfo}</Text>
 
-      <TouchableHighlight
-        style={styles.buttonMain}
-        onPress={() => handleLogin()}
-      >
+      <TouchableHighlight style={styles.buttonMain} onPress={() => handleLogin()}>
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
 
@@ -133,9 +129,7 @@ export default function LoggingScreen({ navigation }) {
         <Text style={{ alignSelf: "center" }}>Zapamiętaj</Text>
       </View>
 
-      <Text style={{ marginTop: 15, marginBottom: 5, fontSize: 13 }}>
-        Nie masz jeszcze konta?
-      </Text>
+      <Text style={{ marginTop: 15, marginBottom: 5, fontSize: 13 }}>Nie masz jeszcze konta?</Text>
 
       <TouchableHighlight
         style={styles.button}
