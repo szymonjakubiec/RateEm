@@ -32,33 +32,6 @@ export default function LoggingScreen({ navigation }) {
   const firstCheck = useRef(true);
 
   /**
-   * Gets the information of all users and passes it to the userData.
-   *  @returns userData
-   */
-  async function getUsers() {
-    try {
-      // TODO
-      // get data using fetch
-
-      return data;
-    } catch (error) {
-      console.log(error);
-      if (error.response) {
-        console.log("RESPONSE ERROR");
-        console.log(error.response.headers);
-      } else if (error.request) {
-        console.log("REQUEST ERROR");
-        console.log(error.request);
-        console.log(error.message);
-      } else {
-        console.log("sth else");
-        console.log(error.config);
-        console.log(error);
-      }
-    }
-  }
-
-  /**
    * Checks if the email format is correct returning the bool value. Also gives feedback to the wrongEmailInfo if the email format is wrong.
    * @param {string} email
    * @returns {boolean}
@@ -102,8 +75,6 @@ export default function LoggingScreen({ navigation }) {
    * Gets userData from getUsers() and sets it which triggers the useEffect hook with checkCredentials() function.
    */
   async function handleLogin() {
-    // const data = await getUsers();
-    // setUserData(data);
     const data = await getAllUsers();
     setUserData(data);
   }
@@ -143,9 +114,7 @@ export default function LoggingScreen({ navigation }) {
 
       <TouchableHighlight
         style={styles.buttonMain}
-        onPress={() =>
-          navigation.navigate("MainNav", { screen: "Home", _title })
-        }
+        onPress={() => handleLogin()}
       >
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
@@ -177,9 +146,6 @@ export default function LoggingScreen({ navigation }) {
         <Text style={styles.buttonText}>Zarejestruj</Text>
       </TouchableHighlight>
 
-      <TouchableHighlight style={styles.button} onPress={() => handleLogin()}>
-        <Text style={styles.buttonText}>Zaloguj</Text>
-      </TouchableHighlight>
       <StatusBar style="auto" />
     </View>
   );
@@ -227,10 +193,6 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#4a4a4a",
-=======
-  button: {
-    backgroundColor: "#000",
->>>>>>> MS-DatabaseMethods
     paddingTop: 8,
     paddingBottom: 8,
     width: "70%",
