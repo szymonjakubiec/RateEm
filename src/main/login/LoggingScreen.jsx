@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import CheckBox from "react-native-check-box";
+import { getAllUsers } from "../../backend/database/Users";
 
 export default function LoggingScreen({ navigation }) {
   const _title = "Rate'Em";
@@ -103,6 +104,8 @@ export default function LoggingScreen({ navigation }) {
   async function handleLogin() {
     // const data = await getUsers();
     // setUserData(data);
+    const data = await getAllUsers();
+    setUserData(data);
   }
 
   /**
@@ -174,6 +177,9 @@ export default function LoggingScreen({ navigation }) {
         <Text style={styles.buttonText}>Zarejestruj</Text>
       </TouchableHighlight>
 
+      <TouchableHighlight style={styles.button} onPress={() => handleLogin()}>
+        <Text style={styles.buttonText}>Zaloguj</Text>
+      </TouchableHighlight>
       <StatusBar style="auto" />
     </View>
   );
@@ -221,6 +227,10 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#4a4a4a",
+=======
+  button: {
+    backgroundColor: "#000",
+>>>>>>> MS-DatabaseMethods
     paddingTop: 8,
     paddingBottom: 8,
     width: "70%",

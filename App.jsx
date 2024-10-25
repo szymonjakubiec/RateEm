@@ -7,6 +7,20 @@ import RegisterNavigation from "./src/main/login/nav/RegisterNavigation";
 
 const Stack = createStackNavigator();
 
+(() =>
+  fetch("https://api.ipify.org?format=json")
+    .then((response) => response.json())
+
+    .then((data) => {
+      global.SERVER_URL = "http://" + data.ip + ":3000/api";
+    })
+
+    .catch((error) => {
+      console.error("Error fetching IP:", error);
+    }))();
+
+global.xD = "YAAAA";
+
 export default function App() {
   return (
     <NavigationContainer>
