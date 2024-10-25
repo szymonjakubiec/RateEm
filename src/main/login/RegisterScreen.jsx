@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -26,6 +27,24 @@ export default function RegisterScreen({ navigation }) {
     return users.some((user) => user.email === email);
   };
 
+  const alert = (text) => {
+    Alert.alert(
+      "❌ Błąd ❌",
+      text,
+      [
+        {
+          text: "OK 💀",
+          onPress: () => console.log("RegisterScreen.jsx:34 ~ OK kliknięty."),
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () =>
+          console.log("RegisterScreen.jsx:38 ~ Kliknięto poza alert."),
+      }
+    );
+  };
+
   const validateFields = async () => {
     if (!name.trim()) {
       alert("Podaj imię.");
@@ -35,7 +54,7 @@ export default function RegisterScreen({ navigation }) {
       !email.trim() ||
       !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email.trim())
     ) {
-      alert("Podaj prawidłowy email.");
+      alert("Podaj prawidłowy e-mail.");
       return false;
     }
     if (await emailExists(email.trim())) {
