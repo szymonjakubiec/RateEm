@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
+import { getAllUsers } from "../../backend/database/Users";
 
 export default function RegisterScreen({ navigation }) {
   // ===== PROPERTIES ============================================================= //
@@ -20,7 +21,12 @@ export default function RegisterScreen({ navigation }) {
   // const route = useRoute();
 
   // ===== METHODS ================================================================ //
-  const validateFields = () => {
+  const emailExists = async (email) => {
+    const users = await getAllUsers();
+    return users.some((user) => user.email === email);
+  };
+
+  const validateFields = async () => {
     if (!name.trim()) {
       alert("Podaj imię.");
       return false;
@@ -30,6 +36,12 @@ export default function RegisterScreen({ navigation }) {
       !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email.trim())
     ) {
       alert("Podaj prawidłowy email.");
+      return false;
+    }
+    if (await emailExists(email.trim())) {
+      alert(
+        "Użytkownik o podanym adresie e-mail już istnieje.\nSpróbuj podać inny adres e-mail."
+      );
       return false;
     }
     if (!phone.trim()) {
@@ -111,16 +123,14 @@ export default function RegisterScreen({ navigation }) {
       <TouchableHighlight
         style={styles.button}
         onPress={() => {
-          validateFields() &&
-            navigation.navigate("Confirm", {
-              _title,
-              phone,
-            }); // domyślny ekran, parametry
-          console.log(name);
-          console.log(email);
-          console.log(phone);
-          console.log(password);
-          console.log(repeatPassword);
+          validateFields().then((result) => {
+            if (result) {
+              navigation.navigate("Confirm", {
+                _title,
+                phone,
+              });
+            }
+          });
         }}
       >
         <Text style={styles.buttonText}>Zarejestruj</Text>
