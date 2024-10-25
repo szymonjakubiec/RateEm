@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableHighlight } from "react-native";
-import axios from 'axios';
+import { getAllSejmElections } from '../../SejmElections';
+import { getAllPresidentElections } from '../../PresidentElections';
+import { getAllEuElections } from '../../EuElections';
 
 export default function ElectionScreen(){
     const [years, setYears] = useState([]);
@@ -44,9 +46,9 @@ export default function ElectionScreen(){
 
     async function getWybory() {
         try{
-            const sejm = (await axios.get('http://10.0.2.2:3000/wyborysejm')).data;
-            const prezydent = (await axios.get('http://10.0.2.2:3000/wyboryprezydent')).data;
-            const eu = (await axios.get('http://10.0.2.2:3000/wyboryeu')).data;
+            const sejm = await getAllSejmElections();
+            const prezydent = await getAllPresidentElections();
+            const eu = await getAllEuElections();
             return {sejm, prezydent, eu}
         } catch(error) {
             console.log(error);

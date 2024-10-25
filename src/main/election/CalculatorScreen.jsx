@@ -1,25 +1,79 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput } from "react-native";
+var dhondt = require ('dhondt')
 const plusIcon = require('../../../assets/plus_icon.png');
 const deleteIcon = require('../../../assets/delete_icon.png');
 
 export default function ElectionScreen(){
     const [parties, setParties] = useState([]);
-    const [partyNumber, setPartyNumber] = useState(1);
+
     const [inputValues, setInputValues] = useState([]);
+    const [outputValues, setOutputValues] = useState([]);
+
+    const [sum, setSum] = useState(0);
+    const [theRestValue, setTheRestValue] = useState('100');
+    const [theRestMandatesValue, setTheRestMandatesValue] = useState(0);
 
     useEffect( () => {
-        setParties([ {}, {}, {} ])
-        setPartyNumber(partyNumber+1)
+        setParties([ {} ])
     }, []);
 
     function addParty() {
-        setParties(prevParties => [...prevParties, {}])
-        setPartyNumber(partyNumber+1)
+        if (parties.length < 9  &&  sum<100) {
+            setParties(prevParties => [...prevParties, 0])
+        }
+        onPersentageChange()
     }
 
     function deleteParty(indexToDelete) {
-        setParties(parties.filter((_, index) => index!==indexToDelete))
+        if (parties.length > 1) {
+            setParties( parties=> parties.filter((p, index) => (index != indexToDelete)) )
+            setInputValues( inputValues=> inputValues.filter((i, index) => (index != indexToDelete)) )
+            inputValues[indexToDelete] = 0
+            outputValues[indexToDelete] = 0
+        }
+        onPersentageChange()
+    }
+
+    function onPersentageChange() {
+        var sumTemp = 0
+        for (var index=0; index<inputValues.length; index++) {
+            setTheRestValue('0')
+            if (sumTemp < 100) {
+                sumTemp += parseFloat(inputValues[index])
+                const shortage = 100 - sumTemp
+                if (shortage > 0){ setTheRestValue((shortage).toString()) }
+            }   
+            
+            if (sumTemp >= 100) {
+                const surplus = sumTemp - 100
+                inputValues[index] = (inputValues[index] - surplus).toString()
+                sumTemp = sumTemp - surplus
+            }
+        }
+
+        setInputValues(prevInputValues => prevInputValues.map((value, index) => value));
+        setSum(sumTemp)
+
+        calculateDhondtMandates();
+    }
+
+    function calculateDhondtMandates() {
+        var votes = []
+        var sumTemp = 100
+        for (var index=0; index<inputValues.length; index++) {
+            votes[index] = parseFloat(inputValues[index])
+            sumTemp -= parseFloat(inputValues[index])
+        }
+        votes[votes.length] = sumTemp;
+        
+        var mandates = 460;
+        var results = dhondt.compute(votes, mandates);
+
+        for (var index=0; index<results.length-1; index++) {
+            outputValues[index] = results[index].toString()
+        }
+        setTheRestMandatesValue(results[results.length-1].toString())
     }
 
     return(
@@ -31,14 +85,20 @@ export default function ElectionScreen(){
                 {parties.map((partyItem, index) => (
                     <View key={index} style={styles.partyTile}>
                         <Text style={styles.partyTileText}>Partia {index+1}</Text>
-                        <TextInput style={styles.partyTileInput} value={inputValues[index]}/>
+                        <TextInput style={styles.partyTileInput} value={inputValues[index]} onChangeText={(newValue) => {inputValues[index]=newValue; onPersentageChange()}} keyboardType='numeric' maxLength={5}/>
                         <Text style={styles.partyTileText}>%</Text>
-                        <TextInput style={styles.partyTileInput} readOnly={true} value={inputValues[index]}/>
+                        <TextInput style={styles.partyTileInput} readOnly={true} value={outputValues[index]}/>
                         <TouchableHighlight onPress={() => deleteParty(index)}>
                             <Image source={deleteIcon} style={styles.deleteIcon} />
                         </TouchableHighlight>
                     </View>
                 ))}
+                <View style={styles.partyTile}>
+                    <Text style={styles.partyTileText}>Reszta  </Text>
+                    <TextInput style={styles.partyTileInput} value={theRestValue} readOnly={true} />
+                    <Text style={styles.partyTileText}>%</Text>
+                    <TextInput style={styles.partyTileInput} value={theRestMandatesValue} readOnly={true} />
+                </View>
                 <TouchableHighlight style={styles.addPartyTile} onPress={addParty}>
                     <Image source={plusIcon} style={styles.plusIcon} />
                 </TouchableHighlight>
