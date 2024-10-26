@@ -5,10 +5,9 @@ import {
   Text,
   TextInput,
   TouchableHighlight,
-  View
+  View,
 } from "react-native";
-import { useState } from 'react';
-import CheckBox from 'react-native-check-box';
+import { useEffect, useRef, useState } from "react";
 
 export default function LoggingScreen({ navigation }) {
   const _title = "Rate'Em";
@@ -35,7 +34,7 @@ export default function LoggingScreen({ navigation }) {
    */
   async function getUsers() {
     try {
-      const response = await fetch("http://10.0.2.2:3000/api/uzytkownicy");
+      const response = await fetch("http://10.0.2.2:3000/api/users");
       const data = response.json();
 
       return data;
@@ -170,7 +169,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     width: "90%",
-    marginBottom: 15,
   },
   wrongInputText: {
     fontSize: 12,
