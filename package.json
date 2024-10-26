@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "scripts": {
+    "server": "cd .\\src\\backend\\ && npx nodemon Server.js",
     "start": "npx expo start --tunnel",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -24,15 +25,19 @@
     "fs": "^0.0.1-security",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.3",
+    "mssql": "^11.0.1",
+    "nodemon": "^3.1.7",
     "react": "18.2.0",
-    "react-dom": "^18.2.0",
     "react-native": "0.74.5",
     "react-native-check-box": "^2.1.7",
     "react-native-web": "^0.19.12"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "concurrently": "^9.0.1"
+    "@babel/core": "^7.20.0"
   },
-  "private": true
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
