@@ -5,9 +5,10 @@ import {
   Text,
   TextInput,
   TouchableHighlight,
-  View,
+  View
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
+import { useState } from 'react';
+import CheckBox from 'react-native-check-box';
 
 export default function LoggingScreen({ navigation }) {
   const _title = "Rate'Em";
@@ -169,6 +170,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     width: "90%",
+    marginBottom: 15,
   },
   wrongInputText: {
     fontSize: 12,
