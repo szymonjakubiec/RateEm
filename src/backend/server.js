@@ -101,6 +101,7 @@ app.put(`/api/ratings/:id`, async (req, res) => {
 
   let connection;
 
+
   const fields = [];
   const values = [];
 
@@ -129,16 +130,18 @@ app.put(`/api/ratings/:id`, async (req, res) => {
     values.push(data);
   }
 
+
   if (fields.length === 0) {
     return res.status(400).json({ message: "No data provided to update" });
   }
-
   values.push(parseInt(id));
+
 
   const query = `UPDATE oceny SET ${fields.join(", ")} WHERE id = ?`;
 
   try {
     connection = await mysql.createConnection(config);
+
 
     const [result] = await connection.execute(query, values);
 
@@ -203,7 +206,6 @@ app.post("/api/ownratings", async (req, res) => {
       "INSERT INTO oceny_wlasne (id_uzytkownik, id_polityk, wartosc) VALUES (?, ?, ?)",
       [id_uzytkownik, id_polityk, wartosc]
     );
-
     res
       .status(201)
       .json({ id: result.insertId, id_uzytkownik, id_polityk, wartosc });
@@ -263,9 +265,11 @@ app.put(`/api/ownratings/:id`, async (req, res) => {
     values.push(id_polityk);
   }
   if (wartosc) {
+
     fields.push("wartosc = ?");
     values.push(wartosc);
   }
+
 
   if (fields.length === 0) {
     return res.status(400).json({ message: "No data provided to update" });
@@ -478,7 +482,9 @@ app.put(`/api/users/:id`, async (req, res) => {
     return res.status(400).json({ message: "No data provided to update" });
   }
 
+
   values.push(parseInt(id));
+
 
   const query = `UPDATE uzytkownicy SET ${fields.join(", ")} WHERE id = ?`;
 
