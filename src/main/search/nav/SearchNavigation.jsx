@@ -7,7 +7,6 @@ var Stack = createStackNavigator();
 
 export default function SearchNavigation({ route }) {
   const _title = route.params?._title;
-  console.log("in search nav");
 
   return (
     <Stack.Navigator>

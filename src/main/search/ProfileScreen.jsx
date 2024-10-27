@@ -3,11 +3,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useRoute } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
 
-export default function ProfileScreen({ navigation }) {
-  const route = useRoute();
-  const data = route.params?.data;
-  const selectedPolitician = route.params?.selectedPolitician;
-
+export default function ProfileScreen({ navigation, route }) {
+  const { data, selectedPolitician } = route.params;
+  // const selectedPoliticianName = data[selectedPolitician];
   // async function init() {
   //   selectedPolitician = await data.find(
   //     (x) => x.key === route.params?.selectedPolitician
@@ -18,7 +16,7 @@ export default function ProfileScreen({ navigation }) {
   // useLayoutEffect(() => {
   //   init();
   // }, [selectedPolitician]);
-
+  // console.log(selectedPolitician.value);
   return (
     <View style={styles.container}>
       <Text>To jest profil {selectedPolitician}.</Text>
