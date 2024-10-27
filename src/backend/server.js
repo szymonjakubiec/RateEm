@@ -1,22 +1,19 @@
 const express = require("express");
-const mysql = require("mysql2/promise"); // Używamy mysql2 z obsługą obietnic
+const mysql = require("mysql2/promise");
 const app = express();
 
-// Konfiguracja połączenia z MySQL na Azure
 const config = {
   host: "rateem-server.mysql.database.azure.com",
   user: "GodAdmin",
   password: "ZAQ!2wsx",
   database: "ratem",
-  port: 3306, // Użyj poprawnego portu dla MySQL
+  port: 3306,
   ssl: {
-    // Azure wymaga SSL
     rejectUnauthorized: true,
   },
 };
 
 app.use(express.json());
-// Endpoint API
 
 //
 app.get("/api/dane", async (req, res) => {
@@ -26,13 +23,11 @@ app.get("/api/dane", async (req, res) => {
     connection = await mysql.createConnection(config);
     const [rows, fields] = await connection.execute("SELECT * FROM wybory_eu");
 
-    // Zwracanie danych do klienta
     res.json(rows);
   } catch (err) {
     // Obsługa błędów
     res.status(500).send(err.message);
   } finally {
-    // Upewnij się, że połączenie zostało zamknięte
     if (connection) {
       try {
         await connection.end();
@@ -77,7 +72,6 @@ app.post("/api/ratings", async (req, res) => {
       [id_uzytkownik, id_polityk, nazwa, wartosc, opis, data]
     );
 
-    // Zwracamy zaktualizowane dane z ID nowo dodanego rekordu
     res.status(201).json({
       id: result.insertId,
       id_uzytkownik,
@@ -106,52 +100,49 @@ app.put(`/api/ratings/:id`, async (req, res) => {
   const { id_uzytkownik, id_polityk, nazwa, wartosc, opis, data } = req.body;
 
   let connection;
-  console.log("Request body:", req.body); // Logujemy body requestu
 
-  // Budowanie dynamicznego zapytania SQL
+
   const fields = [];
   const values = [];
 
-  if (id_uzytkownik !== undefined) {
+  if (id_uzytkownik) {
     fields.push("id_uzytkownik = ?");
     values.push(id_uzytkownik);
   }
-  if (id_polityk !== undefined) {
+  if (id_polityk) {
     fields.push("id_polityk = ?");
     values.push(id_polityk);
   }
-  if (nazwa !== undefined) {
+  if (nazwa) {
     fields.push("nazwa = ?");
     values.push(nazwa);
   }
-  if (wartosc !== undefined) {
+  if (wartosc) {
     fields.push("wartosc = ?");
     values.push(wartosc);
   }
-  if (opis !== undefined) {
+  if (opis) {
     fields.push("opis = ?");
     values.push(opis);
   }
-  if (data !== undefined) {
+  if (data) {
     fields.push("data = ?");
     values.push(data);
   }
 
-  // Jeżeli nie ma żadnych pól do zaktualizowania
+
   if (fields.length === 0) {
     return res.status(400).json({ message: "No data provided to update" });
   }
-
-  // Dodajemy id na koniec tablicy wartości (parametry zapytania)
   values.push(parseInt(id));
 
-  // Budujemy pełne zapytanie SQL
+
   const query = `UPDATE oceny SET ${fields.join(", ")} WHERE id = ?`;
 
   try {
     connection = await mysql.createConnection(config);
 
-    // Wykonujemy zapytanie
+
     const [result] = await connection.execute(query, values);
 
     if (result.affectedRows > 0) {
@@ -215,8 +206,6 @@ app.post("/api/ownratings", async (req, res) => {
       "INSERT INTO oceny_wlasne (id_uzytkownik, id_polityk, wartosc) VALUES (?, ?, ?)",
       [id_uzytkownik, id_polityk, wartosc]
     );
-
-    // Zwracamy zaktualizowane dane z ID nowo dodanego rekordu
     res
       .status(201)
       .json({ id: result.insertId, id_uzytkownik, id_polityk, wartosc });
@@ -262,40 +251,37 @@ app.put(`/api/ownratings/:id`, async (req, res) => {
   const { id_uzytkownik, id_polityk, wartosc } = req.body;
 
   let connection;
-  console.log("Request body:", req.body); // Logujemy body requestu
+  console.log("Request body:", req.body);
 
-  // Budowanie dynamicznego zapytania SQL
   const fields = [];
   const values = [];
 
-  if (id_uzytkownik !== undefined) {
+  if (id_uzytkownik) {
     fields.push("id_uzytkownik = ?");
     values.push(id_uzytkownik);
   }
-  if (id_polityk !== undefined) {
+  if (id_polityk) {
     fields.push("id_polityk = ?");
     values.push(id_polityk);
   }
-  if (wartosc !== undefined) {
+  if (wartosc) {
+
     fields.push("wartosc = ?");
     values.push(wartosc);
   }
 
-  // Jeżeli nie ma żadnych pól do zaktualizowania
+
   if (fields.length === 0) {
     return res.status(400).json({ message: "No data provided to update" });
   }
 
-  // Dodajemy id na koniec tablicy wartości (parametry zapytania)
   values.push(parseInt(id));
 
-  // Budujemy pełne zapytanie SQL
   const query = `UPDATE oceny_wlasne SET ${fields.join(", ")} WHERE id = ?`;
 
   try {
     connection = await mysql.createConnection(config);
 
-    // Wykonujemy zapytanie
     const [result] = await connection.execute(query, values);
 
     if (result.affectedRows > 0) {
@@ -421,7 +407,6 @@ app.post("/api/users", async (req, res) => {
       ]
     );
 
-    // Zwracamy zaktualizowane dane z ID nowo dodanego rekordu
     res.status(201).json({
       id: result.insertId,
       imie,
@@ -459,56 +444,53 @@ app.put(`/api/users/:id`, async (req, res) => {
   } = req.body;
 
   let connection;
-  console.log("Request body:", req.body); // Logujemy body requestu
+  console.log("Request body:", req.body);
 
-  // Budowanie dynamicznego zapytania SQL
   const fields = [];
   const values = [];
 
-  if (imie !== undefined) {
+  if (imie) {
     fields.push("imie = ?");
     values.push(imie);
   }
-  if (email !== undefined) {
+  if (email) {
     fields.push("email = ?");
     values.push(email);
   }
-  if (haslo !== undefined) {
+  if (haslo) {
     fields.push("haslo = ?");
     values.push(haslo);
   }
-  if (nr_telefonu !== undefined) {
+  if (nr_telefonu) {
     fields.push("nr_telefonu = ?");
     values.push(nr_telefonu);
   }
-  if (zweryfikowany !== undefined) {
+  if (zweryfikowany) {
     fields.push("zweryfikowany = ?");
     values.push(zweryfikowany);
   }
-  if (sposob_komunikacji !== undefined) {
+  if (sposob_komunikacji) {
     fields.push("sposob_komunikacji = ?");
     values.push(sposob_komunikacji);
   }
-  if (sposob_logowania !== undefined) {
+  if (sposob_logowania) {
     fields.push("sposob_logowania = ?");
     values.push(sposob_logowania);
   }
 
-  // Jeżeli nie ma żadnych pól do zaktualizowania
   if (fields.length === 0) {
     return res.status(400).json({ message: "No data provided to update" });
   }
 
-  // Dodajemy id na koniec tablicy wartości (parametry zapytania)
+
   values.push(parseInt(id));
 
-  // Budujemy pełne zapytanie SQL
+
   const query = `UPDATE uzytkownicy SET ${fields.join(", ")} WHERE id = ?`;
 
   try {
     connection = await mysql.createConnection(config);
 
-    // Wykonujemy zapytanie
     const [result] = await connection.execute(query, values);
 
     if (result.affectedRows > 0) {
