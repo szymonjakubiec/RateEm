@@ -1,6 +1,6 @@
 import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import CheckBox from "react-native-check-box";
 import { getAllUsers } from "../../backend/database/Users";
@@ -129,16 +129,26 @@ export default function LoggingScreen({ navigation }) {
         <Text style={{ alignSelf: "center" }}>Zapamiętaj</Text>
       </View>
 
-      <Text style={{ marginTop: 15, marginBottom: 5, fontSize: 13 }}>Nie masz jeszcze konta?</Text>
+      <View style={{ flexDirection: "row", alignItems: "center", marginTop: 20 }}>
+        <Text style={{ /* marginTop: 15, marginBottom: 5, */ fontSize: 13 }}>Nie masz jeszcze konta?</Text>
 
-      <TouchableHighlight
-        style={styles.button}
-        onPress={() => {
-          navigation.navigate("RegisterNav", { _title }); // domyślny ekran, parametry
-        }}
-      >
-        <Text style={styles.buttonText}>Zarejestruj</Text>
-      </TouchableHighlight>
+        <TouchableOpacity
+          style={{
+            marginLeft: 10,
+          }}
+          onPress={() => {
+            navigation.navigate("RegisterNav", { _title }); // domyślny ekran, parametry
+          }}
+        >
+          <Text
+            style={{
+              color: "blue",
+            }}
+          >
+            Zarejestruj
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <StatusBar style="auto" />
     </View>

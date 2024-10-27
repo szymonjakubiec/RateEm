@@ -58,12 +58,7 @@ export default function RegisterScreen({ navigation }) {
       alert("Podaj hasło.");
       return false;
     }
-    if (
-      password.length < 8 ||
-      !/^[a-zA-Z]/.test(password) ||
-      !/^[a-zA-Z0-9!#$._@-]+$/.test(password) ||
-      !/[!#$._@]/.test(password)
-    ) {
+    if (password.length < 8 || !/^[a-zA-Z]/.test(password) || !/^[a-zA-Z0-9!#$._@-]+$/.test(password) || !/[!#$._@]/.test(password)) {
       alert(
         "Hasło powinno mieć minimum 8 znaków.\nPowinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
       );
@@ -82,6 +77,8 @@ export default function RegisterScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
+
       <TextInput
         style={styles.textInput}
         autoComplete="name"
@@ -134,7 +131,7 @@ export default function RegisterScreen({ navigation }) {
         }}
       />
       <TextInput
-        style={styles.textInput}
+        style={[styles.textInput, { marginBottom: 40 }]}
         autoCapitalize="none"
         autoComplete="current-password"
         textContentType="currentPassword"
@@ -162,25 +159,6 @@ export default function RegisterScreen({ navigation }) {
       >
         <Text style={styles.buttonText}>Zarejestruj</Text>
       </TouchableHighlight>
-
-      {/* <TextInput 
-          style={styles.textInput}
-          placeholder='email'
-      />
-      <TextInput 
-          style={styles.textInput}
-          placeholder='hasło'
-      />
-
-      <TouchableHighlight
-          style={styles.button}
-          onPress={() =>{
-            navigation.navigate('MainNav', {screen: 'Home', _title}); // domyślny ekran, parametry
-          }}
-      >
-          <Text style={styles.buttonText}>Zaloguj</Text>
-      </TouchableHighlight>
-      <StatusBar style="auto" /> */}
     </View>
   );
 }
@@ -191,14 +169,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    padding: 70,
+    paddingHorizontal: 70,
+    paddingBottom: 70,
   },
   title: {
-    fontSize: 48,
-  },
-  subTitle: {
-    fontSize: 16,
-    marginBottom: 50,
+    fontSize: 22,
+    alignSelf: "flex-start",
+    marginLeft: 15,
+    marginBottom: 40,
   },
   textInput: {
     borderRadius: 5,
