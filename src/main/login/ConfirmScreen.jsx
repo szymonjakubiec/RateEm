@@ -2,11 +2,14 @@ import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { useState } from "react";
+import { sendSMS } from "../../backend/CommonMethods";
 
 export default function ConfirmScreen({ navigation, route }) {
   // const route = useRoute();
   const { name, email, phone, password } = route.params;
   const [code, setCode] = useState("");
+
+  sendSMS();
 
   return (
     <View style={styles.container}>
