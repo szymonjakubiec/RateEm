@@ -1,16 +1,24 @@
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useRoute } from "@react-navigation/native";
+import { useLayoutEffect } from "react";
 
 export default function ProfileScreen({ navigation }) {
   const route = useRoute();
-  const selectedPolitician =
-    route.params?.data[route.params?.selectedPolitician - 1].value;
-  route.params?.selectedPolitician;
+  const data = route.params?.data;
+  const selectedPolitician = route.params?.selectedPolitician;
 
-  function print() {
-    console.log(selectedPolitician);
-  }
+  // async function init() {
+  //   selectedPolitician = await data.find(
+  //     (x) => x.key === route.params?.selectedPolitician
+  //   ).value;
+  //   console.log(selectedPolitician);
+  // }
+
+  // useLayoutEffect(() => {
+  //   init();
+  // }, [selectedPolitician]);
+
   return (
     <View style={styles.container}>
       <Text>To jest profil {selectedPolitician}.</Text>

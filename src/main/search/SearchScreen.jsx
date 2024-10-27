@@ -1,31 +1,40 @@
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
-import { SearchBar } from "react-native-elements";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { SelectList } from "react-native-dropdown-select-list";
+import {
+  getAllPoliticianNames,
+  getAllPoliticians,
+} from "../../backend/database/Politicians.js";
+import { useRoute } from "@react-navigation/native";
+import { PoliticianNameContext } from "./PoliticianNameContext.jsx";
 
 export default function SearchScreen({ navigation }) {
-  const [searchText, setSearchText] = useState("");
+  const politicianNameData = useContext(PoliticianNameContext);
   const [selectedPolitician, setSelectedPolitician] = useState("");
+  console.log("in search: " + politicianNameData);
+  data = [];
 
-  const data = [
-    { key: "1", value: "Korwinedes z Myken" },
-    { key: "2", value: "Grzesio Braun" },
-    { key: "3", value: "Donald Tusk" },
-    { key: "4", value: "Jarek Kaczyński" },
-    { key: "5", value: "Sławek Memcen" },
-    { key: "6", value: "Szymon Kotłownia" },
-    { key: "7", value: "Al Asad" },
-  ];
+  // useEffect(() => {
+  //   // console.log("in search: " + politicianNameData[0].value);
+  // }, [politicianNameData]);
+
+  function navigateToProfile() {
+    if (selectedPolitician !== "") {
+      navigation.navigate("Profile", {
+        // politicianNameData,
+        selectedPolitician,
+      });
+    }
+  }
+
   return (
     <View style={styles.container}>
       <SelectList
-        data={data}
+        data={politicianNameData}
         placeholder="Wyszukaj polityka"
         searchPlaceholder="Wyszukaj polityka"
         setSelected={setSelectedPolitician}
-        onSelect={() =>
-          navigation.navigate("Profile", { data, selectedPolitician })
-        }
+        onSelect={navigateToProfile()}
         boxStyles={styles.boxStyle}
         dropdownStyles={styles.dropdownStyle}
         dropdownTextStyles={styles.dropdownTextStyle}

@@ -11,7 +11,6 @@ import { useEffect, useRef, useState } from "react";
 
 export default function LoggingScreen({ navigation }) {
   const _title = "Rate'Em";
-  // const route = useRoute();
 
   const [userData, setUserData] = useState([]);
   const [email, setEmail] = useState("");
@@ -72,21 +71,20 @@ export default function LoggingScreen({ navigation }) {
   }
 
   /**
-   * Iterates asynchronously through users in userData checking if email and password are correct. If they are then user navigates to the main screen.
+   * Iterates through users in userData checking if email and password are correct.
    */
-  async function checkCredentials() {
+  function checkCredentials() {
     for (const user of userData) {
       if (user.email == email) {
         if (user.haslo == password) {
           setWrongPasswordInfo("");
           this.textInput.clear();
-          await navigation.navigate("MainNav", { screen: "Home", _title }); // domyślny ekran, parametry
-          return;
+          return true;
         } else {
           setWrongPasswordInfo("Nieprawidłowe hasło");
           setPassword("");
           this.textInput.clear();
-          return;
+          return false;
         }
       }
     }
@@ -96,9 +94,31 @@ export default function LoggingScreen({ navigation }) {
   }
 
   /**
-   * Gets userData from getUsers() and sets it which triggers the useEffect hook with checkCredentials() function.
+   * Navigates to the main screen.
+   * @async
    */
-  async function handleLogin() {
+  async function navigateToProfileScreen() {
+    await navigation.navigate("MainNav", {
+      screen: "Home",
+      params: {
+        _title: _title,
+      },
+    }); // default screen, parameters
+  }
+
+  /**
+   * Calls the checkCredentials() function. If the credentials are correct then user navigates to the main screen.
+   */
+  function handleLogin() {
+    if (checkCredentials()) {
+      navigateToProfileScreen();
+    }
+  }
+  /**
+   * Asynchronously gets userData from getUsers() and sets it which triggers the useEffect hook with handleLogin() function.
+   * @async
+   */
+  async function setCredentials() {
     const data = await getUsers();
     setUserData(data);
   }
@@ -108,7 +128,7 @@ export default function LoggingScreen({ navigation }) {
    */
   useEffect(() => {
     if (!firstCheck.current) {
-      checkCredentials();
+      handleLogin();
     } else {
       firstCheck.current = false;
     }
@@ -136,7 +156,10 @@ export default function LoggingScreen({ navigation }) {
       />
       <Text style={styles.wrongInputText}>{wrongPasswordInfo}</Text>
 
-      <TouchableHighlight style={styles.button} onPress={() => handleLogin()}>
+      <TouchableHighlight
+        style={styles.button}
+        onPress={() => setCredentials()}
+      >
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
       <StatusBar style="auto" />
