@@ -20,6 +20,11 @@ export default function RegisterScreen({ navigation }) {
     return users.some((user) => user.email === email);
   };
 
+  const phoneExists = async (phone) => {
+    const users = await getAllUsers();
+    return users.some((user) => user.phone === phone);
+  };
+
   const alert = (text) => {
     Alert.alert(
       "❌ Błąd ❌",
@@ -52,6 +57,10 @@ export default function RegisterScreen({ navigation }) {
     }
     if (!phone || /* !/^(?:\+?\d{1,3}[-\s.]?)?(?:\(\d{1,3}\)|\d{1,3})[-\s.]?\d{1,9}$/ */ phone.length !== 9) {
       alert("Podaj prawidłowy polski numer telefonu.");
+      return false;
+    }
+    if (await phoneExists(phone)) {
+      alert("Użytkownik o podanym numerze telofonu już istnieje.\nSpróbuj podać inny numer telefonu.");
       return false;
     }
     if (!password) {
