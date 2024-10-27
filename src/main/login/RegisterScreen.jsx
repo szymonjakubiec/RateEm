@@ -119,8 +119,8 @@ export default function RegisterScreen({ navigation }) {
           placeholder="numer telefonu"
           value={phone}
           onChangeText={(text) => {
+            text.slice(0, 3) === "+48" && (text = text.slice(3));
             text = text.trim().replace(/[^0-9]/g, "");
-            text.slice(0, 3) === "+48" && setPhone(text.slice(3));
             if (text.length > 9) return;
             setPhone(text.trim());
           }}
@@ -159,8 +159,11 @@ export default function RegisterScreen({ navigation }) {
           validateFields().then((result) => {
             if (result) {
               navigation.navigate("Confirm", {
-                _title,
+                // _title,
+                name,
+                email,
                 phone,
+                password,
               });
             }
           });
