@@ -1,17 +1,38 @@
 import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { useState } from "react";
 
 export default function ConfirmScreen({ navigation, route }) {
   // const route = useRoute();
-  const phone = route.params?.phone;
+  const { name, email, phone, password } = route.params;
+  const [code, setCode] = useState("");
 
   return (
     <View style={styles.container}>
       <Text style={styles.subTitle}>Potwierdź</Text>
-      <Text style={styles.subTitle}>
-        Na twój telefon +48 {phone} został wysłany SMS z kodem weryfikacyjnym. Wpisz go w oknie poniżej.
-      </Text>
+      <Text style={styles.subTitle}>Na numer +48{phone} został wysłany SMS z kodem weryfikacyjnym. Wpisz go w oknie poniżej.</Text>
+
+      <TextInput style={styles.textInput} autoCapitalize="none" autoComplete="one-time-code" textContentType="oneTimeCode" placeholder="kod" />
+
+      <TouchableHighlight
+        style={styles.button}
+        onPress={() => {
+          (async () => {
+            await addUser(name, email, password, phone, 1, 69, 420);
+          })()
+            .then((result) => {
+              if (result) {
+                navigation.navigate("Success");
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }}
+      >
+        <Text style={styles.buttonText}>Potwierdź</Text>
+      </TouchableHighlight>
 
       {/* <TextInput 
           style={styles.textInput}
@@ -49,6 +70,7 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 16,
     marginBottom: 50,
+    // textAlign: "justify",
   },
   textInput: {
     borderRadius: 5,
