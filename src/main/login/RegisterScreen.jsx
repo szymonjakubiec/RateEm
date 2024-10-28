@@ -5,14 +5,28 @@ import { Alert, StyleSheet, Text, TextInput, TouchableHighlight, View } from "re
 import { getAllUsers } from "../../backend/database/Users";
 
 export default function RegisterScreen({ navigation }) {
+  //
   // ===== PROPERTIES ============================================================= //
   const _title = "Rate'Em";
+
+  // Values
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   // const route = useRoute();
+
+  // Temp
+  const _selectionColor = "#bc15d279";
+  const _cursorColor = "#b01ec386";
+
+  // Validate values
+  const [wrongName, setWrongName] = useState("");
+  const [wrongEmail, setWrongEmail] = useState("");
+  const [wrongPhone, setWrongPhone] = useState("");
+  const [wrongPass, setWrongPass] = useState("");
+  const [wrongPassRep, setWrongPassRep] = useState("");
 
   // ===== METHODS ================================================================ //
   const emailExists = async (email) => {
@@ -42,46 +56,77 @@ export default function RegisterScreen({ navigation }) {
     );
   };
 
-  const validateFields = async () => {
-    if (!name) {
-      alert("Podaj imię.");
-      return false;
-    }
-    if (!email || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
-      alert("Podaj prawidłowy e-mail.");
+  const validateFieldsOnClick = async () => {
+    if (wrongName || !name || wrongEmail || !email || wrongPhone || !phone || wrongPass || !password || wrongPassRep || !repeatPassword) {
+      alert("Wypełnij poprawnie wszystkie pola.");
       return false;
     }
     if (await emailExists(email)) {
       alert("Użytkownik o podanym adresie e-mail już istnieje.\nSpróbuj podać inny adres e-mail.");
       return false;
     }
-    if (!phone || /* !/^(?:\+?\d{1,3}[-\s.]?)?(?:\(\d{1,3}\)|\d{1,3})[-\s.]?\d{1,9}$/ */ phone.length !== 9) {
-      alert("Podaj prawidłowy polski numer telefonu.");
-      return false;
-    }
     if (await phoneExists(phone)) {
       alert("Użytkownik o podanym numerze telofonu już istnieje.\nSpróbuj podać inny numer telefonu.");
       return false;
     }
-    if (!password) {
-      alert("Podaj hasło.");
-      return false;
-    }
-    if (password.length < 8 || !/^[a-zA-Z]/.test(password) || !/^[a-zA-Z0-9!#$._@-]+$/.test(password) || !/[!#$._@]/.test(password)) {
-      alert(
-        "Hasło powinno mieć minimum 8 znaków.\nPowinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
-      );
-      return false;
-    }
-    if (!repeatPassword) {
-      alert("Powtórz hasło");
-      return false;
-    }
-    if (password !== repeatPassword) {
-      alert("Podane hasła są różne.");
+    return true;
+  };
+
+  const validateFieldsOnBlur = () => {
+    if (wrongName || !name || wrongEmail || !email || wrongPhone || !phone || wrongPass || !password || wrongPassRep || !repeatPassword) {
       return false;
     }
     return true;
+  };
+
+  const validateName = (name) => {
+    if (!name) {
+      setWrongName("Podaj imię.");
+    } else {
+      setWrongName("");
+    }
+  };
+
+  const validateEmail = (email) => {
+    if (!email) {
+      setWrongEmail("Podaj e-mail.");
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
+      setWrongEmail("Podaj prawidłowy e-mail.");
+    } else {
+      setWrongEmail("");
+    }
+  };
+
+  const validatePhone = (phone) => {
+    if (!phone || /* !/^(?:\+?\d{1,3}[-\s.]?)?(?:\(\d{1,3}\)|\d{1,3})[-\s.]?\d{1,9}$/ */ phone.length !== 9) {
+      setWrongPhone("Podaj prawidłowy numer telefonu.");
+    } else {
+      setWrongPhone("");
+    }
+  };
+
+  const validatePass = (pass) => {
+    if (!pass) {
+      setWrongPass("Podaj hasło.");
+    } else if (password.length < 8 || !/^[a-zA-Z]/.test(password) || !/^[a-zA-Z0-9!#$._@-]+$/.test(password) || !/[!#$._@]/.test(password)) {
+      setWrongPass(
+        "Hasło powinno mieć minimum 8 znaków. Powinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
+      );
+    } else {
+      setWrongPass("");
+    }
+  };
+
+  const validatePassRep = (pass) => {
+    if (!pass) {
+      setWrongPassRep("Powtórz hasło.");
+    } else if (wrongPass) {
+      setWrongPassRep("Popraw hasło.");
+    } else if (pass !== password) {
+      setWrongPassRep("Hasła są różne.");
+    } else {
+      setWrongPassRep("");
+    }
   };
 
   return (
@@ -89,74 +134,117 @@ export default function RegisterScreen({ navigation }) {
       <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
 
       <TextInput
-        style={styles.textInput}
+        style={styles.textInput(wrongName)}
         autoComplete="name"
         placeholder="imię"
         value={name}
+        selectionColor={_selectionColor}
+        cursorColor={_cursorColor}
         onChangeText={(text) => {
           if (text.includes(" ")) return;
+          text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "");
+          text.length > 0 && (text = text[0].toUpperCase() + text.slice(1).toLowerCase());
           setName(text.trim());
         }}
+        onBlur={() => {
+          validateFieldsOnBlur();
+          validateName(name.trim());
+        }}
       />
+      <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
+
       <TextInput
-        style={styles.textInput}
+        style={styles.textInput(wrongEmail)}
         autoComplete="email"
         textContentType="emailAddress"
         autoCapitalize="none"
         placeholder="e-mail"
         value={email}
+        selectionColor={_selectionColor}
+        cursorColor={_cursorColor}
         onChangeText={(text) => {
           if (text.includes(" ")) return;
+          text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
           setEmail(text.trim());
         }}
+        onBlur={() => {
+          validateFieldsOnBlur();
+          validateEmail(email.trim());
+        }}
       />
+      <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
+
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
-        <Text style={{ alignSelf: "center", left: 10, fontSize: 13, fontWeight: 300, position: "absolute" }}>+48 | </Text>
+        <Text style={{ alignSelf: "center", left: 12, fontSize: 13, fontWeight: 300, position: "absolute", paddingTop: 7 }}>+48 | </Text>
         <TextInput
-          style={[styles.textInput, { paddingLeft: 42 }]}
+          style={[styles.textInput(wrongPhone), { paddingLeft: 44 }]}
           autoComplete="tel"
           keyboardType="phone-pad"
           placeholder="numer telefonu"
           value={phone}
+          selectionColor={_selectionColor}
+          cursorColor={_cursorColor}
           onChangeText={(text) => {
             text.slice(0, 3) === "+48" && (text = text.slice(3));
             text = text.trim().replace(/[^0-9]/g, "");
             if (text.length > 9) return;
             setPhone(text.trim());
           }}
+          onBlur={() => {
+            validateFieldsOnBlur();
+            validatePhone(phone.trim());
+          }}
         />
       </View>
+      <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
+
       <TextInput
-        style={styles.textInput}
+        style={styles.textInput(wrongPass)}
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
         placeholder="hasło"
         secureTextEntry
         value={password}
+        selectionColor={_selectionColor}
+        cursorColor={_cursorColor}
         onChangeText={(text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
           setPassword(text);
         }}
+        onBlur={() => {
+          validateFieldsOnBlur();
+          validatePass(password.trim());
+        }}
       />
+      <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
+
       <TextInput
-        style={[styles.textInput, { marginBottom: 40 }]}
+        style={styles.textInput(wrongPassRep)}
         autoCapitalize="none"
         autoComplete="current-password"
         textContentType="currentPassword"
         placeholder="powtórz hasło"
         secureTextEntry
         value={repeatPassword}
+        selectionColor={_selectionColor}
+        cursorColor={_cursorColor}
         onChangeText={(text) => {
           if (text.includes(" ")) return;
           setRepeatPassword(text);
         }}
+        onBlur={() => {
+          validateFieldsOnBlur();
+          validatePassRep(repeatPassword.trim());
+        }}
       />
+      <Text style={styles.wrongInputText(wrongPassRep)}>{wrongPassRep}</Text>
 
       <TouchableHighlight
-        style={styles.button}
+        style={[styles.button, { marginTop: 40 }, !validateFieldsOnBlur() && { opacity: 0.5 }]}
+        disabled={!validateFieldsOnBlur()}
         onPress={() => {
-          validateFields().then((result) => {
+          validateFieldsOnClick().then((result) => {
             if (result) {
               navigation.navigate("Confirm", {
                 // _title,
@@ -190,19 +278,27 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 40,
   },
-  textInput: {
+  textInput: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
     borderRadius: 5,
     borderWidth: 2,
-    borderColor: "#000",
+    borderColor: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "#e41c1c" : "#000",
     borderStyle: "solid",
     paddingTop: 6,
     paddingBottom: 6,
     paddingLeft: 20,
     paddingRight: 20,
     width: "90%",
-    marginTop: 7,
-    marginBottom: 7,
-  },
+    marginTop: 10,
+    marginBottom: 2,
+    tintColor: "red",
+  }),
+  wrongInputText: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
+    display: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "flex" : "none",
+    fontSize: 12,
+    color: "#e41c1c",
+    alignSelf: "flex-start",
+    paddingLeft: 20,
+  }),
   button: {
     backgroundColor: "#000",
     paddingTop: 8,
