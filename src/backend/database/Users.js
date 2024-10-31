@@ -3,40 +3,40 @@
  *
  * @async
  * @function
- * @param {string} imie - First name of the user
+ * @param {string} name - First name of the user
  * @param {string} email - Email of the user
- * @param {string} haslo - Password of the user
- * @param {string} nr_telefonu - Phone number of the user
- * @param {boolean} zweryfikowany - Whether the user is verified
- * @param {string} sposob_komunikacji - Method of communication
- * @param {string} sposob_logowania - Method of logging in
+ * @param {string} password - Password of the user
+ * @param {string} phone_number - Phone number of the user
+ * @param {boolean} verified - Whether the user is verified
+ * @param {string} communication_method - Method of communication
+ * @param {string} login_method - Method of logging in
  * @returns {Promise<void>}
  */
 const addUser = async (
-  imie,
+  name,
   email,
-  haslo,
-  nr_telefonu,
-  zweryfikowany,
-  sposob_komunikacji,
-  sposob_logowania
+  password,
+  phone_number,
+  verified,
+  communication_method,
+  login_method
 ) => {
-  const url = `${global.SERVER_URL}/users`; // Adres URL endpointu
+  const url = `${global.SERVER_URL}/users`; // Endpoint URL
   try {
     const response = await fetch(url, {
-      method: "POST", // Używamy metody POST
+      method: "POST", // Using POST method
       headers: {
-        "Content-Type": "application/json", // Informujemy, że wysyłamy JSON
+        "Content-Type": "application/json", // Indicating JSON format
       },
       body: JSON.stringify({
-        imie,
+        name,
         email,
-        haslo,
-        nr_telefonu,
-        zweryfikowany,
-        sposob_komunikacji,
-        sposob_logowania,
-      }), // Przekazujemy dane w formacie JSON
+        password,
+        phone_number,
+        verified,
+        communication_method,
+        login_method,
+      }), // Sending data in JSON format
     });
 
     if (!response.ok) {
@@ -44,11 +44,11 @@ const addUser = async (
       throw new Error(`Error: ${response.status} - ${errorMessage}`);
     }
 
-    // Odczytywanie zaktualizowanych danych
-    const newRating = await response.json();
-    console.log("New user added:", newRating);
+    // Reading the added user data
+    const newUser = await response.json();
+    console.log("New user added:", newUser);
   } catch (error) {
-    console.error("An error occurred during adding a user:", error.message);
+    console.error("An error occurred while adding a user:", error.message);
   }
 };
 
@@ -69,7 +69,7 @@ const getAllUsers = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
+    console.error("Error fetching users:", error);
     return null;
   }
 };
@@ -81,13 +81,13 @@ const getAllUsers = async () => {
  * @function
  * @param {string} id - ID of the user to update
  * @param {Object} newData - New data for the user. Possible keys:
- * * {string} imie - First name of the user
+ * * {string} name - First name of the user
  * * {string} email - Email of the user
- * * {string} haslo - Password of the user
- * * {string} nr_telefonu - Phone number of the user
- * * {boolean} zweryfikowany - Whether the user is verified
- * * {string} sposob_komunikacji - Method of communication
- * * {string} sposob_logowania - Method of logging in
+ * * {string} password - Password of the user
+ * * {string} phone_number - Phone number of the user
+ * * {boolean} verified - Whether the user is verified
+ * * {string} communication_method - Method of communication
+ * * {string} login_method - Method of logging in
  * @returns {Promise<Object>} Updated user data
  */
 const updateUser = async (id, newData = {}) => {
@@ -109,7 +109,7 @@ const updateUser = async (id, newData = {}) => {
     console.log("User updated successfully:", updatedData);
     return updatedData;
   } catch (error) {
-    console.error("User updating rating:", error);
+    console.error("Error updating user:", error);
     return null;
   }
 };
@@ -138,7 +138,7 @@ const deleteUser = async (id) => {
     console.log("User deleted successfully:", deletedData);
     return deletedData;
   } catch (error) {
-    console.error("User deleting rating:", error);
+    console.error("Error deleting user:", error);
     return null;
   }
 };

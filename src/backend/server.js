@@ -15,36 +15,13 @@ const config = {
 
 app.use(express.json());
 
-//
-app.get("/api/dane", async (req, res) => {
-  let connection;
-  try {
-    // Połączenie z bazą danych
-    connection = await mysql.createConnection(config);
-    const [rows, fields] = await connection.execute("SELECT * FROM wybory_eu");
-
-    res.json(rows);
-  } catch (err) {
-    // Obsługa błędów
-    res.status(500).send(err.message);
-  } finally {
-    if (connection) {
-      try {
-        await connection.end();
-      } catch (err) {
-        console.error("Błąd podczas zamykania połączenia:", err.message);
-      }
-    }
-  }
-});
-
 //  OCENY TABLE
 //select
 app.get("/api/ratings", async (req, res) => {
   let connection;
   try {
     connection = await mysql.createConnection(config);
-    const [rows, fields] = await connection.execute("SELECT * FROM oceny");
+    const [rows, fields] = await connection.execute("SELECT * FROM ratings");
 
     res.json(rows);
   } catch (err) {
@@ -62,23 +39,23 @@ app.get("/api/ratings", async (req, res) => {
 
 //insert
 app.post("/api/ratings", async (req, res) => {
-  const { id_uzytkownik, id_polityk, nazwa, wartosc, opis, data } = req.body;
+  const { user_id, politician_id, title, value, description, date } = req.body;
   let connection;
 
   try {
     connection = await mysql.createConnection(config);
     const [result] = await connection.execute(
-      "INSERT INTO oceny (id_uzytkownik, id_polityk, nazwa, wartosc, opis, data) VALUES (?, ?, ?, ?, ?, ?)",
-      [id_uzytkownik, id_polityk, nazwa, wartosc, opis, data]
+      "INSERT INTO ratings (user_id, politician_id, title, value, description, date) VALUES (?, ?, ?, ?, ?, ?)",
+      [user_id, politician_id, title, value, description, date]
     );
 
     res.status(201).json({
       id: result.insertId,
-      id_uzytkownik,
-      id_polityk,
-      nazwa,
-      wartosc,
-      opis,
+      user_id,
+      politician_id,
+      title,
+      value,
+      description,
       data,
     });
   } catch (err) {
@@ -88,7 +65,7 @@ app.post("/api/ratings", async (req, res) => {
       try {
         await connection.end();
       } catch (err) {
-        console.error("Błąd podczas zamykania połączenia:", err.message);
+        console.error("Error closing connection:", err.message);
       }
     }
   }
@@ -97,51 +74,47 @@ app.post("/api/ratings", async (req, res) => {
 //update
 app.put(`/api/ratings/:id`, async (req, res) => {
   const { id } = req.params;
-  const { id_uzytkownik, id_polityk, nazwa, wartosc, opis, data } = req.body;
+  const { user_id, politician_id, title, value, description, date } = req.body;
 
   let connection;
-
 
   const fields = [];
   const values = [];
 
-  if (id_uzytkownik) {
-    fields.push("id_uzytkownik = ?");
-    values.push(id_uzytkownik);
+  if (user_id) {
+    fields.push("user_id = ?");
+    values.push(user_id);
   }
-  if (id_polityk) {
-    fields.push("id_polityk = ?");
-    values.push(id_polityk);
+  if (politician_id) {
+    fields.push("politician_id = ?");
+    values.push(politician_id);
   }
-  if (nazwa) {
-    fields.push("nazwa = ?");
-    values.push(nazwa);
+  if (title) {
+    fields.push("title = ?");
+    values.push(title);
   }
-  if (wartosc) {
-    fields.push("wartosc = ?");
-    values.push(wartosc);
+  if (value) {
+    fields.push("value = ?");
+    values.push(value);
   }
-  if (opis) {
-    fields.push("opis = ?");
-    values.push(opis);
+  if (description) {
+    fields.push("description = ?");
+    values.push(description);
   }
-  if (data) {
-    fields.push("data = ?");
-    values.push(data);
+  if (date) {
+    fields.push("date = ?");
+    values.push(date);
   }
-
 
   if (fields.length === 0) {
     return res.status(400).json({ message: "No data provided to update" });
   }
   values.push(parseInt(id));
 
-
-  const query = `UPDATE oceny SET ${fields.join(", ")} WHERE id = ?`;
+  const query = `UPDATE ratings SET ${fields.join(", ")} WHERE id = ?`;
 
   try {
     connection = await mysql.createConnection(config);
-
 
     const [result] = await connection.execute(query, values);
 
@@ -172,7 +145,7 @@ app.delete("/api/ratings/:id", async (req, res) => {
   try {
     connection = await mysql.createConnection(config);
     const [result] = await connection.execute(
-      "DELETE FROM oceny WHERE id = ?",
+      "DELETE FROM ratings WHERE id = ?",
       [parseInt(id)]
     );
 
@@ -194,21 +167,21 @@ app.delete("/api/ratings/:id", async (req, res) => {
   }
 });
 
-//  OCENY_WLASNE TABLE
+//  OWN_RATINGS TABLE
 //insert
 app.post("/api/ownratings", async (req, res) => {
-  const { id_uzytkownik, id_polityk, wartosc } = req.body;
+  const { user_id, politician_id, value } = req.body;
   let connection;
 
   try {
     connection = await mysql.createConnection(config);
     const [result] = await connection.execute(
-      "INSERT INTO oceny_wlasne (id_uzytkownik, id_polityk, wartosc) VALUES (?, ?, ?)",
-      [id_uzytkownik, id_polityk, wartosc]
+      "INSERT INTO own_ratings (user_id, politician_id, value) VALUES (?, ?, ?)",
+      [user_id, politician_id, value]
     );
     res
       .status(201)
-      .json({ id: result.insertId, id_uzytkownik, id_polityk, wartosc });
+      .json({ id: result.insertId, user_id, politician_id, value });
   } catch (err) {
     res.status(500).send(err.message);
   } finally {
@@ -216,7 +189,7 @@ app.post("/api/ownratings", async (req, res) => {
       try {
         await connection.end();
       } catch (err) {
-        console.error("Błąd podczas zamykania połączenia:", err.message);
+        console.error("Error closing connection:", err.message);
       }
     }
   }
@@ -228,7 +201,7 @@ app.get("/api/ownratings", async (req, res) => {
   try {
     connection = await mysql.createConnection(config);
     const [rows, fields] = await connection.execute(
-      "SELECT * FROM oceny_wlasne"
+      "SELECT * FROM own_ratings"
     );
 
     res.json(rows);
@@ -248,7 +221,7 @@ app.get("/api/ownratings", async (req, res) => {
 //update
 app.put(`/api/ownratings/:id`, async (req, res) => {
   const { id } = req.params;
-  const { id_uzytkownik, id_polityk, wartosc } = req.body;
+  const { user_id, politician_id, value } = req.body;
 
   let connection;
   console.log("Request body:", req.body);
@@ -256,20 +229,18 @@ app.put(`/api/ownratings/:id`, async (req, res) => {
   const fields = [];
   const values = [];
 
-  if (id_uzytkownik) {
-    fields.push("id_uzytkownik = ?");
-    values.push(id_uzytkownik);
+  if (user_id) {
+    fields.push("user_id = ?");
+    values.push(user_id);
   }
-  if (id_polityk) {
-    fields.push("id_polityk = ?");
-    values.push(id_polityk);
+  if (politician_id) {
+    fields.push("politician_id = ?");
+    values.push(politician_id);
   }
-  if (wartosc) {
-
-    fields.push("wartosc = ?");
-    values.push(wartosc);
+  if (value) {
+    fields.push("value = ?");
+    values.push(value);
   }
-
 
   if (fields.length === 0) {
     return res.status(400).json({ message: "No data provided to update" });
@@ -277,7 +248,7 @@ app.put(`/api/ownratings/:id`, async (req, res) => {
 
   values.push(parseInt(id));
 
-  const query = `UPDATE oceny_wlasne SET ${fields.join(", ")} WHERE id = ?`;
+  const query = `UPDATE own_ratings SET ${fields.join(", ")} WHERE id = ?`;
 
   try {
     connection = await mysql.createConnection(config);
@@ -311,7 +282,7 @@ app.delete("/api/ownratings/:id", async (req, res) => {
   try {
     connection = await mysql.createConnection(config);
     const [result] = await connection.execute(
-      "DELETE FROM oceny_wlasne WHERE id = ?",
+      "DELETE FROM own_ratings WHERE id = ?",
       [parseInt(id)]
     );
 
@@ -339,30 +310,8 @@ app.get("/api/politicians", async (req, res) => {
   let connection;
   try {
     connection = await mysql.createConnection(config);
-    const [rows, fields] = await connection.execute("SELECT * FROM politycy");
-
-    res.json(rows);
-  } catch (err) {
-    res.status(500).send(err.message);
-  } finally {
-    if (connection) {
-      try {
-        await connection.end();
-      } catch (err) {
-        console.error("Error closing connection:", err.message);
-      }
-    }
-  }
-});
-
-//   UZYTKOWNICY TABLE
-//select
-app.get("/api/users", async (req, res) => {
-  let connection;
-  try {
-    connection = await mysql.createConnection(config);
     const [rows, fields] = await connection.execute(
-      "SELECT * FROM uzytkownicy"
+      "SELECT * FROM politicians"
     );
 
     res.json(rows);
@@ -379,43 +328,64 @@ app.get("/api/users", async (req, res) => {
   }
 });
 
-//insert
+// SELECT
+app.get("/api/users", async (req, res) => {
+  let connection;
+  try {
+    connection = await mysql.createConnection(config);
+    const [rows, fields] = await connection.execute("SELECT * FROM users");
+
+    res.json(rows);
+  } catch (err) {
+    res.status(500).send(err.message);
+  } finally {
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+        console.error("Error closing connection:", err.message);
+      }
+    }
+  }
+});
+
+// INSERT
 app.post("/api/users", async (req, res) => {
   const {
-    imie,
+    name,
     email,
-    haslo,
-    nr_telefonu,
-    zweryfikowany,
-    sposob_komunikacji,
-    sposob_logowania,
+    password,
+    phone_number,
+    verified,
+    communication_method,
+    login_method,
   } = req.body;
   let connection;
 
   try {
     connection = await mysql.createConnection(config);
     const [result] = await connection.execute(
-      "INSERT INTO uzytkownicy (imie, email, haslo, nr_telefonu, zweryfikowany, sposob_komunikacji, sposob_logowania) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO users (name, email, password, phone_number, verified, communication_method, login_method) VALUES (?, ?, ?, ?, ?, ?, ?)",
       [
-        imie,
+        name,
         email,
-        haslo,
-        nr_telefonu,
-        zweryfikowany,
-        sposob_komunikacji,
-        sposob_logowania,
+        password,
+        phone_number,
+        verified,
+        communication_method,
+        login_method,
       ]
     );
 
     res.status(201).json({
       id: result.insertId,
-      imie,
+      name,
       email,
-      haslo,
-      nr_telefonu,
-      zweryfikowany,
-      sposob_komunikacji,
-      sposob_logowania,
+      password,
+      phone_number,
+      verified,
+      communication_method,
+      login_method,
     });
   } catch (err) {
     res.status(500).send(err.message);
@@ -424,23 +394,23 @@ app.post("/api/users", async (req, res) => {
       try {
         await connection.end();
       } catch (err) {
-        console.error("Błąd podczas zamykania połączenia:", err.message);
+        console.error("Error closing connection:", err.message);
       }
     }
   }
 });
 
-//update
+// UPDATE
 app.put(`/api/users/:id`, async (req, res) => {
   const { id } = req.params;
   const {
-    imie,
+    name,
     email,
-    haslo,
-    nr_telefonu,
-    zweryfikowany,
-    sposob_komunikacji,
-    sposob_logowania,
+    password,
+    phone_number,
+    verified,
+    communication_method,
+    login_method,
   } = req.body;
 
   let connection;
@@ -449,44 +419,42 @@ app.put(`/api/users/:id`, async (req, res) => {
   const fields = [];
   const values = [];
 
-  if (imie) {
-    fields.push("imie = ?");
-    values.push(imie);
+  if (name) {
+    fields.push("name = ?");
+    values.push(name);
   }
   if (email) {
     fields.push("email = ?");
     values.push(email);
   }
-  if (haslo) {
-    fields.push("haslo = ?");
-    values.push(haslo);
+  if (password) {
+    fields.push("password = ?");
+    values.push(password);
   }
-  if (nr_telefonu) {
-    fields.push("nr_telefonu = ?");
-    values.push(nr_telefonu);
+  if (phone_number) {
+    fields.push("phone_number = ?");
+    values.push(phone_number);
   }
-  if (zweryfikowany) {
-    fields.push("zweryfikowany = ?");
-    values.push(zweryfikowany);
+  if (verified !== undefined) {
+    fields.push("verified = ?");
+    values.push(verified);
   }
-  if (sposob_komunikacji) {
-    fields.push("sposob_komunikacji = ?");
-    values.push(sposob_komunikacji);
+  if (communication_method !== undefined) {
+    fields.push("communication_method = ?");
+    values.push(communication_method);
   }
-  if (sposob_logowania) {
-    fields.push("sposob_logowania = ?");
-    values.push(sposob_logowania);
+  if (login_method !== undefined) {
+    fields.push("login_method = ?");
+    values.push(login_method);
   }
 
   if (fields.length === 0) {
     return res.status(400).json({ message: "No data provided to update" });
   }
 
-
   values.push(parseInt(id));
 
-
-  const query = `UPDATE uzytkownicy SET ${fields.join(", ")} WHERE id = ?`;
+  const query = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
 
   try {
     connection = await mysql.createConnection(config);
@@ -512,7 +480,7 @@ app.put(`/api/users/:id`, async (req, res) => {
   }
 });
 
-//delete
+// DELETE
 app.delete("/api/users/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -520,7 +488,7 @@ app.delete("/api/users/:id", async (req, res) => {
   try {
     connection = await mysql.createConnection(config);
     const [result] = await connection.execute(
-      "DELETE FROM uzytkownicy WHERE id = ?",
+      "DELETE FROM users WHERE id = ?",
       [parseInt(id)]
     );
 
@@ -549,7 +517,7 @@ app.get("/api/presidentelections", async (req, res) => {
   try {
     connection = await mysql.createConnection(config);
     const [rows, fields] = await connection.execute(
-      "SELECT * FROM wybory_prezydent"
+      "SELECT * FROM president_elections"
     );
 
     res.json(rows);
@@ -573,7 +541,7 @@ app.get("/api/sejmelections", async (req, res) => {
   try {
     connection = await mysql.createConnection(config);
     const [rows, fields] = await connection.execute(
-      "SELECT * FROM wybory_sejm"
+      "SELECT * FROM sejm_elections"
     );
 
     res.json(rows);
@@ -596,7 +564,9 @@ app.get("/api/euelections", async (req, res) => {
   let connection;
   try {
     connection = await mysql.createConnection(config);
-    const [rows, fields] = await connection.execute("SELECT * FROM wybory_eu");
+    const [rows, fields] = await connection.execute(
+      "SELECT * FROM eu_elections"
+    );
 
     res.json(rows);
   } catch (err) {

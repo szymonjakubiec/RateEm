@@ -3,32 +3,32 @@
  *
  * @async
  * @function
- * @param {number} id_uzytkownik - ID of the user
- * @param {number} id_polityk - ID of the politician
- * @param {float} wartosc - Value of the rating
+ * @param {number} user_id - ID of the user
+ * @param {number} politician_id - ID of the politician
+ * @param {float} value - Value of the rating
  * @returns {Promise<Object>} Added rating data
  */
-const addOwnRating = async (id_uzytkownik, id_polityk, wartosc) => {
-  const url = `${global.SERVER_URL}/ownratings`; // Adres URL endpointu
+const addOwnRating = async (user_id, politician_id, value) => {
+  const url = `${global.SERVER_URL}/ownratings`; // Endpoint URL
   try {
     const response = await fetch(url, {
-      method: "POST", // Używamy metody POST
+      method: "POST", // Using POST method
       headers: {
-        "Content-Type": "application/json", // Informujemy, że wysyłamy JSON
+        "Content-Type": "application/json", // Indicate JSON format
       },
-      body: JSON.stringify({ id_uzytkownik, id_polityk, wartosc }), // Przekazujemy dane w formacie JSON
+      body: JSON.stringify({ user_id, politician_id, value }), // Send data in JSON format
     });
 
     if (!response.ok) {
       const errorMessage = await response.text();
-      throw new Error(`Błąd: ${response.status} - ${errorMessage}`);
+      throw new Error(`Error: ${response.status} - ${errorMessage}`);
     }
 
-    // Odczytywanie zaktualizowanych danych
+    // Reading updated data
     const newRating = await response.json();
-    console.log("Nowa ocena dodana:", newRating);
+    console.log("New rating added:", newRating);
   } catch (error) {
-    console.error("Wystąpił błąd podczas dodawania oceny:", error.message);
+    console.error("An error occurred while adding the rating:", error.message);
   }
 };
 
@@ -61,12 +61,11 @@ const getAllOwnRatings = async () => {
  * @function
  * @param {string} id - ID of the rating to update
  * @param {Object} newData - New data for the rating. Possible keys:
- * * {number} id_uzytkownik - ID of the user
- * * {number} id_polityk - ID of the politician
- * * {float} wartosc - Value of the rating
+ * * {number} user_id - ID of the user
+ * * {number} politician_id - ID of the politician
+ * * {float} value - Value of the rating
  * @returns {Promise<Object>} Updated rating data
  */
-// Function to update a rating
 const updateOwnRating = async (id, newData = {}) => {
   const url = `${global.SERVER_URL}/ownratings/${id}`;
   console.log(url);

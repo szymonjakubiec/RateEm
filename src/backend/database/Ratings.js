@@ -3,37 +3,37 @@
  *
  * @async
  * @function
- * @param {number} id_uzytkownik - ID of the user
- * @param {number} id_polityk - ID of the politician
- * @param {string} nazwa - Name of the rating
- * @param {float} wartosc - Value of the rating
- * @param {string} opis - Description of the rating
- * @param {string} data - Date in YYYY-MM-DD format
+ * @param {number} user_id - ID of the user
+ * @param {number} politician_id - ID of the politician
+ * @param {string} title - Name of the rating
+ * @param {float} value - Value of the rating
+ * @param {string} description - Description of the rating
+ * @param {string} date - Date in YYYY-MM-DD format
  * @returns {Promise<void>}
  */
 const addRating = async (
-  id_uzytkownik,
-  id_polityk,
-  nazwa,
-  wartosc,
-  opis,
-  data
+  user_id,
+  politician_id,
+  title,
+  value,
+  description,
+  date
 ) => {
-  const url = `${global.SERVER_URL}/ratings`; // Adres URL endpointu
+  const url = `${global.SERVER_URL}/ratings`;
   try {
     const response = await fetch(url, {
-      method: "POST", // Używamy metody POST
+      method: "POST",
       headers: {
-        "Content-Type": "application/json", // Informujemy, że wysyłamy JSON
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id_uzytkownik,
-        id_polityk,
-        nazwa,
-        wartosc,
-        opis,
-        data,
-      }), // Przekazujemy dane w formacie JSON
+        user_id,
+        politician_id,
+        title,
+        value,
+        description,
+        date,
+      }),
     });
 
     if (!response.ok) {
@@ -78,15 +78,14 @@ const getAllRatings = async () => {
  * @function
  * @param {string} id - ID of the rating to update
  * @param {object} newData - New data for the rating. Possible keys:
- * * {number} id_uzytkownik - ID of the user
- * * {number} id_polityk - ID of the politician
- * * {string} nazwa - Name of the rating
- * * {float} wartosc - Value of the rating
- * * {string} opis - Description of the rating
- * * {string} data - Date in YYYY-MM-DD format
+ * * {number} user_id - ID of the user
+ * * {number} politician_id - ID of the politician
+ * * {string} title - Name of the rating
+ * * {float} value - Value of the rating
+ * * {string} description - Description of the rating
+ * * {string} date - Date in YYYY-MM-DD format
  * @returns {Promise<Object>} Updated rating data
  */
-// Function to update a rating
 const updateRating = async (id, newData = {}) => {
   const url = `${global.SERVER_URL}/ratings/${id}`;
   console.log(url);
@@ -119,7 +118,6 @@ const updateRating = async (id, newData = {}) => {
  * @param {string} id - ID of the rating to delete
  * @returns {Promise<Object>} Deleted rating data
  */
-// Function to delete a rating
 const deleteRating = async (id) => {
   const url = `${global.SERVER_URL}/ratings/${id}`;
   try {
