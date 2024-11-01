@@ -6,7 +6,7 @@
  * @returns {Promise<Object[]>} Array of own rating objects
  */
 const getAllOwnRatings = async () => {
-  const url = `${global.SERVER_URL}/ownratings`;
+  const url = `${global.SERVER_URL}/own-ratings`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -31,7 +31,7 @@ const getAllOwnRatings = async () => {
  * @returns {Promise<Object>} Added rating data
  */
 const addOwnRating = async (user_id, politician_id, value) => {
-  const url = `${global.SERVER_URL}/ownratings`; // Endpoint URL
+  const url = `${global.SERVER_URL}/own-ratings`; // Endpoint URL
   try {
     const response = await fetch(url, {
       method: "POST", // Using POST method
@@ -67,7 +67,7 @@ const addOwnRating = async (user_id, politician_id, value) => {
  * @returns {Promise<Object>} Updated rating data
  */
 const updateOwnRating = async (id, newData = {}) => {
-  const url = `${global.SERVER_URL}/ownratings/${id}`;
+  const url = `${global.SERVER_URL}/own-ratings/${id}`;
   console.log(url);
 
   try {
@@ -99,7 +99,7 @@ const updateOwnRating = async (id, newData = {}) => {
  * @returns {Promise<Object>} Deleted rating data
  */
 const deleteOwnRating = async (id) => {
-  const url = `${global.SERVER_URL}/ownratings/${id}`;
+  const url = `${global.SERVER_URL}/own-ratings/${id}`;
   try {
     const response = await fetch(url, {
       method: "DELETE",
