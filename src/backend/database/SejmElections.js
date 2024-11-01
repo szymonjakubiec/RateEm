@@ -6,7 +6,7 @@
  * @returns {Promise<Object[]>} Array of Sejm election objects
  */
 const getAllSejmElections = async () => {
-  const url = `${global.SERVER_URL}/sejmelections`;
+  const url = `${global.SERVER_URL}/sejm-elections`;
   try {
     const response = await fetch(url);
     if (!response.ok) {

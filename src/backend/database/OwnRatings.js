@@ -1,4 +1,26 @@
 /**
+ * Gets all own ratings.
+ *
+ * @async
+ * @function
+ * @returns {Promise<Object[]>} Array of own rating objects
+ */
+const getAllOwnRatings = async () => {
+  const url = `${global.SERVER_URL}/ownratings`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching ratings:", error);
+    return null;
+  }
+};
+
+/**
  * Adds own rating.
  *
  * @async
@@ -29,28 +51,6 @@ const addOwnRating = async (user_id, politician_id, value) => {
     console.log("New rating added:", newRating);
   } catch (error) {
     console.error("An error occurred while adding the rating:", error.message);
-  }
-};
-
-/**
- * Gets all own ratings.
- *
- * @async
- * @function
- * @returns {Promise<Object[]>} Array of own rating objects
- */
-const getAllOwnRatings = async () => {
-  const url = `${global.SERVER_URL}/ownratings`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching ratings:", error);
-    return null;
   }
 };
 

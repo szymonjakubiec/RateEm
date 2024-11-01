@@ -1,4 +1,26 @@
 /**
+ * Gets all users.
+ *
+ * @async
+ * @function
+ * @returns {Promise<Object[]>} Array of user objects
+ */
+const getAllUsers = async () => {
+  const url = `${global.SERVER_URL}/users`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return null;
+  }
+};
+
+/**
  * Adds a user.
  *
  * @async
@@ -41,28 +63,6 @@ const addUser = async (name, email, password, phone_number, verified, communicat
     console.log("New user added:", newUser);
   } catch (error) {
     console.error("An error occurred while adding a user:", error.message);
-  }
-};
-
-/**
- * Gets all users.
- *
- * @async
- * @function
- * @returns {Promise<Object[]>} Array of user objects
- */
-const getAllUsers = async () => {
-  const url = `${global.SERVER_URL}/users`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    return null;
   }
 };
 

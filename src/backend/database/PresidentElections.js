@@ -6,7 +6,7 @@
  * @returns {Promise<Object[]>} Array of president election objects
  */
 const getAllPresidentElections = async () => {
-  const url = `${global.SERVER_URL}/presidentelections`;
+  const url = `${global.SERVER_URL}/president-elections`;
   try {
     const response = await fetch(url);
     if (!response.ok) {

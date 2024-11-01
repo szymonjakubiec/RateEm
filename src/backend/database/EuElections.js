@@ -6,7 +6,7 @@
  * @returns {Promise<Object[]>} Array of EU election objects
  */
 const getAllEuElections = async () => {
-  const url = `${global.SERVER_URL}/euelections`;
+  const url = `${global.SERVER_URL}/eu-elections`;
   try {
     const response = await fetch(url);
     if (!response.ok) {

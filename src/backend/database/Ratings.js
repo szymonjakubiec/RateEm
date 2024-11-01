@@ -1,4 +1,26 @@
 /**
+ * Gets all ratings.
+ *
+ * @async
+ * @function
+ * @returns {Promise<Object[]>} Array of rating objects
+ */
+const getAllRatings = async () => {
+  const url = `${global.SERVER_URL}/ratings`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching ratings:", error);
+    return null;
+  }
+};
+
+/**
  * Adds rating.
  *
  * @async
@@ -11,14 +33,7 @@
  * @param {string} date - Date in YYYY-MM-DD format
  * @returns {Promise<void>}
  */
-const addRating = async (
-  user_id,
-  politician_id,
-  title,
-  value,
-  description,
-  date
-) => {
+const addRating = async (user_id, politician_id, title, value, description, date) => {
   const url = `${global.SERVER_URL}/ratings`;
   try {
     const response = await fetch(url, {
@@ -46,28 +61,6 @@ const addRating = async (
     console.log("Nowa ocena dodana:", newRating);
   } catch (error) {
     console.error("Wystąpił błąd podczas dodawania oceny:", error.message);
-  }
-};
-
-/**
- * Gets all ratings.
- *
- * @async
- * @function
- * @returns {Promise<Object[]>} Array of rating objects
- */
-const getAllRatings = async () => {
-  const url = `${global.SERVER_URL}/ratings`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching ratings:", error);
-    return null;
   }
 };
 
