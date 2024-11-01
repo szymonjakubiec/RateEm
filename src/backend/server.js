@@ -68,7 +68,7 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Błąd podczas zamykania połączenia:", err.message);
+          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -215,7 +215,7 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Błąd podczas zamykania połączenia:", err.message);
+          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -385,7 +385,7 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Błąd podczas zamykania połączenia:", err.message);
+          console.error("Error closing connection:", err.message);
         }
       }
     }

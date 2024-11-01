@@ -34,12 +34,12 @@ const getAllRatings = async () => {
  * @returns {Promise<void>}
  */
 const addRating = async (user_id, politician_id, title, value, description, date) => {
-  const url = `${global.SERVER_URL}/ratings`; // Adres URL endpointu
+  const url = `${global.SERVER_URL}/ratings`;
   try {
     const response = await fetch(url, {
-      method: "POST", // Używamy metody POST
+      method: "POST",
       headers: {
-        "Content-Type": "application/json", // Informujemy, że wysyłamy JSON
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         user_id,
@@ -48,7 +48,7 @@ const addRating = async (user_id, politician_id, title, value, description, date
         value,
         description,
         date,
-      }), // Przekazujemy dane w formacie JSON
+      }),
     });
 
     if (!response.ok) {
@@ -79,7 +79,6 @@ const addRating = async (user_id, politician_id, title, value, description, date
  * * {string} date - Date in YYYY-MM-DD format
  * @returns {Promise<Object>} Updated rating data
  */
-// Function to update a rating
 const updateRating = async (id, newData = {}) => {
   const url = `${global.SERVER_URL}/ratings/${id}`;
   console.log(url);
@@ -112,7 +111,6 @@ const updateRating = async (id, newData = {}) => {
  * @param {string} id - ID of the rating to delete
  * @returns {Promise<Object>} Deleted rating data
  */
-// Function to delete a rating
 const deleteRating = async (id) => {
   const url = `${global.SERVER_URL}/ratings/${id}`;
   try {

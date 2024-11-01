@@ -31,26 +31,26 @@ const getAllOwnRatings = async () => {
  * @returns {Promise<Object>} Added rating data
  */
 const addOwnRating = async (user_id, politician_id, value) => {
-  const url = `${global.SERVER_URL}/own-ratings`; // Adres URL endpointu
+  const url = `${global.SERVER_URL}/own-ratings`; // Endpoint URL
   try {
     const response = await fetch(url, {
-      method: "POST", // Używamy metody POST
+      method: "POST", // Using POST method
       headers: {
-        "Content-Type": "application/json", // Informujemy, że wysyłamy JSON
+        "Content-Type": "application/json", // Indicate JSON format
       },
-      body: JSON.stringify({ user_id, politician_id, value }), // Przekazujemy dane w formacie JSON
+      body: JSON.stringify({ user_id, politician_id, value }), // Send data in JSON format
     });
 
     if (!response.ok) {
       const errorMessage = await response.text();
-      throw new Error(`Błąd: ${response.status} - ${errorMessage}`);
+      throw new Error(`Error: ${response.status} - ${errorMessage}`);
     }
 
-    // Odczytywanie zaktualizowanych danych
+    // Reading updated data
     const newRating = await response.json();
-    console.log("Nowa ocena dodana:", newRating);
+    console.log("New rating added:", newRating);
   } catch (error) {
-    console.error("Wystąpił błąd podczas dodawania oceny:", error.message);
+    console.error("An error occurred while adding the rating:", error.message);
   }
 };
 

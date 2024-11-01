@@ -15,7 +15,7 @@ const getAllUsers = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
+    console.error("Error fetching users:", error);
     return null;
   }
 };
@@ -35,12 +35,12 @@ const getAllUsers = async () => {
  * @returns {Promise<void>}
  */
 const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
-  const url = `${global.SERVER_URL}/users`; // Adres URL endpointu
+  const url = `${global.SERVER_URL}/users`; // Endpoint URL
   try {
     const response = await fetch(url, {
-      method: "POST", // Używamy metody POST
+      method: "POST", // Using POST method
       headers: {
-        "Content-Type": "application/json", // Informujemy, że wysyłamy JSON
+        "Content-Type": "application/json", // Indicating JSON format
       },
       body: JSON.stringify({
         name,
@@ -50,7 +50,7 @@ const addUser = async (name, email, password, phone_number, verified, communicat
         verified,
         communication_method,
         login_method,
-      }), // Przekazujemy dane w formacie JSON
+      }), // Sending data in JSON format
     });
 
     if (!response.ok) {
@@ -58,11 +58,11 @@ const addUser = async (name, email, password, phone_number, verified, communicat
       throw new Error(`Error: ${response.status} - ${errorMessage}`);
     }
 
-    // Odczytywanie zaktualizowanych danych
-    const newRating = await response.json();
-    console.log("New user added:", newRating);
+    // Reading the added user data
+    const newUser = await response.json();
+    console.log("New user added:", newUser);
   } catch (error) {
-    console.error("An error occurred during adding a user:", error.message);
+    console.error("An error occurred while adding a user:", error.message);
   }
 };
 
@@ -101,7 +101,7 @@ const updateUser = async (id, newData = {}) => {
     console.log("User updated successfully:", updatedData);
     return updatedData;
   } catch (error) {
-    console.error("User updating rating:", error);
+    console.error("Error updating user:", error);
     return null;
   }
 };
@@ -130,7 +130,7 @@ const deleteUser = async (id) => {
     console.log("User deleted successfully:", deletedData);
     return deletedData;
   } catch (error) {
-    console.error("User deleting rating:", error);
+    console.error("Error deleting user:", error);
     return null;
   }
 };
