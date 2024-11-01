@@ -1,22 +1,44 @@
 /**
+ * Gets all own ratings.
+ *
+ * @async
+ * @function
+ * @returns {Promise<Object[]>} Array of own rating objects
+ */
+const getAllOwnRatings = async () => {
+  const url = `${global.SERVER_URL}/own-ratings`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching ratings:", error);
+    return null;
+  }
+};
+
+/**
  * Adds own rating.
  *
  * @async
  * @function
- * @param {number} id_uzytkownik - ID of the user
- * @param {number} id_polityk - ID of the politician
- * @param {float} wartosc - Value of the rating
+ * @param {number} user_id - ID of the user
+ * @param {number} politician_id - ID of the politician
+ * @param {float} value - Value of the rating
  * @returns {Promise<Object>} Added rating data
  */
-const addOwnRating = async (id_uzytkownik, id_polityk, wartosc) => {
-  const url = `${global.SERVER_URL}/ownratings`; // Adres URL endpointu
+const addOwnRating = async (user_id, politician_id, value) => {
+  const url = `${global.SERVER_URL}/own-ratings`; // Adres URL endpointu
   try {
     const response = await fetch(url, {
       method: "POST", // Używamy metody POST
       headers: {
         "Content-Type": "application/json", // Informujemy, że wysyłamy JSON
       },
-      body: JSON.stringify({ id_uzytkownik, id_polityk, wartosc }), // Przekazujemy dane w formacie JSON
+      body: JSON.stringify({ user_id, politician_id, value }), // Przekazujemy dane w formacie JSON
     });
 
     if (!response.ok) {
@@ -33,42 +55,19 @@ const addOwnRating = async (id_uzytkownik, id_polityk, wartosc) => {
 };
 
 /**
- * Gets all own ratings.
- *
- * @async
- * @function
- * @returns {Promise<Object[]>} Array of own rating objects
- */
-const getAllOwnRatings = async () => {
-  const url = `${global.SERVER_URL}/ownratings`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching ratings:", error);
-    return null;
-  }
-};
-
-/**
  * Updates own rating.
  *
  * @async
  * @function
  * @param {string} id - ID of the rating to update
  * @param {Object} newData - New data for the rating. Possible keys:
- * * {number} id_uzytkownik - ID of the user
- * * {number} id_polityk - ID of the politician
- * * {float} wartosc - Value of the rating
+ * * {number} user_id - ID of the user
+ * * {number} politician_id - ID of the politician
+ * * {float} value - Value of the rating
  * @returns {Promise<Object>} Updated rating data
  */
-// Function to update a rating
 const updateOwnRating = async (id, newData = {}) => {
-  const url = `${global.SERVER_URL}/ownratings/${id}`;
+  const url = `${global.SERVER_URL}/own-ratings/${id}`;
   console.log(url);
 
   try {
@@ -100,7 +99,7 @@ const updateOwnRating = async (id, newData = {}) => {
  * @returns {Promise<Object>} Deleted rating data
  */
 const deleteOwnRating = async (id) => {
-  const url = `${global.SERVER_URL}/ownratings/${id}`;
+  const url = `${global.SERVER_URL}/own-ratings/${id}`;
   try {
     const response = await fetch(url, {
       method: "DELETE",

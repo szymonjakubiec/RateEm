@@ -1,58 +1,4 @@
 /**
- * Adds a user.
- *
- * @async
- * @function
- * @param {string} imie - First name of the user
- * @param {string} email - Email of the user
- * @param {string} haslo - Password of the user
- * @param {string} nr_telefonu - Phone number of the user
- * @param {boolean} zweryfikowany - Whether the user is verified
- * @param {string} sposob_komunikacji - Method of communication
- * @param {string} sposob_logowania - Method of logging in
- * @returns {Promise<void>}
- */
-const addUser = async (
-  imie,
-  email,
-  haslo,
-  nr_telefonu,
-  zweryfikowany,
-  sposob_komunikacji,
-  sposob_logowania
-) => {
-  const url = `${global.SERVER_URL}/users`; // Adres URL endpointu
-  try {
-    const response = await fetch(url, {
-      method: "POST", // Używamy metody POST
-      headers: {
-        "Content-Type": "application/json", // Informujemy, że wysyłamy JSON
-      },
-      body: JSON.stringify({
-        imie,
-        email,
-        haslo,
-        nr_telefonu,
-        zweryfikowany,
-        sposob_komunikacji,
-        sposob_logowania,
-      }), // Przekazujemy dane w formacie JSON
-    });
-
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Error: ${response.status} - ${errorMessage}`);
-    }
-
-    // Odczytywanie zaktualizowanych danych
-    const newRating = await response.json();
-    console.log("New user added:", newRating);
-  } catch (error) {
-    console.error("An error occurred during adding a user:", error.message);
-  }
-};
-
-/**
  * Gets all users.
  *
  * @async
@@ -75,19 +21,65 @@ const getAllUsers = async () => {
 };
 
 /**
+ * Adds a user.
+ *
+ * @async
+ * @function
+ * @param {string} name - Name of the user
+ * @param {string} email - Email of the user
+ * @param {string} password - Password of the user
+ * @param {string} phone_number - Phone number of the user
+ * @param {boolean} verified - Whether the user is verified
+ * @param {string} communication_method - Method of communication
+ * @param {string} login_method - Method of logging in
+ * @returns {Promise<void>}
+ */
+const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
+  const url = `${global.SERVER_URL}/users`; // Adres URL endpointu
+  try {
+    const response = await fetch(url, {
+      method: "POST", // Używamy metody POST
+      headers: {
+        "Content-Type": "application/json", // Informujemy, że wysyłamy JSON
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        phone_number,
+        verified,
+        communication_method,
+        login_method,
+      }), // Przekazujemy dane w formacie JSON
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Error: ${response.status} - ${errorMessage}`);
+    }
+
+    // Odczytywanie zaktualizowanych danych
+    const newRating = await response.json();
+    console.log("New user added:", newRating);
+  } catch (error) {
+    console.error("An error occurred during adding a user:", error.message);
+  }
+};
+
+/**
  * Updates a user.
  *
  * @async
  * @function
  * @param {string} id - ID of the user to update
  * @param {Object} newData - New data for the user. Possible keys:
- * * {string} imie - First name of the user
+ * * {string} name - Name of the user
  * * {string} email - Email of the user
- * * {string} haslo - Password of the user
- * * {string} nr_telefonu - Phone number of the user
- * * {boolean} zweryfikowany - Whether the user is verified
- * * {string} sposob_komunikacji - Method of communication
- * * {string} sposob_logowania - Method of logging in
+ * * {string} password - Password of the user
+ * * {string} phone_number - Phone number of the user
+ * * {boolean} verified - Whether the user is verified
+ * * {string} communication_method - Method of communication
+ * * {string} login_method - Method of logging in
  * @returns {Promise<Object>} Updated user data
  */
 const updateUser = async (id, newData = {}) => {
