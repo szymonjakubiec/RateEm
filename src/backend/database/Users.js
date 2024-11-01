@@ -12,15 +12,7 @@
  * @param {string} login_method - Method of logging in
  * @returns {Promise<void>}
  */
-const addUser = async (
-  name,
-  email,
-  password,
-  phone_number,
-  verified,
-  communication_method,
-  login_method
-) => {
+const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
   const url = `${global.SERVER_URL}/users`; // Endpoint URL
   try {
     const response = await fetch(url, {

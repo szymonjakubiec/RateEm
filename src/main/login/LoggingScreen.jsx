@@ -1,11 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { getAllUsers } from "../../backend/database/Users";
 
@@ -50,7 +44,7 @@ export default function LoggingScreen({ navigation }) {
   async function checkCredentials() {
     for (const user of userData) {
       if (user.email == email) {
-        if (user.haslo == password) {
+        if (user.password == password) {
           setWrongPasswordInfo("");
           this.textInput.clear();
           await navigation.navigate("MainNav", { screen: "Home", _title }); // domyślny ekran, parametry
@@ -92,12 +86,7 @@ export default function LoggingScreen({ navigation }) {
       <Text style={styles.title}>{_title}</Text>
       <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
 
-      <TextInput
-        style={styles.textInput}
-        placeholder="email"
-        onChangeText={(email) => setEmail(email.trim())}
-        onBlur={() => emailApproved(email)}
-      />
+      <TextInput style={styles.textInput} placeholder="email" onChangeText={(email) => setEmail(email.trim())} onBlur={() => emailApproved(email)} />
       <Text style={styles.wrongInputText}>{wrongEmailInfo}</Text>
       <TextInput
         style={styles.textInput}
