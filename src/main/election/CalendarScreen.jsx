@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableHighlight,
-} from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableHighlight } from "react-native";
 import { getAllSejmElections } from "../../backend/database/SejmElections";
 import { getAllPresidentElections } from "../../backend/database/PresidentElections";
 import { getAllEuElections } from "../../backend/database/EuElections";
@@ -28,20 +22,18 @@ export default function ElectionScreen() {
           <View style={styles.yearDiv}>
             <Text style={styles.yearTileText}>{year}</Text>
             {data.sejm.map((oneYear) => {
-              if (year == new Date(oneYear.data).getFullYear()) {
-                return <View key={oneYear.nazwa} style={styles.circleSejm} />;
+              if (year == new Date(oneYear.date).getFullYear()) {
+                return <View key={oneYear.name} style={styles.circleSejm} />;
               }
             })}
             {data.prezydent.map((oneYear) => {
-              if (year == new Date(oneYear.data).getFullYear()) {
-                return (
-                  <View key={oneYear.nazwa} style={styles.circlePrezydent} />
-                );
+              if (year == new Date(oneYear.date).getFullYear()) {
+                return <View key={oneYear.name} style={styles.circlePrezydent} />;
               }
             })}
             {data.eu.map((oneYear) => {
-              if (year == new Date(oneYear.data).getFullYear()) {
-                return <View key={oneYear.nazwa} style={styles.circleEu} />;
+              if (year == new Date(oneYear.date).getFullYear()) {
+                return <View key={oneYear.name} style={styles.circleEu} />;
               }
             })}
           </View>
@@ -76,9 +68,7 @@ export default function ElectionScreen() {
         </View>
         <View style={styles.colorsMeaningDiv}>
           <View style={styles.circleEu} />
-          <Text style={styles.colorsMeaningText}>
-            wybory do parlamentu europejskiego
-          </Text>
+          <Text style={styles.colorsMeaningText}>wybory do parlamentu europejskiego</Text>
         </View>
       </View>
       <ScrollView style={styles.scrollView}>
