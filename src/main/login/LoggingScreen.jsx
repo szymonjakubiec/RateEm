@@ -1,4 +1,3 @@
-import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -8,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
+import { getAllUsers } from "../../backend/database/Users";
 
 export default function LoggingScreen({ navigation }) {
   const _title = "Rate'Em";
@@ -26,33 +26,6 @@ export default function LoggingScreen({ navigation }) {
    * Variable preventing the wrongPasswordInfo from writing feedback right after opening the app. Check out the useEffect for more details.
    */
   const firstCheck = useRef(true);
-
-  /**
-   * Gets the information of all users and passes it to the userData.
-   *  @returns userData
-   */
-  async function getUsers() {
-    try {
-      const response = await fetch("http://10.0.2.2:3000/api/uzytkownicy");
-      const data = response.json();
-
-      return data;
-    } catch (error) {
-      console.log(error);
-      if (error.response) {
-        console.log("RESPONSE ERROR");
-        console.log(error.response.headers);
-      } else if (error.request) {
-        console.log("REQUEST ERROR");
-        console.log(error.request);
-        console.log(error.message);
-      } else {
-        console.log("sth else");
-        console.log(error.config);
-        console.log(error);
-      }
-    }
-  }
 
   /**
    * Checks if the email format is correct returning the bool value. Also gives feedback to the wrongEmailInfo if the email format is wrong.
@@ -76,7 +49,7 @@ export default function LoggingScreen({ navigation }) {
   function checkCredentials() {
     for (const user of userData) {
       if (user.email == email) {
-        if (user.haslo == password) {
+        if (user.password == password) {
           setWrongPasswordInfo("");
           this.textInput.clear();
           return true;

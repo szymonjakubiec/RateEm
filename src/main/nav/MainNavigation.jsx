@@ -2,7 +2,8 @@ import { useRoute, useLayoutEffect } from "@react-navigation/native";
 import { createContext, useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../home/HomeScreen";
-import ElectionScreen from "../election/ElectionScreen";
+import SearchScreen from "../search/SearchScreen";
+import ElectionNavigation from "../election/nav/ElectionNavigation";
 import SearchNavigation from "../search/nav/SearchNavigation";
 import TrendingScreen from "../trending/TrendingScreen";
 import ExtrasScreen from "../extras/ExtrasScreen";
@@ -50,7 +51,7 @@ export default function MainNavigation({ route }) {
         />
         <Tab.Screen
           name="Election"
-          component={ElectionScreen}
+          component={ElectionNavigation}
           options={() => ({
             title: "Wybory",
             headerTitle: _title,
