@@ -4,7 +4,7 @@ import { getAllSejmElections } from "../../backend/database/SejmElections";
 import { getAllPresidentElections } from "../../backend/database/PresidentElections";
 import { getAllEuElections } from "../../backend/database/EuElections";
 
-export default function ElectionScreen() {
+export default function CalendarScreen() {
   const [years, setYears] = useState([]);
 
   useEffect(() => {
