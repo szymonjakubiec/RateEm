@@ -9,6 +9,11 @@ export default function LoggingScreen({ navigation }) {
   const _title = "Rate'Em";
   // const route = useRoute();
 
+  // connection test
+  (async () => {
+    console.log((await getAllUsers())[0]?.name + " moment 💁‍");
+  })();
+
   const [userData, setUserData] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

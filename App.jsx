@@ -7,17 +7,21 @@ import RegisterNavigation from "./src/main/login/nav/RegisterNavigation";
 
 const Stack = createStackNavigator();
 
-(() =>
-  fetch("https://api.ipify.org?format=json")
-    .then((response) => response.json())
+// (() =>
+//   fetch("https://api.ipify.org?format=json")
+//     .then((response) => response.json())
 
-    .then((data) => {
-      global.SERVER_URL = "http://" + data.ip + ":3000/api";
-    })
+//     .then((data) => {
+//       global.SERVER_URL = "http://" + data.ip + ":3000/api";
+//     })
 
-    .catch((error) => {
-      console.error("Error fetching IP:", error);
-    }))();
+//     .catch((error) => {
+//       console.error("Error fetching IP:", error);
+//     }))();
+
+// global.SERVER_URL = "http://localhost:3000/api";
+
+global.SERVER_URL = "http://192.168.1.22:3000/api";
 
 global.xD = "YAAAA";
 

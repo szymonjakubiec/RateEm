@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { useState } from "react";
 import { sendSMS } from "../../backend/CommonMethods";
+import { addUser } from "../../backend/database/Users";
 
 export default function ConfirmScreen({ navigation, route }) {
   // const route = useRoute();
