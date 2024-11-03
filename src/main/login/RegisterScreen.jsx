@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { Alert, StyleSheet, Text, TouchableHighlight, SafeAreaView } from "react-native";
@@ -53,7 +53,20 @@ export default function RegisterScreen({ navigation }) {
     );
   };
 
-  const validateFieldsOnClick = async () => {
+  const validateFieldsOnSubmit = async () => {
+    if (
+      password.length < 8 ||
+      !/^[a-zA-Z]/.test(password) ||
+      !/^[a-zA-Z0-9!#$._@-]+$/.test(password) ||
+      !/[0-9]/.test(password) ||
+      !/[!#$._@]/.test(password)
+    ) {
+      setWrongPass(
+        "Hasło powinno mieć minimum 8 znaków. Powinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
+      );
+      return false;
+    }
+
     if (wrongName || !name || wrongEmail || !email || wrongPhone || !phone || wrongPass || !password || wrongPassRep || !repeatPassword) {
       alert("Wypełnij poprawnie wszystkie pola.");
       return false;
@@ -87,16 +100,6 @@ export default function RegisterScreen({ navigation }) {
   const validateEmail = (email) => {
     if (!email) {
       setWrongEmail("Podaj e-mail.");
-    } /* else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
-      setWrongEmail("Podaj prawidłowy e-mail.");
-    } */ else {
-      setWrongEmail("");
-    }
-  };
-
-  const validateEmailOut = (email) => {
-    if (!email) {
-      setWrongEmail("Podaj e-mail.");
     } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
       setWrongEmail("Podaj prawidłowy e-mail.");
     } else {
@@ -104,14 +107,13 @@ export default function RegisterScreen({ navigation }) {
     }
   };
 
-  const validatePhone = (phone) => {
-    if (phone.length === 9) {
-      setWrongPhone("");
-    }
-  };
+  // const validatePhone = (phone) => {
+  //   if (phone.length === 9) {
+  //     setWrongPhone("");
+  //   }
+  // };
 
-  const validatePhoneOut = (phone) => {
-    console.log(typeof phone);
+  const validatePhone = (phone) => {
     if (!phone || phone.length !== 9 || !["45", "50", "51", "53", "57", "60", "66", "69", "72", "73", "78", "79", "88"].includes(phone.slice(0, 2))) {
       setWrongPhone("Podaj prawidłowy numer telefonu.");
     } else {
@@ -119,21 +121,17 @@ export default function RegisterScreen({ navigation }) {
     }
   };
 
+  // const validatePass = (pass) => {
+  //   if (!pass) {
+  //     setWrongPass("Podaj hasło.");
+  //   } else {
+  //     setWrongPass("");
+  //   }
+  // };
+
   const validatePass = (pass) => {
     if (!pass) {
       setWrongPass("Podaj hasło.");
-    } else {
-      setWrongPass("");
-    }
-  };
-
-  const validatePassOut = (pass) => {
-    if (!pass) {
-      setWrongPass("Podaj hasło.");
-    } else if (pass.length < 8 || !/^[a-zA-Z]/.test(pass) || !/^[a-zA-Z0-9!#$._@-]+$/.test(pass) || !/[!#$._@]/.test(pass)) {
-      setWrongPass(
-        "Hasło powinno mieć minimum 8 znaków. Powinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
-      );
     } else {
       setWrongPass("");
     }
@@ -202,7 +200,7 @@ export default function RegisterScreen({ navigation }) {
           validateFieldsOnBlur();
         }}
         onBlur={() => {
-          validateEmailOut(email);
+          // console.log("BLUR");
         }}
       />
       <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
@@ -226,7 +224,7 @@ export default function RegisterScreen({ navigation }) {
             validateFieldsOnBlur();
           }}
           onBlur={() => {
-            validatePhoneOut(phone);
+            // validatePhoneOut(phone);
           }}
         />
         <Text style={{ alignSelf: "center", left: 12, fontSize: 16, fontWeight: 300, position: "absolute", paddingTop: 15 }}>+48 | </Text>
@@ -249,7 +247,7 @@ export default function RegisterScreen({ navigation }) {
           validateFieldsOnBlur();
         }}
         onBlur={() => {
-          validatePassOut(password);
+          // validatePassOut(password);
         }}
       />
       <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
@@ -280,7 +278,7 @@ export default function RegisterScreen({ navigation }) {
         style={[styles.button, { marginTop: 40 }, !validateFieldsOnBlur() && { opacity: 0.5 }]}
         disabled={!validateFieldsOnBlur()}
         onPress={() => {
-          validateFieldsOnClick().then((result) => {
+          validateFieldsOnSubmit().then((result) => {
             if (result) {
               navigation.navigate("Confirm", {
                 // _title,
