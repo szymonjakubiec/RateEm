@@ -90,6 +90,16 @@ export default function RegisterScreen({ navigation }) {
   const validateEmail = (email) => {
     if (!email) {
       setWrongEmail("Podaj e-mail.");
+    } /* else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
+      setWrongEmail("Podaj prawidłowy e-mail.");
+    } */ else {
+      setWrongEmail("");
+    }
+  };
+
+  const validateEmailOut = (email) => {
+    if (!email) {
+      setWrongEmail("Podaj e-mail.");
     } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
       setWrongEmail("Podaj prawidłowy e-mail.");
     } else {
@@ -98,7 +108,14 @@ export default function RegisterScreen({ navigation }) {
   };
 
   const validatePhone = (phone) => {
-    if (!phone || /* !/^(?:\+?\d{1,3}[-\s.]?)?(?:\(\d{1,3}\)|\d{1,3})[-\s.]?\d{1,9}$/ */ phone.length !== 9) {
+    if (phone.length === 9) {
+      setWrongPhone("");
+    }
+  };
+
+  const validatePhoneOut = (phone) => {
+    console.log(typeof phone);
+    if (!phone || phone.length !== 9 || !["45", "50", "51", "53", "57", "60", "66", "69", "72", "73", "78", "79", "88"].includes(phone.slice(0, 2))) {
       setWrongPhone("Podaj prawidłowy numer telefonu.");
     } else {
       setWrongPhone("");
@@ -108,7 +125,15 @@ export default function RegisterScreen({ navigation }) {
   const validatePass = (pass) => {
     if (!pass) {
       setWrongPass("Podaj hasło.");
-    } else if (password.length < 8 || !/^[a-zA-Z]/.test(password) || !/^[a-zA-Z0-9!#$._@-]+$/.test(password) || !/[!#$._@]/.test(password)) {
+    } else {
+      setWrongPass("");
+    }
+  };
+
+  const validatePassOut = (pass) => {
+    if (!pass) {
+      setWrongPass("Podaj hasło.");
+    } else if (pass.length < 8 || !/^[a-zA-Z]/.test(pass) || !/^[a-zA-Z0-9!#$._@-]+$/.test(pass) || !/[!#$._@]/.test(pass)) {
       setWrongPass(
         "Hasło powinno mieć minimum 8 znaków. Powinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
       );
@@ -141,14 +166,15 @@ export default function RegisterScreen({ navigation }) {
         selectionColor={_selectionColor}
         cursorColor={_cursorColor}
         onChangeText={(text) => {
-          if (text.includes(" ")) return;
+          // if (text.includes(" ")) return;
           text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "");
           text.length > 0 && (text = text[0].toUpperCase() + text.slice(1).toLowerCase());
           setName(text.trim());
+          validateName(text.trim());
+          validateFieldsOnBlur();
         }}
         onBlur={() => {
-          validateFieldsOnBlur();
-          validateName(name.trim());
+          validateName(name);
         }}
       />
       <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
@@ -166,10 +192,11 @@ export default function RegisterScreen({ navigation }) {
           if (text.includes(" ")) return;
           text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
           setEmail(text.trim());
+          validateEmail(text.trim());
+          validateFieldsOnBlur();
         }}
         onBlur={() => {
-          validateFieldsOnBlur();
-          validateEmail(email.trim());
+          validateEmailOut(email);
         }}
       />
       <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
@@ -189,10 +216,11 @@ export default function RegisterScreen({ navigation }) {
             text = text.trim().replace(/[^0-9]/g, "");
             if (text.length > 9) return;
             setPhone(text.trim());
+            validatePhone(text.trim());
+            validateFieldsOnBlur();
           }}
           onBlur={() => {
-            validateFieldsOnBlur();
-            validatePhone(phone.trim());
+            validatePhoneOut(phone);
           }}
         />
       </View>
@@ -200,6 +228,10 @@ export default function RegisterScreen({ navigation }) {
 
       <TextInput
         style={styles.textInput(wrongPass)}
+        iconFamily={"MaterialCommunityIcons"}
+        iconSuccess={"emoticon-happy-outline"}
+        iconWarning={"alert-outline"}
+        iconAlert={"alert-octagon-outline"}
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
@@ -210,11 +242,12 @@ export default function RegisterScreen({ navigation }) {
         cursorColor={_cursorColor}
         onChangeText={(text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
-          setPassword(text);
+          setPassword(text.trim());
+          validatePass(text.trim());
+          validateFieldsOnBlur();
         }}
         onBlur={() => {
-          validateFieldsOnBlur();
-          validatePass(password.trim());
+          validatePassOut(password);
         }}
       />
       <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
@@ -231,11 +264,12 @@ export default function RegisterScreen({ navigation }) {
         cursorColor={_cursorColor}
         onChangeText={(text) => {
           if (text.includes(" ")) return;
-          setRepeatPassword(text);
+          setRepeatPassword(text.trim());
+          validatePassRep(text.trim());
+          validateFieldsOnBlur();
         }}
         onBlur={() => {
-          validateFieldsOnBlur();
-          validatePassRep(repeatPassword.trim());
+          // validatePassRep(repeatPassword.trim());
         }}
       />
       <Text style={styles.wrongInputText(wrongPassRep)}>{wrongPassRep}</Text>
@@ -291,6 +325,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 2,
     tintColor: "red",
+    height: 45,
   }),
   wrongInputText: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
     display: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "flex" : "none",
