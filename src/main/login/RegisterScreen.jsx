@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { Alert, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableHighlight, SafeAreaView } from "react-native";
+import { TextInput } from "react-native-paper";
 import { getAllUsers } from "../../backend/database/Users";
 
 export default function RegisterScreen({ navigation }) {
@@ -16,10 +17,6 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   // const route = useRoute();
-
-  // Temp
-  const _selectionColor = "#bc15d279";
-  const _cursorColor = "#b01ec386";
 
   // Validate values
   const [wrongName, setWrongName] = useState("");
@@ -154,17 +151,27 @@ export default function RegisterScreen({ navigation }) {
     }
   };
 
+  const _textInputProps = {
+    mode: "outlined",
+    activeOutlineColor: "black",
+    selectTextOnFocus: true,
+    returnKeyType: "next",
+    style: styles.textInput,
+    selectionColor: "#bc15d279",
+    cursorColor: "#b01ec386",
+  };
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
 
       <TextInput
-        style={styles.textInput(wrongName)}
+        {..._textInputProps}
+        label="imię"
+        outlineColor={wrongName ? "#e41c1c" : "black"}
+        maxLength={22}
         autoComplete="name"
-        placeholder="imię"
         value={name}
-        selectionColor={_selectionColor}
-        cursorColor={_cursorColor}
         onChangeText={(text) => {
           // if (text.includes(" ")) return;
           text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "");
@@ -180,14 +187,13 @@ export default function RegisterScreen({ navigation }) {
       <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
 
       <TextInput
-        style={styles.textInput(wrongEmail)}
+        {..._textInputProps}
+        label="e-mail"
+        outlineColor={wrongEmail ? "red" : "black"}
         autoComplete="email"
         textContentType="emailAddress"
         autoCapitalize="none"
-        placeholder="e-mail"
         value={email}
-        selectionColor={_selectionColor}
-        cursorColor={_cursorColor}
         onChangeText={(text) => {
           if (text.includes(" ")) return;
           text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
@@ -201,16 +207,16 @@ export default function RegisterScreen({ navigation }) {
       />
       <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
 
-      <View style={{ flexDirection: "row", justifyContent: "center" }}>
-        <Text style={{ alignSelf: "center", left: 12, fontSize: 13, fontWeight: 300, position: "absolute", paddingTop: 7 }}>+48 | </Text>
+      <SafeAreaView style={{ flexDirection: "row", justifyContent: "center" }}>
         <TextInput
-          style={[styles.textInput(wrongPhone), { paddingLeft: 44 }]}
+          {..._textInputProps}
+          label="numer telefonu"
+          outlineColor={wrongPhone ? "red" : "black"}
+          maxLength={12}
+          style={[styles.textInput, { paddingLeft: 34 }]}
           autoComplete="tel"
           keyboardType="phone-pad"
-          placeholder="numer telefonu"
           value={phone}
-          selectionColor={_selectionColor}
-          cursorColor={_cursorColor}
           onChangeText={(text) => {
             text.slice(0, 3) === "+48" && (text = text.slice(3));
             text = text.trim().replace(/[^0-9]/g, "");
@@ -223,23 +229,19 @@ export default function RegisterScreen({ navigation }) {
             validatePhoneOut(phone);
           }}
         />
-      </View>
+        <Text style={{ alignSelf: "center", left: 12, fontSize: 16, fontWeight: 300, position: "absolute", paddingTop: 15 }}>+48 | </Text>
+      </SafeAreaView>
       <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
 
       <TextInput
-        style={styles.textInput(wrongPass)}
-        iconFamily={"MaterialCommunityIcons"}
-        iconSuccess={"emoticon-happy-outline"}
-        iconWarning={"alert-outline"}
-        iconAlert={"alert-octagon-outline"}
+        {..._textInputProps}
+        label="hasło"
+        outlineColor={wrongPass ? "red" : "black"}
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
-        placeholder="hasło"
         secureTextEntry
         value={password}
-        selectionColor={_selectionColor}
-        cursorColor={_cursorColor}
         onChangeText={(text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
           setPassword(text.trim());
@@ -253,15 +255,15 @@ export default function RegisterScreen({ navigation }) {
       <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
 
       <TextInput
-        style={styles.textInput(wrongPassRep)}
+        {..._textInputProps}
+        label="powtórz hasło"
+        outlineColor={wrongPassRep ? "red" : "black"}
+        returnKeyType="done"
         autoCapitalize="none"
         autoComplete="current-password"
         textContentType="currentPassword"
-        placeholder="powtórz hasło"
         secureTextEntry
         value={repeatPassword}
-        selectionColor={_selectionColor}
-        cursorColor={_cursorColor}
         onChangeText={(text) => {
           if (text.includes(" ")) return;
           setRepeatPassword(text.trim());
@@ -293,7 +295,7 @@ export default function RegisterScreen({ navigation }) {
       >
         <Text style={styles.buttonText}>Zarejestruj</Text>
       </TouchableHighlight>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -312,21 +314,12 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 40,
   },
-  textInput: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "#e41c1c" : "#000",
-    borderStyle: "solid",
-    paddingTop: 6,
-    paddingBottom: 6,
-    paddingLeft: 20,
-    paddingRight: 20,
+  textInput: {
     width: "90%",
     marginTop: 10,
     marginBottom: 2,
     tintColor: "red",
-    height: 45,
-  }),
+  },
   wrongInputText: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
     display: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "flex" : "none",
     fontSize: 12,
