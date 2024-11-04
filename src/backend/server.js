@@ -20,7 +20,7 @@ app.use(express.json());
 //
 {
   // --- select ---------------------------------------------------------------------------
-  app.get("/api/ratings", async (req, res) => {
+  app.get("/api/all-ratings", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
@@ -29,6 +29,50 @@ app.use(express.json());
       res.json(rows);
     } catch (err) {
       res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
+      }
+    }
+  });
+
+  app.get("/api/ratings", async (req, res) => {
+    const { user_id, politician_id } = req.query; // Używamy req.query do pobrania parametrów
+
+    // Walidacja danych
+    if (!user_id || !politician_id) {
+      return res.status(400).json({
+        message: "Both user_id and politician_id must be provided",
+        missing: {
+          user_id: !user_id ? "Missing" : "Provided",
+          politician_id: !politician_id ? "Missing" : "Provided",
+        },
+      });
+    }
+
+    let connection;
+    try {
+      connection = await mysql.createConnection(config);
+      const [rows] = await connection.execute(
+        "SELECT * FROM ratings WHERE user_id = ? AND politician_id = ?",
+        [user_id, politician_id]
+      );
+
+      // Sprawdzenie, czy wynik nie jest pusty
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Rating not found" });
+      }
+
+      res.json(rows);
+    } catch (err) {
+      console.error("Database error:", err);
+      res
+        .status(500)
+        .json({ message: "Internal Server Error", error: err.message });
     } finally {
       if (connection) {
         try {
@@ -179,7 +223,7 @@ app.use(express.json());
 //
 {
   // --- select ---------------------------------------------------------------------------
-  app.get("/api/own-ratings", async (req, res) => {
+  app.get("/api/all-own-ratings", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
@@ -201,25 +245,39 @@ app.use(express.json());
     }
   });
 
-  app.post("/api/own-ratings", async (req, res) => {
-    const { user_id, politician_id } = req.body;
+  app.get("/api/own-ratings", async (req, res) => {
+    const { user_id, politician_id } = req.query; // Używamy req.query do pobrania parametrów
 
+    // Walidacja danych
     if (!user_id || !politician_id) {
-      return res
-        .status(400)
-        .json({ message: "Both user_id and politician_id must be provided" });
+      return res.status(400).json({
+        message: "Both user_id and politician_id must be provided",
+        missing: {
+          user_id: !user_id ? "Missing" : "Provided",
+          politician_id: !politician_id ? "Missing" : "Provided",
+        },
+      });
     }
 
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, _] = await connection.execute(
+      const [rows] = await connection.execute(
         "SELECT * FROM own_ratings WHERE user_id = ? AND politician_id = ?",
         [user_id, politician_id]
       );
+
+      // Sprawdzenie, czy wynik nie jest pusty
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Rating not found" });
+      }
+
       res.json(rows);
     } catch (err) {
-      res.status(500).send(err.message);
+      console.error("Database error:", err);
+      res
+        .status(500)
+        .json({ message: "Internal Server Error", error: err.message });
     } finally {
       if (connection) {
         try {

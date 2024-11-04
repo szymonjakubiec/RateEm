@@ -6,7 +6,7 @@
  * @returns {Promise<Object[]>} Array of own rating objects
  */
 const getAllOwnRatings = async () => {
-  const url = `${global.SERVER_URL}/own-ratings`;
+  const url = `${global.SERVER_URL}/all-own-ratings`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -21,7 +21,7 @@ const getAllOwnRatings = async () => {
 };
 
 /**
- * Gets all own ratings.
+ * Gets specific own ratings.
  *
  * @async
  * @function
