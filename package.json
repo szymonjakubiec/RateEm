@@ -19,6 +19,7 @@
     "axios": "^1.7.7",
     "dhondt": "^0.1.0",
     "expo": "^51.0.38",
+    "expo-location": "~17.0.1",
     "expo-status-bar": "~1.12.1",
     "express": "^4.21.1",
     "mssql": "^11.0.1",
@@ -27,8 +28,7 @@
     "react": "18.2.0",
     "react-native": "^0.74.5",
     "react-native-check-box": "^2.1.7",
-    "react-native-dropdown-select-list": "^2.0.5",
-    "expo-location": "~17.0.1"
+    "react-native-dropdown-select-list": "^2.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

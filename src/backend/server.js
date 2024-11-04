@@ -538,5 +538,33 @@ app.get("/api/euelections", async (req, res) => {
   }
 });
 
+//   SEJM_DISTRICTS TABLE
+//select
+app.get("/api/districts/sejm/:powiatName", async (req, res) => {
+  const { powiatName } = req.params;
+  let connection;
+
+  try {
+    connection = await mysql.createConnection(config);
+    const [rows, fields] = await connection.execute("SELECT * FROM sejm_districts WHERE powiat_name = ?", [powiatName]);
+
+    if (rows.length > 0) {
+      res.json(rows);
+    } else {
+      res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+    }
+  } catch (err) {
+    res.status(500).send(err.message);
+  } finally {
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+        console.error("Error closing connection:", err.message);
+      }
+    }
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));

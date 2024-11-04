@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Button } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import * as Location from "expo-location";
 import { getUserAddress } from "../../backend/GetAddress";
+import { getSejmDistrict } from "../../backend/database/Districts";
 
 export default function ElectoralDistricts() {
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
+  const [district, setDistrict] = useState(null);
 
   useEffect(() => {
     handleGettingDistrict();
@@ -30,16 +32,14 @@ export default function ElectoralDistricts() {
 
   const getAddress = async (loc) => {
     const adderssData = await getUserAddress(loc.coords.latitude, loc.coords.longitude);
-    // console.log(adderssData.results[0].address_components[3].long_name);
-    // setAddress(adderssData.results[0].address_components[3].long_name);
+    var powiatName = adderssData.results[0].address_components[3].long_name.toString().split("Powiat ")[1];
+    setAddress(powiatName);
 
-    // brać 'adderssData.results[0].address_components[3].long_name
-    // usunąć 'Powiat '
-    // wyszukać w tablicy okręgów
+    const districtData = (await getSejmDistrict(powiatName))[0];
+    setDistrict(districtData.district_number);
+    console.log(districtData);
 
-    // tablica okręgów:
-    // przechodzi przez wszystkie pod strony "https://sejmsenat2023.pkw.gov.pl/sejmsenat2023/pl/sejm/wynik/okr/1" od 1 do 41
-    // dodaje do niej powiaty i miasta na prawach powiatów
+    // ogarnąć zagranice i morze
   };
 
   return (
@@ -50,7 +50,9 @@ export default function ElectoralDistricts() {
             <Text>
               Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
             </Text>
-            <Text>Address: {address}</Text>
+            <Text>SEJM</Text>
+            <Text>District name: {address}</Text>
+            <Text>District number: {district}</Text>
           </View>
         ) : (
           <Text>Fetching location...</Text>
