@@ -8,7 +8,6 @@ import SummaryScreen from "../SummaryScreen";
 var Stack = createStackNavigator();
 
 export default function ExtrasNavigation({ route }) {
-  // const route = useRoute();
   const _title = route.params?._title;
 
   return (
