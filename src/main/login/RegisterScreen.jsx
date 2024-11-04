@@ -33,7 +33,7 @@ export default function RegisterScreen({ navigation }) {
 
   const phoneExists = async (phone) => {
     const users = await getAllUsers();
-    return users.some((user) => user.phone === phone);
+    return users.some((user) => user.phone_number === phone);
   };
 
   const alert = (text) => {
@@ -277,8 +277,8 @@ export default function RegisterScreen({ navigation }) {
       <TouchableHighlight
         style={[styles.button, { marginTop: 40 }, !validateFieldsOnBlur() && { opacity: 0.5 }]}
         disabled={!validateFieldsOnBlur()}
-        onPress={() => {
-          validateFieldsOnSubmit().then((result) => {
+        onPress={async () => {
+          await validateFieldsOnSubmit().then((result) => {
             if (result) {
               navigation.navigate("Confirm", {
                 // _title,
