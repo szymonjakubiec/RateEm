@@ -2,8 +2,7 @@
  * Gets all users.
  *
  * @async
- * @function
- * @returns {Promise<Object[]>} Array of user objects
+ * @returns {object[]|undefined} Array of user objects
  */
 const getAllUsers = async () => {
   const url = `${global.SERVER_URL}/users`;
@@ -16,7 +15,7 @@ const getAllUsers = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching users:", error);
-    return null;
+    return undefined;
   }
 };
 
@@ -24,7 +23,6 @@ const getAllUsers = async () => {
  * Adds a user.
  *
  * @async
- * @function
  * @param {string} name - Name of the user
  * @param {string} email - Email of the user
  * @param {string} password - Password of the user
@@ -32,7 +30,7 @@ const getAllUsers = async () => {
  * @param {boolean} verified - Whether the user is verified
  * @param {string} communication_method - Method of communication
  * @param {string} login_method - Method of logging in
- * @returns {Promise<void>}
+ * @returns {object|undefined} New user data object
  */
 const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
   const url = `${global.SERVER_URL}/users`; // Endpoint URL
@@ -61,8 +59,10 @@ const addUser = async (name, email, password, phone_number, verified, communicat
     // Reading the added user data
     const newUser = await response.json();
     console.log("New user added:", newUser);
+    return newUser;
   } catch (error) {
     console.error("An error occurred while adding a user:", error.message);
+    return undefined;
   }
 };
 
@@ -70,7 +70,6 @@ const addUser = async (name, email, password, phone_number, verified, communicat
  * Updates a user.
  *
  * @async
- * @function
  * @param {string} id - ID of the user to update
  * @param {Object} newData - New data for the user. Possible keys:
  * * {string} name - Name of the user
@@ -80,7 +79,7 @@ const addUser = async (name, email, password, phone_number, verified, communicat
  * * {boolean} verified - Whether the user is verified
  * * {string} communication_method - Method of communication
  * * {string} login_method - Method of logging in
- * @returns {Promise<Object>} Updated user data
+ * @returns {object|undefined} Updated user data object
  */
 const updateUser = async (id, newData = {}) => {
   const url = `${global.SERVER_URL}/users/${id}`;
@@ -102,7 +101,7 @@ const updateUser = async (id, newData = {}) => {
     return updatedData;
   } catch (error) {
     console.error("Error updating user:", error);
-    return null;
+    return undefined;
   }
 };
 
@@ -110,9 +109,8 @@ const updateUser = async (id, newData = {}) => {
  * Deletes a user.
  *
  * @async
- * @function
  * @param {string} id - ID of the user to delete
- * @returns {Promise<Object>} Deleted user data
+ * @returns {object|undefined} Deleted user data object
  */
 const deleteUser = async (id) => {
   const url = `${global.SERVER_URL}/users/${id}`;
@@ -131,7 +129,7 @@ const deleteUser = async (id) => {
     return deletedData;
   } catch (error) {
     console.error("Error deleting user:", error);
-    return null;
+    return undefined;
   }
 };
 

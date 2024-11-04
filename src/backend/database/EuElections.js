@@ -2,8 +2,7 @@
  * Gets all EU elections.
  *
  * @async
- * @function
- * @returns {Promise<Object[]>} Array of EU election objects
+ * @returns {object[]|undefined} Array of EU election objects
  */
 const getAllEuElections = async () => {
   const url = `${global.SERVER_URL}/eu-elections`;
@@ -16,7 +15,7 @@ const getAllEuElections = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching EU elections:", error);
-    return null;
+    return undefined;
   }
 };
 

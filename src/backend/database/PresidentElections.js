@@ -2,8 +2,7 @@
  * Gets all president elections.
  *
  * @async
- * @function
- * @returns {Promise<Object[]>} Array of president election objects
+ * @returns {object[]|undefined} Array of president election objects
  */
 const getAllPresidentElections = async () => {
   const url = `${global.SERVER_URL}/president-elections`;
@@ -16,7 +15,7 @@ const getAllPresidentElections = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching ratings:", error);
-    return null;
+    return undefined;
   }
 };
 

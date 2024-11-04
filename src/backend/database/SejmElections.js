@@ -2,8 +2,7 @@
  * Gets all Sejm elections.
  *
  * @async
- * @function
- * @returns {Promise<Object[]>} Array of Sejm election objects
+ * @returns {object[]|undefined} Array of Sejm elections objects
  */
 const getAllSejmElections = async () => {
   const url = `${global.SERVER_URL}/sejm-elections`;
@@ -16,7 +15,7 @@ const getAllSejmElections = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching ratings:", error);
-    return null;
+    return undefined;
   }
 };
 
