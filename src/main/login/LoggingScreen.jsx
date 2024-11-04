@@ -52,7 +52,7 @@ export default function LoggingScreen({ navigation }) {
   async function checkCredentials() {
     for (const user of userData) {
       if (user.email == email) {
-        if (user.haslo == password) {
+        if (user.password == password) {
           setWrongPasswordInfo("");
           this.textInput.clear();
           await navigation.navigate("MainNav", { screen: "Home", _title }); // domyślny ekran, parametry
