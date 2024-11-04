@@ -21,6 +21,35 @@ const getAllOwnRatings = async () => {
 };
 
 /**
+ * Gets all own ratings.
+ *
+ * @async
+ * @function
+ * @param {number} user_id - ID of the user
+ * @param {number} politician_id - ID of the politician
+ * @returns {Promise<Object[]>} Array of own rating objects
+ */
+const getOwnRating = async (user_id, politician_id) => {
+  const url = `${global.SERVER_URL}/own-ratings?user_id=${user_id}&politician_id=${politician_id}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching ratings:", error);
+    return null;
+  }
+};
+
+/**
  * Adds own rating.
  *
  * @async
@@ -124,4 +153,5 @@ module.exports = {
   updateOwnRating,
   deleteOwnRating,
   getAllOwnRatings,
+  getOwnRating,
 };
