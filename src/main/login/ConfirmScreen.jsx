@@ -1,7 +1,7 @@
 import { useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
-import { useState } from "react";
+import { StyleSheet, Text, TextInput, TouchableHighlight, View, BackHandler } from "react-native";
+import { useState, useEffect } from "react";
 import { sendSMS } from "../../backend/CommonMethods";
 import { addUser } from "../../backend/database/Users";
 
@@ -9,6 +9,23 @@ export default function ConfirmScreen({ navigation, route }) {
   // const route = useRoute();
   const { name, email, phone, password } = route.params;
   const [code, setCode] = useState("");
+
+  useEffect(() => {
+    const backAction = () => {
+      return true;
+      // if (currentRoute === "Home") {
+      //   // Wyjście z aplikacji, jeśli aktualny ekran to Home
+      //   BackHandler.exitApp();
+      //   return true; // Zapobiega domyślnemu zachowaniu
+      // } else {
+      //   // Przechodzi do ekranu Home w przypadku innych ekranów
+      //   navigation.navigate("Home");
+      //   return true;
+      // }
+    };
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    return () => backHandler.remove(); // usuwa nasłuchiwacz przy odmontowaniu komponentu
+  }, [navigation]);
 
   sendSMS();
 
@@ -21,11 +38,10 @@ export default function ConfirmScreen({ navigation, route }) {
 
       <TouchableHighlight
         style={styles.button}
-        onPress={() => {
-          (async () => {
-            await addUser(name, email, password, phone, 1, 69, 420);
-          })()
+        onPress={async () => {
+          await addUser(name, email, password, phone, 1, 69, 420)
             .then((result) => {
+              console.log(result);
               if (result) {
                 navigation.navigate("Success");
               }
