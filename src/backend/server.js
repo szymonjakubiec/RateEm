@@ -246,9 +246,8 @@ app.use(express.json());
   });
 
   app.get("/api/own-ratings", async (req, res) => {
-    const { user_id, politician_id } = req.query; // Używamy req.query do pobrania parametrów
+    const { user_id, politician_id } = req.query;
 
-    // Walidacja danych
     if (!user_id || !politician_id) {
       return res.status(400).json({
         message: "Both user_id and politician_id must be provided",
@@ -409,7 +408,7 @@ app.use(express.json());
 //
 {
   // --- select ---------------------------------------------------------------------------
-  app.get("/api/politicians", async (req, res) => {
+  app.get("/api/all-politicians", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
@@ -431,6 +430,48 @@ app.use(express.json());
     }
   });
 }
+
+app.get("/api/politicians", async (req, res) => {
+  const { politician_id } = req.query;
+
+  if (!politician_id) {
+    return res.status(400).json({
+      message: "politician_id must be provided",
+      missing: {
+        politician_id: !politician_id ? "Missing" : "Provided",
+      },
+    });
+  }
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(config);
+    const [rows] = await connection.execute(
+      "SELECT * FROM politicians WHERE id = ?",
+      [politician_id]
+    );
+
+    // Sprawdzenie, czy wynik nie jest pusty
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Politician not found" });
+    }
+
+    res.json(rows);
+  } catch (err) {
+    console.error("Database error:", err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: err.message });
+  } finally {
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+        console.error("Error closing connection:", err.message);
+      }
+    }
+  }
+});
 
 //
 // === USERS TABLE ========================================================================
