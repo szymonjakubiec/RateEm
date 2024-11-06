@@ -540,16 +540,42 @@ app.get("/api/euelections", async (req, res) => {
 
 //   SEJM_DISTRICTS TABLE
 //select
-app.get("/api/districts/sejm/:powiatName", async (req, res) => {
-  const { powiatName } = req.params;
+app.get("/api/districts/sejm", async (req, res) => {
   let connection;
 
   try {
     connection = await mysql.createConnection(config);
-    const [rows, fields] = await connection.execute("SELECT * FROM sejm_districts WHERE powiat_name = ?", [powiatName]);
+    const [result] = await connection.execute("SELECT * FROM sejm_districts");
 
-    if (rows.length > 0) {
-      res.json(rows);
+    if (result.length > 0) {
+      res.json(result);
+    } else {
+      res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+    }
+  } catch (err) {
+    res.status(500).send(err.message);
+  } finally {
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+        console.error("Error closing connection:", err.message);
+      }
+    }
+  }
+});
+
+//   EU_DISTRICTS TABLE
+//select
+app.get("/api/districts/eu", async (req, res) => {
+  let connection;
+
+  try {
+    connection = await mysql.createConnection(config);
+    const [result] = await connection.execute("SELECT * FROM eu_districts");
+
+    if (result.length > 0) {
+      res.json(result);
     } else {
       res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
     }
