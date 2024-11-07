@@ -20,10 +20,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+      "package": "com.anonymous.RateEm"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "android.config.googleMaps.apiKey": "AIzaSyBIHMXgF1F5nHAR8SE-W273o2C7dCjzvbQ"
   }
 }
