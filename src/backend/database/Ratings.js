@@ -31,9 +31,18 @@ const getAllRatings = async () => {
  * @param {float} value - Value of the rating
  * @param {string} description - Description of the rating
  * @param {string} date - Date in YYYY-MM-DD format
+ * @param {number} weight - Weight of the rating, 1 if not specified
  * @returns {Promise<void>}
  */
-const addRating = async (user_id, politician_id, title, value, description, date) => {
+const addRating = async (
+  user_id,
+  politician_id,
+  title,
+  value,
+  description,
+  date,
+  weight
+) => {
   const url = `${global.SERVER_URL}/ratings`;
   try {
     const response = await fetch(url, {
@@ -48,6 +57,7 @@ const addRating = async (user_id, politician_id, title, value, description, date
         value,
         description,
         date,
+        weight,
       }),
     });
 
