@@ -15,7 +15,7 @@ const getAllPoliticians = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
+    console.error("Error fetching politicians:", error);
     return null;
   }
 };
@@ -28,7 +28,7 @@ const getAllPoliticians = async () => {
  * @returns {Promise<Object[]>} Array of politician name objects
  */
 const getAllPoliticianNames = async () => {
-  const url = "http://10.0.2.2:3000/api/politicians";
+  const url = `${global.SERVER_URL}/all-politicians`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -40,12 +40,12 @@ const getAllPoliticianNames = async () => {
     for await (const element of rawData) {
       data.push({
         key: element.id,
-        value: element.imie__drugie_imie__nazwisko,
+        value: element.names_surname,
       });
     }
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
+    console.error("Error fetching politicians:", error);
     return null;
   }
 };
@@ -60,8 +60,6 @@ const getAllPoliticianNames = async () => {
  */
 const getPolitician = async (politician_id) => {
   const url = `${global.SERVER_URL}/politicians?politician_id=${politician_id}`;
-  console.log(url);
-
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -75,7 +73,7 @@ const getPolitician = async (politician_id) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
+    console.error("Error fetching politicians:", error);
     return null;
   }
 };

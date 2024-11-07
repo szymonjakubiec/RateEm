@@ -32,7 +32,6 @@ const getAllRatings = async () => {
  */
 const getRating = async (user_id, politician_id) => {
   const url = `${global.SERVER_URL}/ratings?user_id=${user_id}&politician_id=${politician_id}`;
-  console.log(url);
   try {
     const response = await fetch(url, {
       method: "GET",

@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../home/HomeScreen";
 import ElectionNavigation from "../election/nav/ElectionNavigation";
 import SearchNavigation from "../search/nav/SearchNavigation";
-import TrendingScreen from "../trending/TrendingScreen";
 import {
   getAllPoliticianNames,
   getAllPoliticians,

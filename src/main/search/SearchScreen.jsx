@@ -5,15 +5,15 @@ import { PoliticianNameContext } from "./PoliticianNameContext.jsx";
 
 export default function SearchScreen({ navigation }) {
   const politicianNameData = useContext(PoliticianNameContext);
-  const [selectedPolitician, setSelectedPolitician] = useState("");
+  const [selectedPoliticianId, setSelectedPoliticianId] = useState(null);
 
   /**
    * Navigation to the ProfileScreen.js
    */
   function navigateToProfile() {
-    if (selectedPolitician !== "") {
+    if (selectedPoliticianId !== null) {
       navigation.navigate("Profile", {
-        selectedPolitician,
+        selectedPoliticianId,
       });
     }
   }
@@ -24,10 +24,7 @@ export default function SearchScreen({ navigation }) {
         data={politicianNameData}
         placeholder="Wyszukaj polityka"
         searchPlaceholder="Wyszukaj polityka"
-        setSelected={
-          (selected) =>
-            setSelectedPolitician(politicianNameData[selected - 1].value) // sets the name and surname of selected politician
-        }
+        setSelected={(selected) => setSelectedPoliticianId(selected)}
         onSelect={navigateToProfile()}
         boxStyles={styles.boxStyle}
         dropdownStyles={styles.dropdownStyle}

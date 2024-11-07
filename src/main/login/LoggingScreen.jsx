@@ -92,7 +92,7 @@ export default function LoggingScreen({ navigation }) {
    * @async
    */
   async function setCredentials() {
-    const data = await getUsers();
+    const data = await getAllUsers();
     setUserData(data);
   }
 
