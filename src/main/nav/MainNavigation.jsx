@@ -2,16 +2,16 @@ import { useRoute, useLayoutEffect } from "@react-navigation/native";
 import { createContext, useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../home/HomeScreen";
-import SearchScreen from "../search/SearchScreen";
 import ElectionNavigation from "../election/nav/ElectionNavigation";
 import SearchNavigation from "../search/nav/SearchNavigation";
 import TrendingScreen from "../trending/TrendingScreen";
-import ExtrasScreen from "../extras/ExtrasScreen";
 import {
   getAllPoliticianNames,
   getAllPoliticians,
 } from "../../backend/database/Politicians.js";
 import { PoliticianNameContext } from "../search/PoliticianNameContext.jsx";
+import TrendingScreen from "../trending/TrendingScreen";
+import ExtrasNavigation from "../extras/nav/ExtrasNavigation";
 
 const Tab = createBottomTabNavigator();
 
@@ -83,8 +83,8 @@ export default function MainNavigation({ route }) {
           })}
         />
         <Tab.Screen
-          name="Extras"
-          component={ExtrasScreen}
+          name="ExtrasNav"
+          component={ExtrasNavigation}
           options={() => ({
             title: "Więcej",
             headerTitle: _title,

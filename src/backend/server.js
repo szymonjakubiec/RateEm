@@ -88,13 +88,14 @@ app.use(express.json());
   app.post("/api/ratings", async (req, res) => {
     const { user_id, politician_id, title, value, description, date } =
       req.body;
+    const weight = req.body.weight || 1;
     let connection;
 
     try {
       connection = await mysql.createConnection(config);
       const [result] = await connection.execute(
-        "INSERT INTO ratings (user_id, politician_id, title, value, description, date) VALUES (?, ?, ?, ?, ?, ?)",
-        [user_id, politician_id, title, value, description, date]
+        "INSERT INTO ratings (user_id, politician_id, title, value, description, date, weight) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [user_id, politician_id, title, value, description, date, weight]
       );
 
       res.status(201).json({
