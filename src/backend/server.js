@@ -65,7 +65,7 @@ app.use(express.json());
         p.facebook_link, p.twitter_link, p.birth_date, p.name, p.surname, p.party_short, p.picture
         FROM ratings r
         JOIN politicians p ON r.politician_id = p.id
-        WHERE r.user_id = ?  -- Dodano filtr do zapytania
+        WHERE r.user_id = ?
       `,
         [userId]
       );
