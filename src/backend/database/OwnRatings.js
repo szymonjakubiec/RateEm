@@ -21,6 +21,31 @@ const getAllOwnRatings = async () => {
 };
 
 /**
+ * Gets all politician's ratings.
+ *
+ * @async
+ * @function
+ * @param {number} politician_id - ID of the politician
+ * @returns {Promise<Object[]>} Array of own rating objects
+ */
+const getAllPoliticianOwnRatings = async (politician_id) => {
+  const url = `${global.SERVER_URL}/all-politician-own-ratings?politician_id=${politician_id}`;
+  console.log(url);
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching own ratings:", error);
+    return null;
+  }
+};
+
+/**
  * Gets specific own ratings.
  *
  * @async
@@ -88,15 +113,16 @@ const addOwnRating = async (user_id, politician_id, value) => {
  *
  * @async
  * @function
- * @param {string} id - ID of the rating to update
- * @param {Object} newData - New data for the rating. Possible keys:
+ * @param {string} user_id - ID of the user
+ * @param {string} politician_id - ID of the politician
+ * @param {number} rating - New data for the rating. Possible keys:
  * * {number} user_id - ID of the user
  * * {number} politician_id - ID of the politician
  * * {float} value - Value of the rating
  * @returns {Promise<Object>} Updated rating data
  */
-const updateOwnRating = async (id, newData = {}) => {
-  const url = `${global.SERVER_URL}/own-ratings/${id}`;
+const updateOwnRating = async (politician_id, user_id, rating) => {
+  const url = `${global.SERVER_URL}/own-ratings`;
   console.log(url);
 
   try {
@@ -105,7 +131,7 @@ const updateOwnRating = async (id, newData = {}) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newData),
+      body: JSON.stringify({ politician_id, user_id, rating }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -153,5 +179,6 @@ module.exports = {
   updateOwnRating,
   deleteOwnRating,
   getAllOwnRatings,
+  getAllPoliticianOwnRatings,
   getOwnRating,
 };

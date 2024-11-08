@@ -246,6 +246,34 @@ app.use(express.json());
     }
   });
 
+  app.get("/api/all-politician-own-ratings", async (req, res) => {
+    const { politician_id } = req.query;
+
+    if (!politician_id) {
+      return res.status(400).json({ message: "No politician_id provided" });
+    }
+
+    let connection;
+    try {
+      connection = await mysql.createConnection(config);
+      const query = "SELECT * FROM own_ratings WHERE politician_id = ?";
+      const [rows] = await connection.execute(query, [politician_id]);
+
+      res.json(rows);
+    } catch (err) {
+      console.error("Error fetching ratings:", err.message);
+      res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
+      }
+    }
+  });
+
   app.get("/api/own-ratings", async (req, res) => {
     const { user_id, politician_id } = req.query;
 
@@ -267,7 +295,6 @@ app.use(express.json());
         [user_id, politician_id]
       );
 
-      // Sprawdzenie, czy wynik nie jest pusty
       if (rows.length === 0) {
         return res.status(404).json({ message: "Rating not found" });
       }
@@ -318,44 +345,30 @@ app.use(express.json());
   });
 
   // --- update ---------------------------------------------------------------------------
-  app.put(`/api/own-ratings/:id`, async (req, res) => {
-    const { id } = req.params;
-    const { user_id, politician_id, value } = req.body;
+  app.put("/api/own-ratings", async (req, res) => {
+    const { politician_id, user_id, rating } = req.body;
+
+    if (!politician_id || !user_id || rating === undefined) {
+      return res
+        .status(400)
+        .json({ message: "politician_id, user_id, and rating are required" });
+    }
 
     let connection;
-    console.log("Request body:", req.body);
-
-    const fields = [];
-    const values = [];
-
-    if (user_id) {
-      fields.push("user_id = ?");
-      values.push(user_id);
-    }
-    if (politician_id) {
-      fields.push("politician_id = ?");
-      values.push(politician_id);
-    }
-    if (value) {
-      fields.push("value = ?");
-      values.push(value);
-    }
-
-    if (fields.length === 0) {
-      return res.status(400).json({ message: "No data provided to update" });
-    }
-
-    values.push(parseInt(id));
-
-    const query = `UPDATE own_ratings SET ${fields.join(", ")} WHERE id = ?`;
-
     try {
       connection = await mysql.createConnection(config);
 
-      const [result] = await connection.execute(query, values);
+      // Aktualizujemy rating na podstawie `politician_id` i `user_id`
+      const query =
+        "UPDATE own_ratings SET value = ? WHERE politician_id = ? AND user_id = ?";
+      const [result] = await connection.execute(query, [
+        rating,
+        politician_id,
+        user_id,
+      ]);
 
       if (result.affectedRows > 0) {
-        res.json({ id, ...req.body });
+        res.json({ politician_id, user_id, rating });
       } else {
         res.status(404).json({ message: "Record not found" });
       }
@@ -372,7 +385,6 @@ app.use(express.json());
       }
     }
   });
-
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/own-ratings/:id", async (req, res) => {
     const { id } = req.params;
