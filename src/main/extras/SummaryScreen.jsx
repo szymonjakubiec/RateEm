@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { getUserRatings } from "../../backend/database/Ratings";
@@ -75,9 +76,6 @@ export default function SummaryScreen() {
               {highestRating.value}
             </Text>
           </TouchableOpacity>
-          // <Text style={styles.ratingText}>
-          //   Najwyższa ocena: {highestRating.names_surname} {highestRating.value}
-          // </Text>
         )}
       </View>
 
@@ -97,15 +95,26 @@ export default function SummaryScreen() {
       {ratings && (
         <ScrollView style={styles.scrollContainer}>
           {ratings.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.ratingItem}
-              onPress={() => handleratingClick(item)}
-            >
-              <Text style={styles.ratingItemText}>
-                {item.names_surname} {item.value}
-              </Text>
-            </TouchableOpacity>
+            <View key={index} style={styles.ratingItemContainer}>
+              <TouchableOpacity
+                style={styles.ratingItem}
+                onPress={() => handleratingClick(item)}
+              >
+                <Image
+                  source={{
+                    uri: "https://api.sejm.gov.pl/sejm/term9/MP/49/photo",
+                    cache: "force-cache",
+                  }}
+                  style={styles.ratingImage}
+                  onError={(error) =>
+                    console.log("Błąd wczytywania obrazu:", error.nativeEvent)
+                  }
+                />
+                <Text style={styles.ratingItemText}>
+                  {item.names_surname} {item.value}
+                </Text>
+              </TouchableOpacity>
+            </View>
           ))}
         </ScrollView>
       )}
@@ -273,5 +282,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  imageContainer: {
+    marginRight: 10,
+  },
+  ratingImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25, // Zaokrąglone zdjęcie
   },
 });
