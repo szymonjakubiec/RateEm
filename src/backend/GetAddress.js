@@ -9,7 +9,7 @@
  */
 const getUserAddress = async (latitude, longitude) => {
   const googleApiKey = "AIzaSyBIHMXgF1F5nHAR8SE-W273o2C7dCjzvbQ";
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${latitude},${longitude}&key=${googleApiKey}`;
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${latitude},${longitude}&key=${googleApiKey}&language=pl`;
 
   try {
     const response = await fetch(url);
