@@ -1,6 +1,14 @@
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  View,
+} from "react-native";
 import { NavigationContainer, useRoute } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image } from "react-native";
 import {
   getOwnRating,
@@ -13,21 +21,33 @@ import StarRating from "react-native-star-rating-widget";
 
 export default function ProfileScreen({ navigation, route }) {
   const { selectedPoliticianId } = route.params;
-  const [politicianData, setPoliticianData] = useState();
+  const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
   const [politicianSurname, setPoliticianSurname] = useState();
 
-  const [globalRating, setGlobalRating] = useState(0.0);
-  const [ownRating, setOwnRating] = useState(0.0);
   const [party, setParty] = useState("Oszuści i Złodzieje"); // by default
   const [partyShort, setPartyShort] = useState("OiZ"); // by default
+
+  const [globalRating, setGlobalRating] = useState(0.0);
+  const [ownRating, setOwnRating] = useState(0.0);
+  const [firstOwnRating, setFirstOwnRating] = useState(0);
   const [singleRatings, setSingleRatings] = useState([]); // these are ratings from ratings.js
+  const [newSingleRating, setNewSingleRating] = useState(0);
   const [starRating, setStarRating] = useState(0);
-  const [newRating, setNewRating] = useState(0);
 
   const [wrongRatingInfo, setWrongRatingInfo] = useState("");
 
+  const newTitleRef = useRef("");
+  const newDescriptionRef = useRef("");
+  const [newTitle, setNewTitle] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+
+  const [expandedRatings, setExpandedRatings] = useState(false);
+  const [expandedAddOpinion, setExpandedAddOpinion] = useState(false);
+
   const userId = 2;
+
+  const currentDate = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
 
   async function init() {
     await loadPoliticianData();
@@ -45,7 +65,6 @@ export default function ProfileScreen({ navigation, route }) {
     try {
       const data = await getPolitician(selectedPoliticianId);
       setPoliticianData(data);
-
       if (data.at(0).global_rating != null)
         setGlobalRating(data.at(0).global_rating);
       if (data.at(0).party != null) {
@@ -72,12 +91,14 @@ export default function ProfileScreen({ navigation, route }) {
     }
   }
 
+  /**
+   * Loads asynchronously all single ratings from Ratings.js from a user about politician into singleRatings array.
+   */
   async function loadSingleRatings() {
     try {
       const data = await getRating(userId, selectedPoliticianId);
       if (data !== null) {
         setSingleRatings(data);
-        console.log(data);
       }
     } catch (error) {
       console.log("Error with loading single ratings: " + error);
@@ -106,7 +127,7 @@ export default function ProfileScreen({ navigation, route }) {
         <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
         <TouchableHighlight
           style={styles.opinionsTileButton}
-          onPress={setBaseRate}
+          onPress={setBaseRate} // function to set firstRating if >= 1
         >
           <Text>Ustaw</Text>
         </TouchableHighlight>
@@ -117,36 +138,138 @@ export default function ProfileScreen({ navigation, route }) {
   function displayYourOpinionsComponent() {
     return (
       <View style={styles.opinionsTile}>
-        <Text>Twoje opinie</Text>
+        <View>
+          <TouchableHighlight
+            onPress={() => {
+              setExpandedRatings(!expandedRatings);
+            }}
+          >
+            <Text>Twoje opinie</Text>
+          </TouchableHighlight>
+        </View>
+        <RatingsList />
+        <AddOpinion />
       </View>
     );
   }
 
+  function RatingsList() {
+    if (expandedRatings === true) {
+      return (
+        <FlatList
+          data={singleRatings}
+          renderItem={RatingItem}
+          keyExtractor={(item) => item.id}
+          scrollEnabled={false}
+        />
+      );
+    }
+  }
+
+  function RatingItem({ item }) {
+    return (
+      <TouchableHighlight>
+        <View style={styles.ratingItem}>
+          <View>
+            <Text>{item.date}</Text>
+            <Text>{item.title}</Text>
+          </View>
+          <View>
+            <Text>{item.value}</Text>
+          </View>
+        </View>
+      </TouchableHighlight>
+    );
+  }
+  function AddOpinion() {
+    if (expandedAddOpinion === false) {
+      return (
+        <TouchableHighlight
+          style={styles.ratingItem}
+          onPress={() => setExpandedAddOpinion(true)}
+        >
+          <Text>Dodaj opinię</Text>
+        </TouchableHighlight>
+      );
+    } else {
+      return (
+        <View>
+          <TouchableHighlight
+            style={styles.ratingItem}
+            onPress={() => setExpandedAddOpinion(false)}
+          >
+            <Text>Dodaj opinię</Text>
+          </TouchableHighlight>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Wstaw tytuł"
+            ref={newTitleRef}
+            onChangeText={(input) => {
+              newTitleRef.current.value = input;
+            }}
+            onBlur={() => setNewTitle(newTitleRef.current.value)}
+          />
+          <StarRating
+            rating={starRating}
+            onChange={setStarRating}
+            enableHalfStar={true}
+          />
+          <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Wstaw komentarz do opinii"
+            ref={newDescriptionRef}
+            onChangeText={(input) => (newDescriptionRef.current.value = input)}
+            onBlur={() => setNewDescription(newDescriptionRef.current.value)}
+          />
+          <TouchableHighlight
+            style={styles.opinionsTileButton}
+            onPress={setSingleRate} // function to set firstRating if >= 1
+          >
+            <Text>Ustaw</Text>
+          </TouchableHighlight>
+        </View>
+      );
+    }
+  }
+  /**
+   * Checks if the starRating is at least 1 and set it into firstOwnRating, which fires
+   */
   function setBaseRate() {
     if (starRating >= 1) {
-      setNewRating(starRating);
+      setFirstOwnRating(starRating);
       setWrongRatingInfo("");
     } else {
       setWrongRatingInfo("Ocena polityka musi wynosić przynajmniej 1.");
     }
   }
 
-  function countOwnRating(newRating) {
+  function setSingleRate() {
+    // console.log(newTitle);
+    // console.log(newDescription);
+    if (starRating >= 1) {
+      setNewSingleRating(starRating);
+      setWrongRatingInfo("");
+    } else {
+      setWrongRatingInfo("Ocena polityka musi wynosić przynajmniej 1.");
+    }
+  }
+
+  // only for adding single rating into DB
+  function countOwnRating(newSingleRating) {
     let numerator = 0;
     let denominator = 0;
     for (singleRating of singleRatings) {
       numerator = numerator + singleRating.value * singleRating.weight;
       denominator = denominator + singleRating.weight;
     }
-    numerator = numerator + newRating * 10;
-    denominator = denominator + 10;
+    numerator = numerator + newSingleRating * 1;
+    denominator = denominator + 1;
     let weightedAverage = numerator / denominator;
     console.log("Srednia ważona wychodzi: " + weightedAverage);
     setOwnRating(weightedAverage);
 
-    if (singleRatings.length === 0) {
-      addOwnRating(userId, selectedPoliticianId, weightedAverage);
-    }
+    updateOwnRating(selectedPoliticianId, userId, weightedAverage);
   }
 
   useEffect(() => {
@@ -154,49 +277,72 @@ export default function ProfileScreen({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-    if (newRating) {
+    if (firstOwnRating) {
       addRating(
         userId,
         selectedPoliticianId,
         `Bazowa opinia o ${politicianNames} ${politicianSurname}`,
-        newRating,
+        firstOwnRating,
         "Użytkownik ma już wyrobione zdanie.",
-        "2024-11-07",
+        currentDate,
         10
       );
-      countOwnRating(newRating);
-      setNewRating(0);
-
+      addOwnRating(userId, selectedPoliticianId, firstOwnRating);
+      setOwnRating(firstOwnRating);
+      setFirstOwnRating(0);
       loadSingleRatings();
     }
-  }, [newRating]);
+  }, [firstOwnRating]);
+
+  useEffect(() => {
+    if (newSingleRating && newTitle && newDescription) {
+      addRating(
+        userId,
+        selectedPoliticianId,
+        newTitle,
+        newSingleRating,
+        newDescription,
+        currentDate,
+        1
+      );
+      countOwnRating(newSingleRating);
+      setNewSingleRating(0);
+      loadSingleRatings();
+      // setNewTitle("");
+      // setNewDescription("");
+    } else {
+      console.log(`${newSingleRating}  ${newTitle} ${newDescription}`);
+    }
+  }, [newSingleRating, newTitle, newDescription]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.infoTile}>
-        <View style={styles.nameContainer}>
-          <View style={styles.nameSurnameColumn}>
-            <Text style={styles.surname}>{politicianSurname}</Text>
-            <Text style={styles.names}>{politicianNames}</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.infoTile}>
+          <View style={styles.nameContainer}>
+            <View style={styles.nameSurnameColumn}>
+              <Text style={styles.surname}>{politicianSurname}</Text>
+              <Text style={styles.names}>{politicianNames}</Text>
+            </View>
+            <View style={styles.imageContainer}>
+              <Image
+                style={styles.image}
+                source={require("./../../../assets/Jan_Paweł_Adamczewski.png")}
+                alt="politician"
+              />
+            </View>
           </View>
-          <View style={styles.imageContainer}>
-            <Image
-              style={styles.image}
-              source={require("./../../../assets/Jan_Paweł_Adamczewski.png")}
-              alt="politician"
-            />
+          <View>
+            <Text>Globalna ocena: {globalRating}</Text>
+            <Text>Twoja ocena: {ownRating}</Text>
+          </View>
+          <View>
+            <Text>Partia polityczna: {party}.</Text>
           </View>
         </View>
-        <View>
-          <Text>Globalna ocena: {globalRating}</Text>
-          <Text>Twoja ocena: {ownRating}</Text>
-        </View>
-        <View>
-          <Text>Partia polityczna: {party}.</Text>
-        </View>
+        <OpinionsTile />
       </View>
-      <OpinionsTile />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -211,7 +357,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   infoTile: {
-    height: "50%",
+    // height: "100vh",
+    height: 300,
     backgroundColor: "lightgray",
     padding: 30,
     gap: 20,
@@ -244,7 +391,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   opinionsTile: {
-    height: "30%",
+    // height: "30%",
     backgroundColor: "lightgray",
     padding: 30,
   },
@@ -258,5 +405,24 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "red",
     marginBottom: 15,
+  },
+  ratingItem: {
+    backgroundColor: "gray",
+    padding: 20,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 10,
+  },
+  textInput: {
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#000",
+    borderStyle: "solid",
+    paddingTop: 6,
+    paddingBottom: 6,
+    paddingLeft: 20,
+    paddingRight: 20,
+    width: "90%",
   },
 });
