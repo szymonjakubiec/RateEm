@@ -1,18 +1,10 @@
 import { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Image,
-  TouchableHighlight,
-  TextInput,
-} from "react-native";
+import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput } from "react-native";
 var dhondt = require("dhondt");
 const plusIcon = require("../../../assets/plus_icon.png");
 const deleteIcon = require("../../../assets/delete_icon.png");
 
-export default function ElectionScreen() {
+export default function CalculatorScreen() {
   const [parties, setParties] = useState([]);
 
   const [inputValues, setInputValues] = useState([]);
@@ -35,12 +27,8 @@ export default function ElectionScreen() {
 
   function deleteParty(indexToDelete) {
     if (parties.length > 1) {
-      setParties((parties) =>
-        parties.filter((p, index) => index != indexToDelete)
-      );
-      setInputValues((inputValues) =>
-        inputValues.filter((i, index) => index != indexToDelete)
-      );
+      setParties((parties) => parties.filter((p, index) => index != indexToDelete));
+      setInputValues((inputValues) => inputValues.filter((i, index) => index != indexToDelete));
       inputValues[indexToDelete] = 0;
       outputValues[indexToDelete] = 0;
     }
@@ -66,9 +54,7 @@ export default function ElectionScreen() {
       }
     }
 
-    setInputValues((prevInputValues) =>
-      prevInputValues.map((value, index) => value)
-    );
+    setInputValues((prevInputValues) => prevInputValues.map((value, index) => value));
     setSum(sumTemp);
 
     calculateDhondtMandates();
@@ -112,11 +98,7 @@ export default function ElectionScreen() {
               maxLength={5}
             />
             <Text style={styles.partyTileText}>%</Text>
-            <TextInput
-              style={styles.partyTileInput}
-              readOnly={true}
-              value={outputValues[index]}
-            />
+            <TextInput style={styles.partyTileInput} readOnly={true} value={outputValues[index]} />
             <TouchableHighlight onPress={() => deleteParty(index)}>
               <Image source={deleteIcon} style={styles.deleteIcon} />
             </TouchableHighlight>
@@ -124,17 +106,9 @@ export default function ElectionScreen() {
         ))}
         <View style={styles.partyTile}>
           <Text style={styles.partyTileText}>Reszta </Text>
-          <TextInput
-            style={styles.partyTileInput}
-            value={theRestValue}
-            readOnly={true}
-          />
+          <TextInput style={styles.partyTileInput} value={theRestValue} readOnly={true} />
           <Text style={styles.partyTileText}>%</Text>
-          <TextInput
-            style={styles.partyTileInput}
-            value={theRestMandatesValue}
-            readOnly={true}
-          />
+          <TextInput style={styles.partyTileInput} value={theRestMandatesValue} readOnly={true} />
         </View>
         <TouchableHighlight style={styles.addPartyTile} onPress={addParty}>
           <Image source={plusIcon} style={styles.plusIcon} />
