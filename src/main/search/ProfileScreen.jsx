@@ -42,8 +42,11 @@ export default function ProfileScreen({ navigation, route }) {
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
 
-  const [expandedRatings, setExpandedRatings] = useState(false);
+  const [expandedRatingList, setExpandedRatingList] = useState(false);
+  const [expandedRating, setExpandedRating] = useState(false);
   const [expandedAddOpinion, setExpandedAddOpinion] = useState(false);
+
+  const [selectedItemId, setSelectedItemId] = useState(0);
 
   const userId = 2;
 
@@ -126,7 +129,7 @@ export default function ProfileScreen({ navigation, route }) {
         />
         <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
         <TouchableHighlight
-          style={styles.opinionsTileButton}
+          style={styles.button}
           onPress={setBaseRate} // function to set firstRating if >= 1
         >
           <Text>Ustaw</Text>
@@ -141,7 +144,7 @@ export default function ProfileScreen({ navigation, route }) {
         <View>
           <TouchableHighlight
             onPress={() => {
-              setExpandedRatings(!expandedRatings);
+              setExpandedRatingList(!expandedRatingList);
             }}
           >
             <Text>Twoje opinie</Text>
@@ -152,9 +155,12 @@ export default function ProfileScreen({ navigation, route }) {
       </View>
     );
   }
-
+  /**
+   * Component with a FlatList of single ratings.
+   * @returns
+   */
   function RatingsList() {
-    if (expandedRatings === true) {
+    if (expandedRatingList === true) {
       return (
         <FlatList
           data={singleRatings}
@@ -165,22 +171,51 @@ export default function ProfileScreen({ navigation, route }) {
       );
     }
   }
-
+  /**
+   * Component
+   * @param {object} item
+   * @returns
+   */
   function RatingItem({ item }) {
     return (
-      <TouchableHighlight>
+      <TouchableHighlight
+        onPress={() => {
+          if (selectedItemId !== item.id) setSelectedItemId(item.id);
+          else setSelectedItemId(0);
+        }}
+      >
         <View style={styles.ratingItem}>
-          <View>
-            <Text>{item.date}</Text>
-            <Text>{item.title}</Text>
+          <View style={styles.ratingItemBase}>
+            <View>
+              <Text>{item.date}</Text>
+              <Text>{item.title}</Text>
+            </View>
+            <View>
+              <Text>{item.value}</Text>
+            </View>
           </View>
-          <View>
-            <Text>{item.value}</Text>
-          </View>
+          <ItemExtension item={item} />
         </View>
       </TouchableHighlight>
     );
   }
+
+  function ItemExtension({ item }) {
+    if (selectedItemId === item.id) {
+      return (
+        <View style={{ backgroundColor: "gray", padding: 10 }}>
+          <Text>{item.description}</Text>
+          <TouchableHighlight
+            style={styles.button}
+            onPress={() => console.log("Not yet, WIP")}
+          >
+            <Text>Usuń opinię</Text>
+          </TouchableHighlight>
+        </View>
+      );
+    }
+  }
+
   function AddOpinion() {
     if (expandedAddOpinion === false) {
       return (
@@ -193,11 +228,8 @@ export default function ProfileScreen({ navigation, route }) {
       );
     } else {
       return (
-        <View>
-          <TouchableHighlight
-            style={styles.ratingItem}
-            onPress={() => setExpandedAddOpinion(false)}
-          >
+        <View style={styles.ratingItem}>
+          <TouchableHighlight onPress={() => setExpandedAddOpinion(false)}>
             <Text>Dodaj opinię</Text>
           </TouchableHighlight>
           <TextInput
@@ -223,7 +255,7 @@ export default function ProfileScreen({ navigation, route }) {
             onBlur={() => setNewDescription(newDescriptionRef.current.value)}
           />
           <TouchableHighlight
-            style={styles.opinionsTileButton}
+            style={styles.button}
             onPress={setSingleRate} // function to set firstRating if >= 1
           >
             <Text>Ustaw</Text>
@@ -245,8 +277,6 @@ export default function ProfileScreen({ navigation, route }) {
   }
 
   function setSingleRate() {
-    // console.log(newTitle);
-    // console.log(newDescription);
     if (starRating >= 1) {
       setNewSingleRating(starRating);
       setWrongRatingInfo("");
@@ -307,11 +337,9 @@ export default function ProfileScreen({ navigation, route }) {
       );
       countOwnRating(newSingleRating);
       setNewSingleRating(0);
+      setNewTitle("");
+      setNewDescription("");
       loadSingleRatings();
-      // setNewTitle("");
-      // setNewDescription("");
-    } else {
-      console.log(`${newSingleRating}  ${newTitle} ${newDescription}`);
     }
   }, [newSingleRating, newTitle, newDescription]);
 
@@ -391,28 +419,32 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   opinionsTile: {
-    // height: "30%",
     backgroundColor: "lightgray",
     padding: 30,
   },
-  opinionsTileButton: {
+  button: {
     width: "60%",
     backgroundColor: "whitesmoke",
     borderColor: "#000",
     borderWidth: 1,
+    textAlign: "center",
+    marginTop: 10,
   },
   wrongInputText: {
     fontSize: 10,
     color: "red",
     marginBottom: 15,
   },
+
   ratingItem: {
     backgroundColor: "gray",
     padding: 20,
+    marginBottom: 10,
+  },
+  ratingItemBase: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 10,
   },
   textInput: {
     borderRadius: 5,
