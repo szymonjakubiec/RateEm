@@ -102,7 +102,7 @@ export default function SummaryScreen() {
               >
                 <Image
                   source={{
-                    uri: "https://api.sejm.gov.pl/sejm/term9/MP/49/photo",
+                    uri: "https://www.europarl.europa.eu/mepphoto/23788.jpg",
                     cache: "force-cache",
                   }}
                   style={styles.ratingImage}

@@ -9,12 +9,6 @@ import {
 } from "react-native";
 
 export default function GuideScreen({ navigation }) {
-  const handleNavigation = (screenName) => {
-    navigation.navigate(screenName);
-  };
-  const goBack = () => {
-    navigation.goBack();
-  };
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Przewodnik po aplikacji</Text>
@@ -29,7 +23,7 @@ export default function GuideScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.section}
-        onPress={() => handleNavigation("SearchNav")}
+        onPress={() => navigation.navigate("SearchNav")}
       >
         <Text style={styles.sectionTitle}>🔍 Wyszukiwarka</Text>
         <Text style={styles.sectionDescription}>
@@ -39,7 +33,7 @@ export default function GuideScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.section}
-        onPress={() => handleNavigation("Election")}
+        onPress={() => navigation.navigate("Election")}
       >
         <Text style={styles.sectionTitle}>📄 Wyborcze ABC</Text>
         <Text style={styles.sectionDescription}>
@@ -50,7 +44,7 @@ export default function GuideScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.section}
-        onPress={() => handleNavigation("Trending")}
+        onPress={() => navigation.navigate("Trending")}
       >
         <Text style={styles.sectionTitle}>📰 Tablica</Text>
         <Text style={styles.sectionDescription}>
@@ -58,7 +52,10 @@ export default function GuideScreen({ navigation }) {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.section} onPress={() => goBack()}>
+      <TouchableOpacity
+        style={styles.section}
+        onPress={() => navigation.goBack()}
+      >
         <Text style={styles.sectionTitle}>≡ Więcej</Text>
         <Text style={styles.sectionDescription}>
           Odnośniki do ustawień, podsumowania ocen i innych funkcji.
