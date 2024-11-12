@@ -58,6 +58,7 @@ const getUserRatings = async (userId) => {
  * @param {float} value - Value of the rating
  * @param {string} description - Description of the rating
  * @param {string} date - Date in YYYY-MM-DD format
+ * @param {number} weight - Weight of the rating, 1 if not specified
  * @returns {Promise<void>}
  */
 const addRating = async (
@@ -66,7 +67,8 @@ const addRating = async (
   title,
   value,
   description,
-  date
+  date,
+  weight
 ) => {
   const url = `${global.SERVER_URL}/ratings`;
   try {
@@ -82,6 +84,7 @@ const addRating = async (
         value,
         description,
         date,
+        weight,
       }),
     });
 
