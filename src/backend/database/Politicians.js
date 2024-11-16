@@ -2,14 +2,14 @@
  * Gets all politicians.
  *
  * @async
- * @returns {object[]|undefined} Array of politician objects
+ * @returns {Promise<object[]|undefined>} Array of politician objects
  */
 const getAllPoliticians = async () => {
-  const url = `${global.SERVER_URL}/politicians`;
+  const url = `${ global.SERVER_URL }/politicians`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${ response.status }`);
     }
     const data = await response.json();
     return data;
@@ -19,4 +19,4 @@ const getAllPoliticians = async () => {
   }
 };
 
-module.exports = { getAllPoliticians };
+module.exports = {getAllPoliticians};
