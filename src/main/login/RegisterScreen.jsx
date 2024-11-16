@@ -1,14 +1,18 @@
-import { useEffect, useRef, useState } from "react";
-import { useRoute } from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
-import { Alert, StyleSheet, Text, TouchableHighlight, SafeAreaView } from "react-native";
-import { TextInput } from "react-native-paper";
-import { getAllUsers } from "../../backend/database/Users";
+import {useEffect, useRef, useState} from "react";
+import {useRoute} from "@react-navigation/native";
+import {StatusBar} from "expo-status-bar";
+import {Alert, StyleSheet, Text, TouchableHighlight, SafeAreaView} from "react-native";
+import {TextInput} from "react-native-paper";
+import {getAllUsers} from "../../backend/database/Users";
+import {alert} from "../../backend/CommonMethods";
 
-export default function RegisterScreen({ navigation }) {
+
+
+export default function RegisterScreen({navigation}) {
   //
   // ===== PROPERTIES ============================================================= //
   const _title = "Rate'Em";
+
 
   // Values
   const [name, setName] = useState("");
@@ -34,23 +38,6 @@ export default function RegisterScreen({ navigation }) {
   const phoneExists = async (phone) => {
     const users = await getAllUsers();
     return users.some((user) => user.phone_number === phone);
-  };
-
-  const alert = (text) => {
-    Alert.alert(
-      "❌ Błąd ❌",
-      text,
-      [
-        {
-          text: "OK 💀",
-          onPress: () => console.log("RegisterScreen.jsx:34 ~ OK kliknięty."),
-        },
-      ],
-      {
-        cancelable: true,
-        onDismiss: () => console.log("RegisterScreen.jsx:38 ~ Kliknięto poza alert."),
-      }
-    );
   };
 
   const validateFieldsOnSubmit = async () => {
@@ -149,6 +136,8 @@ export default function RegisterScreen({ navigation }) {
     }
   };
 
+  // Twilio
+
   const _textInputProps = {
     mode: "outlined",
     activeOutlineColor: "black",
@@ -160,138 +149,145 @@ export default function RegisterScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
+    <SafeAreaView style={ styles.container }>
+      <Text style={ styles.title }>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
 
       <TextInput
-        {..._textInputProps}
+        { ..._textInputProps }
         label="imię"
-        outlineColor={wrongName ? "#e41c1c" : "black"}
-        maxLength={22}
+        outlineColor={ wrongName ? "#e41c1c" : "black" }
+        maxLength={ 22 }
         autoComplete="name"
-        value={name}
-        onChangeText={(text) => {
+        value={ name }
+        onChangeText={ (text) => {
           // if (text.includes(" ")) return;
           text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "");
           text.length > 0 && (text = text[0].toUpperCase() + text.slice(1).toLowerCase());
           setName(text.trim());
           validateName(text.trim());
           validateFieldsOnBlur();
-        }}
-        onBlur={() => {
+        } }
+        onBlur={ () => {
           validateName(name);
-        }}
+        } }
       />
-      <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
+      <Text style={ styles.wrongInputText(wrongName) }>{ wrongName }</Text>
 
       <TextInput
-        {..._textInputProps}
+        { ..._textInputProps }
         label="e-mail"
-        outlineColor={wrongEmail ? "red" : "black"}
+        outlineColor={ wrongEmail ? "red" : "black" }
         autoComplete="email"
         textContentType="emailAddress"
         autoCapitalize="none"
-        value={email}
-        onChangeText={(text) => {
+        value={ email }
+        onChangeText={ (text) => {
           if (text.includes(" ")) return;
           text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
           setEmail(text.trim());
           validateEmail(text.trim());
           validateFieldsOnBlur();
-        }}
-        onBlur={() => {
+        } }
+        onBlur={ () => {
           // console.log("BLUR");
-        }}
+        } }
       />
-      <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
+      <Text style={ styles.wrongInputText(wrongEmail) }>{ wrongEmail }</Text>
 
-      <SafeAreaView style={{ flexDirection: "row", justifyContent: "center" }}>
+      <SafeAreaView style={ {flexDirection: "row", justifyContent: "center"} }>
         <TextInput
-          {..._textInputProps}
+          { ..._textInputProps }
           label="numer telefonu"
-          outlineColor={wrongPhone ? "red" : "black"}
-          maxLength={12}
-          style={[styles.textInput, { paddingLeft: 34 }]}
+          outlineColor={ wrongPhone ? "red" : "black" }
+          maxLength={ 12 }
+          style={ [styles.textInput, {paddingLeft: 34}] }
           autoComplete="tel"
           keyboardType="phone-pad"
-          value={phone}
-          onChangeText={(text) => {
+          value={ phone }
+          onChangeText={ (text) => {
             text.slice(0, 3) === "+48" && (text = text.slice(3));
             text = text.trim().replace(/[^0-9]/g, "");
             if (text.length > 9) return;
             setPhone(text.trim());
             validatePhone(text.trim());
             validateFieldsOnBlur();
-          }}
-          onBlur={() => {
+          } }
+          onBlur={ () => {
             // validatePhoneOut(phone);
-          }}
+          } }
         />
-        <Text style={{ alignSelf: "center", left: 12, fontSize: 16, fontWeight: 300, position: "absolute", paddingTop: 15 }}>+48 | </Text>
+        <Text style={ {
+          alignSelf: "center",
+          left: 12,
+          fontSize: 16,
+          fontWeight: 300,
+          position: "absolute",
+          paddingTop: 15
+        } }>+48 | </Text>
       </SafeAreaView>
-      <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
+      <Text style={ styles.wrongInputText(wrongPhone) }>{ wrongPhone }</Text>
 
       <TextInput
-        {..._textInputProps}
+        { ..._textInputProps }
         label="hasło"
-        outlineColor={wrongPass ? "red" : "black"}
+        outlineColor={ wrongPass ? "red" : "black" }
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
         secureTextEntry
-        value={password}
-        onChangeText={(text) => {
+        value={ password }
+        onChangeText={ (text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
           setPassword(text.trim());
           validatePass(text.trim());
           validateFieldsOnBlur();
-        }}
-        onBlur={() => {
+        } }
+        onBlur={ () => {
           // validatePassOut(password);
-        }}
+        } }
       />
-      <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
+      <Text style={ styles.wrongInputText(wrongPass) }>{ wrongPass }</Text>
 
       <TextInput
-        {..._textInputProps}
+        { ..._textInputProps }
         label="powtórz hasło"
-        outlineColor={wrongPassRep ? "red" : "black"}
+        outlineColor={ wrongPassRep ? "red" : "black" }
         returnKeyType="done"
         autoCapitalize="none"
         autoComplete="current-password"
         textContentType="currentPassword"
         secureTextEntry
-        value={repeatPassword}
-        onChangeText={(text) => {
+        value={ repeatPassword }
+        onChangeText={ (text) => {
           if (text.includes(" ")) return;
           setRepeatPassword(text.trim());
           validatePassRep(text.trim());
           validateFieldsOnBlur();
-        }}
-        onBlur={() => {
+        } }
+        onBlur={ () => {
           // validatePassRep(repeatPassword.trim());
-        }}
+        } }
       />
-      <Text style={styles.wrongInputText(wrongPassRep)}>{wrongPassRep}</Text>
+      <Text style={ styles.wrongInputText(wrongPassRep) }>{ wrongPassRep }</Text>
 
       <TouchableHighlight
-        style={[styles.button, { marginTop: 40 }, !validateFieldsOnBlur() && { opacity: 0.5 }]}
-        disabled={!validateFieldsOnBlur()}
-        onPress={async () => {
+        style={ [styles.button, {marginTop: 40} /* !validateFieldsOnBlur() && { opacity: 0.5 } */] }
+        // disabled={!validateFieldsOnBlur()}
+        onPress={ async () => {
           await validateFieldsOnSubmit().then((result) => {
-            if (result) {
-              navigation.navigate("Confirm", {
-                // _title,
-                name,
-                email,
-                phone,
-                password,
-              });
-            }
+            // if (result) {
+            navigation.navigate("Confirm", {
+              // _title,
+              name,
+              email,
+              phone,
+              password,
+            });
+            // }
           });
-        }}
+        } }
       >
-        <Text style={styles.buttonText}>Zarejestruj</Text>
+        <Text style={ styles.buttonText }>Zarejestruj</Text>
       </TouchableHighlight>
     </SafeAreaView>
   );
