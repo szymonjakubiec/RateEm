@@ -6,24 +6,22 @@ import { getUserAddress } from "../../backend/GetAddress";
 import { getSejmDistrict, getEuDistrict } from "../../backend/database/Districts";
 
 export default function ElectoralDistricts() {
-  const [appState, setAppState] = useState(AppState.currentState);
+  // const [appState, setAppState] = useState(AppState.currentState);
 
   const [refreshing, setRefreshing] = useState(false);
-  const [locationCurrent, setLocationCurrent] = useState(null);
+  // const [locationCurrent, setLocationCurrent] = useState(null);
   const [addressCurrent, setAddressCurrent] = useState(null);
   const [sejmDistrictCurrent, setSejmDistrictCurrent] = useState("");
   const [euDistrictCurrent, setEuDistrictCurrent] = useState("");
-
-  const [locationPermission, setLocationPermission] = useState(false);
   const [locationMap, setLocationMap] = useState(null);
-  const [addressMap, setAddressMap] = useState(null);
-  const [sejmDistrictMap, setSejmDistrictMap] = useState("");
-  const [euDistrictMap, setEuDistrictMap] = useState("");
+  const [locationPermission, setLocationPermission] = useState(false);
+
+  const [mapComponent, setMapComponent] = useState(null);
 
   useEffect(() => {
     AppState.addEventListener("change", handleAppStateChange);
 
-    handleGettingDistrict();
+    setMapComponent(createMap());
   }, []);
 
   const handleAppStateChange = (nextAppState) => {
@@ -71,20 +69,19 @@ export default function ElectoralDistricts() {
 
   const handleGettingDistrict = async () => {
     var permissionResponse = await requestLocationPermission();
+    var locationTemp;
 
     if (permissionResponse) {
-      const locationTemp = await Location.getCurrentPositionAsync({});
-      setLocationCurrent({
-        latitude: parseFloat(locationTemp.coords.latitude.toFixed(5)),
-        longitude: parseFloat(locationTemp.coords.longitude.toFixed(5)),
-      });
+      locationTemp = await Location.getCurrentPositionAsync({});
+
       const result = await getAddress(parseFloat(locationTemp.coords.latitude.toFixed(5)), parseFloat(locationTemp.coords.longitude.toFixed(5)));
       setAddressCurrent(result.address);
       setSejmDistrictCurrent(result.sejmDistrict);
       setEuDistrictCurrent(result.euDistrict);
-    }
 
-    setRefreshing(false);
+      setRefreshing(false);
+      return { latitude: parseFloat(locationTemp.coords.latitude.toFixed(5)), longitude: parseFloat(locationTemp.coords.longitude.toFixed(5)) };
+    }
   };
 
   function setMapLocation(location) {
@@ -93,9 +90,9 @@ export default function ElectoralDistricts() {
 
   async function onLocationMapChange(location) {
     const result = await getAddress(parseFloat(location.latitude), parseFloat(location.longitude));
-    setAddressMap(result.address);
-    setSejmDistrictMap(result.sejmDistrict);
-    setEuDistrictMap(result.euDistrict);
+    setAddressCurrent(result.address);
+    setSejmDistrictCurrent(result.sejmDistrict);
+    setEuDistrictCurrent(result.euDistrict);
   }
 
   const getAddress = async (latitude, longitude) => {
@@ -153,67 +150,55 @@ export default function ElectoralDistricts() {
     return returnValue;
   };
 
+  async function createMap() {
+    var locationMap = await handleGettingDistrict();
+
+    if (locationMap != null) {
+      return (
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          region={locationMap}
+          onRegionChange={setMapLocation}
+          initialRegion={{
+            latitude: locationMap.latitude,
+            longitude: locationMap.longitude,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
+          }}
+          style={styles.map}
+        />
+      );
+    } else {
+      return (
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          region={locationMap}
+          onRegionChange={setMapLocation}
+          initialRegion={{
+            latitude: 50.25962,
+            longitude: 19.021725,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
+          }}
+          style={styles.map}
+        />
+      );
+    }
+  }
+
   return (
     <View style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleGettingDistrict}
-            tintColor="#333"
-            colors={["#ff0000", "#00ff00", "#0000ff"]}
-            progressViewOffset={10}
-          />
-        }
-      >
-        <View style={styles.districtElement}>
-          <Text style={styles.districtElementText}>CURRENT LOCATION</Text>
-          {locationPermission == true ? (
-            locationCurrent ? (
-              <View>
-                <Text style={styles.districtElementText}>
-                  Latitude: {locationCurrent.latitude.toFixed(5)}, Longitude: {locationCurrent.longitude.toFixed(5)}
-                </Text>
-                <Text style={styles.districtElementText}>Powiat name: {addressCurrent}</Text>
-                <Text style={styles.districtElementText}>SEJM District number: {sejmDistrictCurrent}</Text>
-                <Text style={styles.districtElementText}>EU District number: {euDistrictCurrent}</Text>
-              </View>
-            ) : (
-              <Text style={styles.districtElementText}>Fetching location...</Text>
-            )
-          ) : (
-            <View>
-              <Text style={styles.districtElementText}>Location permission denied</Text>
-              <TouchableHighlight onPress={() => requestLocationPermissionAgain()} style={styles.applyButton}>
-                <Text>grant permission</Text>
-              </TouchableHighlight>
-            </View>
-          )}
-        </View>
-
+      <ScrollView style={styles.scrollView}>
         <View style={styles.districtElementMap}>
-          <Text style={styles.districtElementText}>PICEKD LOCATION</Text>
-          <MapView
-            provider={PROVIDER_GOOGLE}
-            region={locationMap}
-            onRegionChange={setMapLocation}
-            initialRegion={{
-              latitude: 50.25962,
-              longitude: 19.021725,
-              latitudeDelta: 0.001,
-              longitudeDelta: 0.001,
-            }}
-            style={styles.map}
-          />
+          {mapComponent}
           {locationMap ? (
             <View>
               <Text style={styles.districtElementText}>
                 Latitude: {locationMap.latitude.toFixed(5)}, Longitude: {locationMap.longitude.toFixed(5)}
               </Text>
-              <Text style={styles.districtElementText}>Powiat name: {addressMap}</Text>
-              <Text style={styles.districtElementText}>SEJM District number: {sejmDistrictMap}</Text>
-              <Text style={styles.districtElementText}>EU District number: {euDistrictMap}</Text>
+              <Text style={styles.districtElementText}>Powiat name: {addressCurrent}</Text>
+              <Text style={styles.districtElementText}>SEJM District number: {sejmDistrictCurrent}</Text>
+              <Text style={styles.districtElementText}>EU District number: {euDistrictCurrent}</Text>
               <TouchableHighlight onPress={() => onLocationMapChange(locationMap)} style={styles.applyButton}>
                 <Text>apply</Text>
               </TouchableHighlight>
