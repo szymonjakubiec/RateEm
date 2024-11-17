@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import {useRoute} from "@react-navigation/native";
 import {StatusBar} from "expo-status-bar";
-import {Alert, StyleSheet, Text, TouchableHighlight, SafeAreaView} from "react-native";
+import {StyleSheet, Text, TouchableHighlight, SafeAreaView} from "react-native";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../backend/database/Users";
 import {alert} from "../../backend/CommonMethods";
@@ -20,6 +20,11 @@ export default function RegisterScreen({navigation}) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+
+  // Password visibility
+  const [passVisible, setPassVisible] = useState(true);
+  const [repeatPassVisible, setRepeatPassVisible] = useState(true);
+
   // const route = useRoute();
 
   // Validate values
@@ -70,10 +75,7 @@ export default function RegisterScreen({navigation}) {
   };
 
   const validateFieldsOnBlur = () => {
-    if (wrongName || !name || wrongEmail || !email || wrongPhone || !phone || wrongPass || !password || wrongPassRep || !repeatPassword) {
-      return false;
-    }
-    return true;
+    return !(wrongName || !name || wrongEmail || !email || wrongPhone || !phone || wrongPass || !password || wrongPassRep || !repeatPassword);
   };
 
   const validateName = (name) => {
@@ -154,7 +156,8 @@ export default function RegisterScreen({navigation}) {
 
       <TextInput
         { ..._textInputProps }
-        label="imię"
+        // label="imię"
+        placeholder="imię"
         outlineColor={ wrongName ? "#e41c1c" : "black" }
         maxLength={ 22 }
         autoComplete="name"
@@ -234,7 +237,10 @@ export default function RegisterScreen({navigation}) {
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
-        secureTextEntry
+        secureTextEntry={ passVisible }
+        right={ <TextInput.Icon icon={ passVisible ? "eye" : "eye-off" }
+                                onPress={ () => setPassVisible(!passVisible) }/>
+        }
         value={ password }
         onChangeText={ (text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
@@ -256,7 +262,10 @@ export default function RegisterScreen({navigation}) {
         autoCapitalize="none"
         autoComplete="current-password"
         textContentType="currentPassword"
-        secureTextEntry
+        secureTextEntry={ repeatPassVisible }
+        right={ <TextInput.Icon icon={ repeatPassVisible ? "eye" : "eye-off" }
+                                onPress={ () => setRepeatPassVisible(!repeatPassVisible) }/>
+        }
         value={ repeatPassword }
         onChangeText={ (text) => {
           if (text.includes(" ")) return;

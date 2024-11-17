@@ -4,7 +4,8 @@
   "main": "expo/AppEntry.js",
   "scripts": {
     "server": "cd .\\src\\backend\\ && npx nodemon Server.js",
-    "start": "npx expo start --tunnel",
+    "start": "npx expo start",
+    "tunnel": "npx expo start --tunnel",
     "web": "expo start --web",
     "dev": "concurrently --kill-others 'node .\\src\\backend\\Server.js' 'npx expo start --android'",
     "android": "expo run:android",
