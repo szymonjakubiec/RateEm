@@ -1,10 +1,18 @@
-import {useRoute} from "@react-navigation/native";
 import {StatusBar} from "expo-status-bar";
-import {StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
+import {BackHandler, StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
+import {useEffect} from "react";
 
 
 
 export default function SuccessScreen({navigation, route}) {
+
+  // PK: Prevents navigating back
+  useEffect(() => {
+    const backAction = () => true;
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    return () => backHandler.remove();
+  }, [navigation]);
+
   return (
     <View style={ styles.container }>
       <Text style={ styles.title }>Sukces!</Text>
@@ -12,6 +20,8 @@ export default function SuccessScreen({navigation, route}) {
 
       <TouchableHighlight
         style={ styles.button }
+
+        // PK: Goes to logging screen with clearing the navigation stack
         onPress={ () => {
           navigation.popToTop();
           navigation.goBack();
@@ -19,7 +29,7 @@ export default function SuccessScreen({navigation, route}) {
       >
         <Text style={ styles.buttonText }>Powrót do menu</Text>
       </TouchableHighlight>
-      <StatusBar style="auto" /* hidden  */ />
+      
     </View>
   );
 }
