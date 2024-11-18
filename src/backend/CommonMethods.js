@@ -1,4 +1,7 @@
-const {Alert} = require("react-native");
+import {Alert} from "react-native";
+import {Resend} from "resend";
+import emailjs from '@emailjs/react-native';
+
 
 
 /**
@@ -42,7 +45,7 @@ const sendVerificationSMS = async (phone) => {
  * @param {string} code - The verification code.
  * @returns {Promise<boolean>} success
  */
-const checkVerification = async (phone, code) => {
+const checkVerificationSMS = async (phone, code) => {
   try {
     const response = await fetch(
       `https://verify-5317-mnuord.twil.io/check-verify`,
@@ -70,32 +73,79 @@ const checkVerification = async (phone, code) => {
 
 
 const sendVerificationMail = async (mail, code) => {
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      // user: process.env.SERVER_USER,
-      // pass: process.env.SERVER_PASSWORD,
-      user: global.user,
-      pass: global.pass,
-    }
-  });
+  // PK: Nodemailer
 
-  const info = await transporter.sendMail({
-    from: '"RateEm" <noreply.rateem@gmail.com>',
-    to: mail,
-    subject: "Zweryfikuj konto RateEm",
-    text: `Kod weryfikacyjny dla twojego konta na RateEm to:\n${ code }\nWpisz go w aplikacji RateEm.`,
-    html: "<br>Kod weryfikacyjny dla twojego konta na RateEm to:<br><b>code</b><br>Wpisz go w aplikacji RateEm.",
-  });
+  // const transporter = nodemailer.createTransport({
+  //   host: "smtp.gmail.com",
+  //   port: 465,
+  //   secure: true,
+  //   auth: {
+  //     // user: process.env.SERVER_USER,
+  //     // pass: process.env.SERVER_PASSWORD,
+  //     // user: global.user,
+  //     // pass: global.pass,
+  //     user: "noreply.rateem@gmail.com",
+  //     pass: "Ochojec.123",
+  //   }
+  // });
+  //
+  // const emailHtml = await render(<Email url="https://example.com"/>);
+  //
+  // const info = await transporter.sendMail({
+  //   from: '"RateEm" <noreply.rateem@gmail.com>',
+  //   to: mail,
+  //   subject: "Zweryfikuj konto RateEm",
+  //   text: `Kod weryfikacyjny dla twojego konta na RateEm to:\n${ code }\nWpisz go w aplikacji RateEm.`,
+  //   html: "<br>Kod weryfikacyjny dla twojego konta na RateEm to:<br><b>code</b><br>Wpisz go w aplikacji RateEm.",
+  // });
+  //
+  // console.warn(info);
+  // return info;
 
-  console.log(info);
-  return info;
+  // PK: Resend
+
+  // const resend = new Resend("re_JH2d2yXA_51rTpkKZCH6iLdk8LXWyt8nD");
+  //
+  // const {data, error} = await resend.emails.send({
+  //   from: "Updates <updates@example.com>",
+  //   to: mail,
+  //   subject: "Zweryfikuj konto RateEm",
+  //   html: "<br>Kod weryfikacyjny dla twojego konta na RateEm to:<br><b>${code}</b><br>Wpisz go w aplikacji RateEm.",
+  // });
+  //
+  // if (error) return console.error("bruh", {error});
+  //
+  // console.warn(data);
+  // return data;
+
+  // PK: Email.js
+
+  const templateParams = {
+    mail,
+    code
+  };
+  emailjs
+    .send('service_nn7mz3o', 'template_za4zsi5', templateParams, {
+      publicKey: 'tEwluatDV5HTFU6dq',
+    })
+    .then(
+      (response) => {
+        console.warn(response.text);
+        return response;
+      },
+      (error) => {
+        console.error(error.text);
+        return error;
+      }
+    );
 
 };
 
 
+/**
+ * Creates custom alert box with given text.
+ * @param {string} text - alert text.
+ */
 const alert = (text) => {
   Alert.alert(
     "❌ Błąd ❌",
@@ -113,4 +163,4 @@ const alert = (text) => {
   );
 };
 
-module.exports = {sendVerificationSMS, checkVerification, sendVerificationMail, alert};
+module.exports = {sendVerificationSMS, checkVerificationSMS, sendVerificationMail, alert};

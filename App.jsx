@@ -22,9 +22,9 @@ const Stack = createStackNavigator();
 //       console.error("Error fetching IP:", error);
 //     }))();
 
-// Setting global parameters
-// global.SERVER_URL = "http://157.158.168.62:3000/api"; // aka
-global.SERVER_URL = "http://192.168.1.22:3000/api"; // cn
+// PK: Setting global parameters
+global.SERVER_URL = "http://157.158.168.62:3000/api"; // aka
+// global.SERVER_URL = "http://192.168.1.22:3000/api"; // cn
 
 global.xD = "YAAAA";
 
