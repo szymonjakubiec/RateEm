@@ -1,22 +1,23 @@
-import { useRoute } from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
-import { addUser } from "../../backend/database/Users";
+import {useRoute} from "@react-navigation/native";
+import {StatusBar} from "expo-status-bar";
+import {StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
 
-export default function SuccessScreen({ navigation, route }) {
+
+
+export default function SuccessScreen({navigation, route}) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sukces!</Text>
-      <Text style={styles.subTitle}>Konto zostało założone.</Text>
+    <View style={ styles.container }>
+      <Text style={ styles.title }>Sukces!</Text>
+      <Text style={ styles.subTitle }>Konto zostało założone.</Text>
 
       <TouchableHighlight
-        style={styles.button}
-        onPress={() => {
+        style={ styles.button }
+        onPress={ () => {
           navigation.popToTop();
           navigation.goBack();
-        }}
+        } }
       >
-        <Text style={styles.buttonText}>Powrót do menu</Text>
+        <Text style={ styles.buttonText }>Powrót do menu</Text>
       </TouchableHighlight>
       <StatusBar style="auto" /* hidden  */ />
     </View>

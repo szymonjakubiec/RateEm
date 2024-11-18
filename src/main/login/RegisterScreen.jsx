@@ -203,7 +203,8 @@ export default function RegisterScreen({navigation}) {
           label="numer telefonu"
           outlineColor={ wrongPhone ? "red" : "black" }
           maxLength={ 12 }
-          style={ [styles.textInput, {paddingLeft: 34}] }
+          style={ [styles.textInput, {paddingLeft: 31}] }
+          // left={ <TextInput.Affix textStyle={ {fontSize: 16, marginLeft: 4} } text="+48 |"/> }
           autoComplete="tel"
           keyboardType="phone-pad"
           value={ phone }
@@ -221,11 +222,11 @@ export default function RegisterScreen({navigation}) {
         />
         <Text style={ {
           alignSelf: "center",
-          left: 12,
+          left: 9,
           fontSize: 16,
           fontWeight: 300,
           position: "absolute",
-          paddingTop: 15
+          paddingTop: 7
         } }>+48 | </Text>
       </SafeAreaView>
       <Text style={ styles.wrongInputText(wrongPhone) }>{ wrongPhone }</Text>
@@ -319,7 +320,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     width: "90%",
-    marginTop: 10,
+    marginTop: 2,
     marginBottom: 2,
     tintColor: "red",
   },
@@ -329,6 +330,7 @@ const styles = StyleSheet.create({
     color: "#e41c1c",
     alignSelf: "flex-start",
     paddingLeft: 20,
+    marginBottom: 6,
   }),
   button: {
     backgroundColor: "#000",
