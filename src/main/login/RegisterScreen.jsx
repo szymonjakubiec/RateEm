@@ -245,6 +245,7 @@ export default function RegisterScreen({navigation}) {
         value={ password }
         onChangeText={ (text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
+          repeatPassword && setRepeatPassword('');
           setPassword(text.trim());
           validatePass(text.trim());
           validateFieldsOnBlur();
