@@ -156,8 +156,8 @@ export default function RegisterScreen({navigation}) {
 
       <TextInput
         { ..._textInputProps }
-        // label="imię"
-        placeholder="imię"
+        label="imię"
+        // placeholder="imię"
         outlineColor={ wrongName ? "#e41c1c" : "black" }
         maxLength={ 22 }
         autoComplete="name"
@@ -226,7 +226,7 @@ export default function RegisterScreen({navigation}) {
           fontSize: 16,
           fontWeight: 300,
           position: "absolute",
-          paddingTop: 7
+          paddingTop: 8
         } }>+48 | </Text>
       </SafeAreaView>
       <Text style={ styles.wrongInputText(wrongPhone) }>{ wrongPhone }</Text>
@@ -281,19 +281,15 @@ export default function RegisterScreen({navigation}) {
       <Text style={ styles.wrongInputText(wrongPassRep) }>{ wrongPassRep }</Text>
 
       <TouchableHighlight
-        style={ [styles.button, {marginTop: 40} /* !validateFieldsOnBlur() && { opacity: 0.5 } */] }
-        // disabled={!validateFieldsOnBlur()}
         onPress={ async () => {
-          await validateFieldsOnSubmit().then((result) => {
-            // if (result) {
-            navigation.navigate("Confirm", {
-              // _title,
-              name,
-              email,
-              phone,
-              password,
-            });
-            // }
+          validateFieldsOnSubmit().then((result) => {
+              navigation.navigate("Confirm", {
+                // _title,
+                name,
+                email,
+                phone,
+                password,
+              });
           });
         } }
       >
@@ -338,9 +334,11 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     width: "70%",
     borderRadius: 20,
+    height: 45,
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonText: {
-    alignSelf: "center",
     color: "#fff",
     fontWeight: "700",
   },

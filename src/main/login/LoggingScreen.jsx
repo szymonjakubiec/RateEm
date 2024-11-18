@@ -56,8 +56,8 @@ export default function LoggingScreen({navigation}) {
    */
   async function checkCredentials() {
     for (const user of userData) {
-      if (user.email == email) {
-        if (user.password == password) {
+      if (user.email === email) {
+        if (user.password === password) {
           setWrongPasswordInfo("");
           this.textInput.clear();
           await navigation.navigate("MainNav", {screen: "Home", _title}); // domyślny ekran, parametry
@@ -161,7 +161,7 @@ export default function LoggingScreen({navigation}) {
         </TouchableOpacity>
       </View>
 
-      <StatusBar style="auto"/>
+      <StatusBar style="light"/>
     </View>
   );
 }
