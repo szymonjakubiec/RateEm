@@ -27,9 +27,6 @@ export default function MainNavigation({ route }) {
     setNamesData(data);
   }
 
-  /**
-   * Runs right after user navigates to this component. It's sole purpose is to call init function.
-   */
   useEffect(() => {
     init();
   }, []);

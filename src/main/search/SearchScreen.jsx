@@ -1,36 +1,46 @@
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
-import { SelectList } from "react-native-dropdown-select-list";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { PoliticianNameContext } from "./PoliticianNameContext.jsx";
+import SearchFlatList from "./SearchFlatList.jsx";
 
 export default function SearchScreen({ navigation }) {
   const politicianNameData = useContext(PoliticianNameContext);
-  const [selectedPoliticianId, setSelectedPoliticianId] = useState(null);
+  const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
+  function handle(selected) {
+    setSelectedPoliticianId(selected);
+  }
+
+  useEffect(() => {
+    setSelectedPoliticianId(0);
+  });
   /**
-   * Navigation to the ProfileScreen.js
+   * Navigation to the ProfileScreen.js after selection of politician.
    */
-  function navigateToProfile() {
-    if (selectedPoliticianId !== null) {
+  useEffect(() => {
+    console.log(selectedPoliticianId);
+    if (selectedPoliticianId > 0) {
       navigation.navigate("Profile", {
         selectedPoliticianId,
       });
     }
-  }
+  }, [selectedPoliticianId]);
 
   return (
     <View style={styles.container}>
-      <SelectList
-        data={politicianNameData}
-        placeholder="Wyszukaj polityka"
-        searchPlaceholder="Wyszukaj polityka"
-        setSelected={(selected) => setSelectedPoliticianId(selected)}
-        onSelect={navigateToProfile()}
-        boxStyles={styles.boxStyle}
-        dropdownStyles={styles.dropdownStyle}
-        dropdownTextStyles={styles.dropdownTextStyle}
-        dropdownItemStyles={styles.dropdownItemStyles}
-      />
+      <SearchFlatList data={politicianNameData} handleOnPress={handle} />
     </View>
   );
 }
@@ -46,7 +56,14 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     padding: 0,
   },
-  dropdownStyle: {},
+  dropdownStyle: {
+    width: "80%",
+    minWidth: "80%",
+
+    // backgroundColor: "whitesmoke",
+    // borderColor: "#000",
+    // borderWidth: 2,
+  },
   dropdownItemStyles: {},
   dropdownTextStyle: {
     fontSize: 20,

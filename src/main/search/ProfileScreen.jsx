@@ -7,7 +7,6 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import { NavigationContainer, useRoute } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { Image } from "react-native";
 import {
@@ -24,6 +23,8 @@ export default function ProfileScreen({ navigation, route }) {
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
   const [politicianSurname, setPoliticianSurname] = useState();
+
+  const [surnameTextHeight, setSurnameTextHeight] = useState(0); // for adjusting names and surname font sizes on long surnames
 
   const [party, setParty] = useState("Oszuści i Złodzieje"); // by default
   const [partyShort, setPartyShort] = useState("OiZ"); // by default
@@ -52,6 +53,10 @@ export default function ProfileScreen({ navigation, route }) {
 
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
 
+  useEffect(() => {
+    init();
+  }, []);
+
   async function init() {
     await loadPoliticianData();
     await loadOwnRating();
@@ -65,47 +70,58 @@ export default function ProfileScreen({ navigation, route }) {
    * @async
    */
   async function loadPoliticianData() {
-    try {
-      const data = await getPolitician(selectedPoliticianId);
-      setPoliticianData(data);
-      if (data.at(0).global_rating != null)
-        setGlobalRating(data.at(0).global_rating);
-      if (data.at(0).party != null) {
-        setParty(data.at(0).party);
-        displayNoOpinionComponent();
-      } else {
-        displayYourOpinionsComponent();
-      }
-      setPoliticianNames(data.at(0).name);
-      setPoliticianSurname(data.at(0).surname);
-    } catch (error) {
-      console.log("Error with loading politician data: " + error);
+    // try {
+    const data = await getPolitician(selectedPoliticianId);
+    setPoliticianData(data);
+    if (data.at(0).global_rating != null)
+      setGlobalRating(data.at(0).global_rating);
+    if (data.at(0).party != null) {
+      setParty(data.at(0).party);
+      displayNoOpinionComponent();
+    } else {
+      displayYourOpinionsComponent();
     }
+    setPoliticianNames(data.at(0).name);
+    setPoliticianSurname(data.at(0).surname);
+    // } catch (error) {
+    //   console.log("Error with loading politician data: " + error);
+    // }
   }
 
   async function loadOwnRating() {
-    try {
-      const ownRating = (await getOwnRating(userId, selectedPoliticianId)).at(
-        0
-      ).value;
-      setOwnRating(ownRating);
-    } catch (error) {
-      console.log("Error with loading own rating: " + error);
-    }
+    // try {
+    const ownRating = (await getOwnRating(userId, selectedPoliticianId)).at(
+      0
+    ).value;
+    setOwnRating(ownRating);
+    // } catch (error) {
+    //   console.log("Error with loading own rating: " + error);
+    // }
   }
 
   /**
    * Loads asynchronously all single ratings from Ratings.js from a user about politician into singleRatings array.
    */
   async function loadSingleRatings() {
-    try {
-      const data = await getRating(userId, selectedPoliticianId);
-      if (data !== null) {
-        setSingleRatings(data);
-      }
-    } catch (error) {
-      console.log("Error with loading single ratings: " + error);
+    // try {
+    const data = await getRating(userId, selectedPoliticianId);
+    if (data !== null) {
+      setSingleRatings(data);
     }
+    // } catch (error) {
+    //   console.log("Error with loading single ratings: " + error);
+    // }
+  }
+
+  /**
+   * Calculates whether surnameTextHeight takes more than 1 line.
+   * @returns {number}
+   */
+  function calculateFontSize() {
+    if (surnameTextHeight > 32) {
+      return 21;
+    }
+    return 24;
   }
 
   function OpinionsTile() {
@@ -125,7 +141,7 @@ export default function ProfileScreen({ navigation, route }) {
         <StarRating
           rating={starRating}
           onChange={setStarRating}
-          enableHalfStar={true}
+          enableHalfStar={false}
         />
         <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
         <TouchableHighlight
@@ -147,7 +163,9 @@ export default function ProfileScreen({ navigation, route }) {
               setExpandedRatingList(!expandedRatingList);
             }}
           >
-            <Text>Twoje opinie</Text>
+            <Text style={{ fontWeight: "500", fontSize: 20 }}>
+              Twoje opinie
+            </Text>
           </TouchableHighlight>
         </View>
         <RatingsList />
@@ -223,14 +241,26 @@ export default function ProfileScreen({ navigation, route }) {
           style={styles.ratingItem}
           onPress={() => setExpandedAddOpinion(true)}
         >
-          <Text>Dodaj opinię</Text>
+          <Text
+            style={{ fontWeight: "500", fontSize: 20, alignSelf: "center" }}
+          >
+            Dodaj opinię
+          </Text>
         </TouchableHighlight>
       );
     } else {
       return (
         <View style={styles.ratingItem}>
           <TouchableHighlight onPress={() => setExpandedAddOpinion(false)}>
-            <Text>Dodaj opinię</Text>
+            <Text
+              style={{
+                fontWeight: "500",
+                fontSize: 18,
+                alignSelf: "flex-start",
+              }}
+            >
+              Dodaj opinię
+            </Text>
           </TouchableHighlight>
           <TextInput
             style={styles.textInput}
@@ -244,7 +274,7 @@ export default function ProfileScreen({ navigation, route }) {
           <StarRating
             rating={starRating}
             onChange={setStarRating}
-            enableHalfStar={true}
+            enableHalfStar={false}
           />
           <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
           <TextInput
@@ -303,10 +333,6 @@ export default function ProfileScreen({ navigation, route }) {
   }
 
   useEffect(() => {
-    init();
-  }, []);
-
-  useEffect(() => {
     if (firstOwnRating) {
       addRating(
         userId,
@@ -349,8 +375,19 @@ export default function ProfileScreen({ navigation, route }) {
         <View style={styles.infoTile}>
           <View style={styles.nameContainer}>
             <View style={styles.nameSurnameColumn}>
-              <Text style={styles.surname}>{politicianSurname}</Text>
-              <Text style={styles.names}>{politicianNames}</Text>
+              <Text
+                style={[styles.surname, { fontSize: calculateFontSize() }]}
+                onLayout={(event) =>
+                  setSurnameTextHeight(event.nativeEvent.layout.height)
+                }
+              >
+                {politicianSurname}
+              </Text>
+              <Text
+                style={[styles.names, { fontSize: calculateFontSize() - 2 }]}
+              >
+                {politicianNames}
+              </Text>
             </View>
             <View style={styles.imageContainer}>
               <Image
@@ -361,11 +398,24 @@ export default function ProfileScreen({ navigation, route }) {
             </View>
           </View>
           <View>
-            <Text>Globalna ocena: {globalRating}</Text>
-            <Text>Twoja ocena: {ownRating}</Text>
+            <View style={styles.ratingRow}>
+              <Text style={styles.rating}>Globalna ocena:</Text>
+              <View>
+                <Text style={styles.rating}>{globalRating}</Text>
+                {/* <Image>star</Image> */}
+              </View>
+            </View>
+            <View style={styles.ratingRow}>
+              <Text style={styles.rating}>Twoja ocena:</Text>
+              <View>
+                <Text style={styles.rating}>{ownRating}</Text>
+                {/* <Image>star</Image> */}
+              </View>
+            </View>
           </View>
           <View>
-            <Text>Partia polityczna: {party}.</Text>
+            <Text style={styles.rating}>Partia polityczna:</Text>
+            <Text>{party}.</Text>
           </View>
         </View>
         <OpinionsTile />
@@ -394,29 +444,45 @@ const styles = StyleSheet.create({
   nameContainer: {
     display: "flex",
     flexDirection: "row",
+    // backgroundColor: "white",
     height: "30%",
-    gap: 25,
   },
   nameSurnameColumn: {
-    flexGrow: 11,
+    // backgroundColor: "white",
+    display: "flex",
+    justifyContent: "center",
+    flexGrow: 1,
+    maxWidth: "80%",
   },
   surname: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
+    maxWidth: "90%",
+    // backgroundColor: "lightblue",
   },
   names: {
+    maxWidth: "90%",
     fontSize: 22,
+    height: "auto",
     fontWeight: "semibold",
   },
   imageContainer: {
-    flexGrow: 5,
+    // flexGrow: 6,
+    borderWidth: 5,
   },
   image: {
-    minHeight: 40,
-    minWidth: 40,
-    objectFit: "contain",
-    width: "same-as-height",
     height: "100%",
+    aspectRatio: 1 / 1,
+    borderColor: "black",
+  },
+  ratingRow: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  rating: {
+    fontSize: 22,
+    fontWeight: "bold",
   },
   opinionsTile: {
     backgroundColor: "lightgray",
