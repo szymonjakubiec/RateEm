@@ -5,7 +5,8 @@ import emailjs from '@emailjs/react-native';
 
 
 /**
- *
+ * Sends SMS verification - Twilio.
+ * @async
  * @param {string} phone - The phone number to send verification code to.
  * @returns {Promise<boolean>} success
  */
@@ -39,7 +40,7 @@ const sendVerificationSMS = async (phone) => {
 };
 
 /**
- *
+ * Checks SMS verification - Twilio.
  * @async
  * @param {string} phone - The phone number to send verification code to.
  * @param {string} code - The verification code.
@@ -72,6 +73,13 @@ const checkVerificationSMS = async (phone, code) => {
 };
 
 
+/**
+ * Sends e-mail verification.
+ * @async
+ * @param {string} mail - Mail to send verification code to.
+ * @param {string} code - Code to verify.
+ * @returns {Promise<number>} status code.
+ */
 const sendVerificationMail = async (mail, code) => {
   // PK: Nodemailer
 
@@ -120,24 +128,18 @@ const sendVerificationMail = async (mail, code) => {
 
   // PK: Email.js
 
-  const templateParams = {
-    mail,
-    code
-  };
-  emailjs
-    .send('service_nn7mz3o', 'template_za4zsi5', templateParams, {
-      publicKey: 'tEwluatDV5HTFU6dq',
-    })
-    .then(
-      (response) => {
-        console.warn(response.text);
-        return response;
-      },
-      (error) => {
-        console.error(error.text);
-        return error;
-      }
-    );
+  try {
+    const res = await emailjs.send("service_nn7mz3o", "template_za4zsi5",
+      {
+        mail,
+        code
+      }, {
+        publicKey: "tEwluatDV5HTFU6dq",
+      });
+    return res.status;
+  } catch (error) {
+    return error.status;
+  }
 
 };
 

@@ -1,55 +1,93 @@
-import { useRoute } from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, TextInput, TouchableHighlight, View, BackHandler } from "react-native";
-import { useState, useEffect } from "react";
-import { sendVerificationSMS } from "../../backend/CommonMethods";
-import { addUser } from "../../backend/database/Users";
+import {useRoute} from "@react-navigation/native";
+import {StatusBar} from "expo-status-bar";
+import {StyleSheet, Text, TextInput, TouchableHighlight, View, BackHandler} from "react-native";
+import {useState, useEffect, useRef} from "react";
+import {alert, checkVerificationSMS, sendVerificationMail, sendVerificationSMS} from "../../backend/CommonMethods";
+import {addUser} from "../../backend/database/Users";
 
-export default function ConfirmScreen({ navigation, route }) {
+
+
+export default function ConfirmScreen({navigation, route}) {
   // const route = useRoute();
-  const { name, email, phone, password } = route.params;
-  let _code = 0;
+  const {name, email, phone, password} = route.params;
+  let _code = useRef('');
 
   const createCode = () => {
     const code = Math.floor(100000 + Math.random() * 900000);
-    return code;
+    return code.toString();
   };
 
+  const [code, setCode] = useState('');
+
+  // Pk: Preventing navigating back
   // useEffect(() => {
-  //   const backAction = () => {
-  //     return true;
-  //     // if (currentRoute === "Home") {
-  //     //   // Wyjście z aplikacji, jeśli aktualny ekran to Home
-  //     //   BackHandler.exitApp();
-  //     //   return true; // Zapobiega domyślnemu zachowaniu
-  //     // } else {
-  //     //   // Przechodzi do ekranu Home w przypadku innych ekranów
-  //     //   navigation.navigate("Home");
-  //     //   return true;
-  //     // }
-  //   };
+  //   const backAction = () => true;
   //   const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-  //   return () => backHandler.remove(); // usuwa nasłuchiwacz przy odmontowaniu komponentu
+  //   return () => backHandler.remove();
   // }, [navigation]);
 
-  (() => {
-    _code = createCode();
-    sendVerificationSMS(phone, _code);
-  })();
+
+  useEffect(() => {
+    (() => {
+      _code.current = createCode();
+      console.info("Kod:", _code.current);
+
+      // Pk: SMS - Twilio
+      // sendVerificationSMS(`+48${ phone }`);
+
+      // Pk: EMAIL - Resend
+      sendVerificationMail(email, _code.current).then((status) => {
+        status === 200 ? console.warn("Mail wysłany.") : console.warn("Błąd!");
+      }).catch((err) => {
+        console.error(err);
+      });
+
+    })();
+
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.subTitle}>Potwierdź</Text>
-      <Text style={styles.subTitle}>Na numer +48{phone} został wysłany SMS z kodem weryfikacyjnym. Wpisz go w oknie poniżej.</Text>
+    <View style={ styles.container }>
+      <Text style={ styles.subTitle }>Potwierdź konto</Text>
 
-      <TextInput style={styles.textInput} autoCapitalize="none" autoComplete="one-time-code" textContentType="oneTimeCode" placeholder="kod" />
+      {/* PK: Sms */ }
+      {/*  <Text style={ styles.subTitle }>Na numer +48{ phone } został wysłany SMS z kodem weryfikacyjnym. Wpisz go w oknie
+        poniżej.</Text> */ }
+
+      {/* PK: Email */ }
+      <Text style={ styles.subTitle }>Na adres e-mail { email } został wysłany mail z kodem weryfikacyjnym. Wpisz go w
+        oknie poniżej.</Text>
+
+      <TextInput
+        style={ styles.textInput }
+        autoCapitalize="none"
+        autoComplete="one-time-code"
+        textContentType="oneTimeCode"
+        placeholder="kod"
+        value={ code }
+        onChangeText={ (text) => setCode(text) }
+      />
 
       <TouchableHighlight
-        style={styles.button}
-        onPress={async () => {
-          await addUser(name, email, password, phone, 1, 69, 420)
+        style={ styles.button }
+        onPress={ async () => {
+          // PK: SMS
+
+          // await checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
+          //   if (!success) {
+          //     alert("Kod");
+          //     return false;
+          //   }
+
+          // PK: Email
+
+          if (code !== _code.current) {
+            alert("Błędny kod!\nSpróbuj ponownie.");
+            return false;
+          }
+
+          await addUser(name, email, password, phone, 1, 1, 1)
             .then((result) => {
-              console.log(result);
               if (result) {
                 navigation.navigate("Success");
               }
@@ -57,29 +95,12 @@ export default function ConfirmScreen({ navigation, route }) {
             .catch((error) => {
               console.error(error);
             });
-        }}
+          // });
+        } }
       >
-        <Text style={styles.buttonText}>Potwierdź</Text>
+        <Text style={ styles.buttonText }>Potwierdź</Text>
       </TouchableHighlight>
 
-      {/* <TextInput 
-          style={styles.textInput}
-          placeholder='email'
-      />
-      <TextInput 
-          style={styles.textInput}
-          placeholder='hasło'
-      />
-      
-      <TouchableHighlight
-          style={styles.button}
-          onPress={() =>{
-            navigation.navigate('MainNav', {screen: 'Home', _title}); // domyślny ekran, parametry
-          }}
-      >
-          <Text style={styles.buttonText}>Zaloguj</Text>
-      </TouchableHighlight>
-      <StatusBar style="auto" /> */}
     </View>
   );
 }

@@ -282,8 +282,11 @@ export default function RegisterScreen({navigation}) {
       <Text style={ styles.wrongInputText(wrongPassRep) }>{ wrongPassRep }</Text>
 
       <TouchableHighlight
+        style={ [styles.button, {marginTop: 40}, !validateFieldsOnBlur() && {opacity: 0.5}] }
+        disabled={ !validateFieldsOnBlur() }
         onPress={ async () => {
           validateFieldsOnSubmit().then((result) => {
+            if (result) {
               navigation.navigate("Confirm", {
                 // _title,
                 name,
@@ -291,6 +294,7 @@ export default function RegisterScreen({navigation}) {
                 phone,
                 password,
               });
+            }
           });
         } }
       >
