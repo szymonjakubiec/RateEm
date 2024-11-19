@@ -63,8 +63,9 @@ export default function CalculatorScreen() {
   function calculateDhondtMandates() {
     var votes = [];
     var sumTemp = 100;
+
     for (var index = 0; index < inputValues.length; index++) {
-      votes[index] = parseFloat(inputValues[index]);
+      votes[index] = parseFloat(inputValues[index]) * 100000;
       sumTemp -= parseFloat(inputValues[index]);
     }
     votes[votes.length] = sumTemp;
@@ -80,9 +81,6 @@ export default function CalculatorScreen() {
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text>To jest kalkulator mandatónw.</Text>
-      </View>
       <ScrollView style={styles.scrollView}>
         {parties.map((partyItem, index) => (
           <View key={index} style={styles.partyTile}>
