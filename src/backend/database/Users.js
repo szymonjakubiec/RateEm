@@ -91,7 +91,6 @@ const addUser = async (
  */
 const updateUser = async (id, newData = {}) => {
   const url = `${global.SERVER_URL}/users/${id}`;
-  console.log(url);
 
   try {
     const response = await fetch(url, {

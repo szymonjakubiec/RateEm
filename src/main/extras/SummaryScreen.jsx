@@ -249,14 +249,20 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
-    padding: 5,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+    zIndex: 2,
   },
+
   closeIconText: {
     fontSize: 18,
     color: "#888",
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 21,
     fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
