@@ -1,6 +1,7 @@
-import {Alert} from "react-native";
+import {Alert, BackHandler} from "react-native";
 import {Resend} from "resend";
 import emailjs from '@emailjs/react-native';
+import {useEffect} from "react";
 
 
 
@@ -165,4 +166,21 @@ const alert = (text) => {
   );
 };
 
-module.exports = {sendVerificationSMS, checkVerificationSMS, sendVerificationMail, alert};
+/**
+ * Goes back in navigation.
+ * @function
+ * @param navigation - navigation.
+ */
+function goBack(navigation) {
+  // Pk: Exiting app from HomeScreen
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    return () => backHandler.remove();
+  }, [navigation]);
+}
+
+module.exports = {sendVerificationSMS, checkVerificationSMS, sendVerificationMail, alert, goBack};

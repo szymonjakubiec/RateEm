@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView,
+  KeyboardAvoidingView, BackHandler,
 } from "react-native";
-import { getAllUsers, updateUser } from "../../backend/database/Users";
-export default function SettingsScreen() {
+import {getAllUsers, updateUser} from "../../backend/database/Users";
+import {goBack} from "../../backend/CommonMethods";
+
+
+
+export default function SettingsScreen({navigation}) {
+
+  // Pk: Going back
+  goBack(navigation);
+
   const [user, setUser] = useState(null);
   const [CommunicationRadio, setCommunicationRadio] = useState(null);
   const [LoginRadio, setLoginRadio] = useState(null);
