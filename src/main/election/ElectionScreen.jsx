@@ -1,9 +1,14 @@
-import { StyleSheet, Text, View, Button, TouchableHighlight } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer, useRoute } from "@react-navigation/native";
+import {StyleSheet, Text, View, Button, TouchableHighlight} from "react-native";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import {NavigationContainer, useRoute} from "@react-navigation/native";
+import {goBack} from "../../backend/CommonMethods";
 
-export default function ElectionScreen({ navigation }) {
+
+
+export default function ElectionScreen({navigation}) {
   const route = useRoute();
+
+  goBack(navigation);
 
   return (
     <View style={styles.container}>

@@ -1,4 +1,3 @@
-import {useRoute} from "@react-navigation/native";
 import {StatusBar} from "expo-status-bar";
 import {StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View} from "react-native";
 import {useEffect, useRef, useState} from "react";
@@ -95,66 +94,66 @@ export default function LoggingScreen({navigation}) {
   }, [userData]);
 
   return (
-    <View style={ styles.container }>
-      <Text style={ styles.title }>{ _title }</Text>
-      <Text style={ styles.subTitle }>Twój polityczny niezbędnik</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>{_title}</Text>
+      <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
 
       <TextInput
-        style={ styles.textInput }
+        style={styles.textInput}
         autoComplete="email"
         autoCapitalize="none"
         placeholder="e-mail"
-        onChangeText={ (email) => setEmail(email.trim()) }
-        onBlur={ () => emailApproved(email) }
+        onChangeText={(email) => setEmail(email.trim())}
+        onBlur={() => emailApproved(email)}
       />
-      <Text style={ styles.wrongInputText }>{ wrongEmailInfo }</Text>
+      <Text style={styles.wrongInputText}>{wrongEmailInfo}</Text>
       <TextInput
-        style={ styles.textInput }
+        style={styles.textInput}
         autoComplete="current-password"
         autoCapitalize="none"
         placeholder="hasło"
         secureTextEntry
-        onChangeText={ (email) => setPassword(email.trim()) }
-        ref={ (input) => {
+        onChangeText={(email) => setPassword(email.trim())}
+        ref={(input) => {
           this.textInput = input;
-        } }
+        }}
       />
-      <Text style={ styles.wrongInputText }>{ wrongPasswordInfo }</Text>
+      <Text style={styles.wrongInputText}>{wrongPasswordInfo}</Text>
 
-      <TouchableHighlight style={ styles.buttonMain } onPress={ () => handleLogin() }>
-        <Text style={ styles.buttonText }>Zaloguj</Text>
+      <TouchableHighlight style={styles.buttonMain} onPress={() => handleLogin()}>
+        <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
 
-      <View style={ {flexDirection: "row", left: -30} }>
+      <View style={{flexDirection: "row", left: -30}}>
         <CheckBox
-          isChecked={ !toggleCheckBox }
-          style={ {
+          isChecked={!toggleCheckBox}
+          style={{
             /* flex: 1, */ padding: 5 /* , justifyContent: "flex-start" */,
-          } }
+          }}
           /* rightText='Zapamiętaj' rightTextStyle={{color: '#000000'}} */
-          onClick={ () => {
+          onClick={() => {
             setToggleCheckBox(!toggleCheckBox);
             console.log(toggleCheckBox);
-          } }
+          }}
         />
-        <Text style={ {alignSelf: "center"} }>Zapamiętaj</Text>
+        <Text style={{alignSelf: "center"}}>Zapamiętaj</Text>
       </View>
 
-      <View style={ {flexDirection: "row", alignItems: "center", marginTop: 20} }>
-        <Text style={ { /* marginTop: 15, marginBottom: 5, */ fontSize: 13} }>Nie masz jeszcze konta?</Text>
+      <View style={{flexDirection: "row", alignItems: "center", marginTop: 20}}>
+        <Text style={{ /* marginTop: 15, marginBottom: 5, */ fontSize: 13}}>Nie masz jeszcze konta?</Text>
 
         <TouchableOpacity
-          style={ {
+          style={{
             marginLeft: 10,
-          } }
-          onPress={ () => {
+          }}
+          onPress={() => {
             navigation.navigate("RegisterNav", {_title}); // domyślny ekran, parametry
-          } }
+          }}
         >
           <Text
-            style={ {
+            style={{
               color: "blue",
-            } }
+            }}
           >
             Zarejestruj
           </Text>
