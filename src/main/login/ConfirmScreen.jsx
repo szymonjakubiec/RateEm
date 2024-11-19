@@ -1,5 +1,3 @@
-import {useRoute} from "@react-navigation/native";
-import {StatusBar} from "expo-status-bar";
 import {StyleSheet, Text, TextInput, TouchableHighlight, View, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
 import {alert, checkVerificationSMS, sendVerificationMail, sendVerificationSMS} from "../../backend/CommonMethods";
@@ -20,11 +18,11 @@ export default function ConfirmScreen({navigation, route}) {
   const [code, setCode] = useState('');
 
   // Pk: Preventing navigating back
-  // useEffect(() => {
-  //   const backAction = () => true;
-  //   const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-  //   return () => backHandler.remove();
-  // }, [navigation]);
+  useEffect(() => {
+    const backAction = () => true;
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    return () => backHandler.remove();
+  }, [navigation]);
 
 
   useEffect(() => {
@@ -47,30 +45,30 @@ export default function ConfirmScreen({navigation, route}) {
   }, []);
 
   return (
-    <View style={ styles.container }>
-      <Text style={ styles.subTitle }>Potwierdź konto</Text>
+    <View style={styles.container}>
+      <Text style={styles.subTitle}>Potwierdź konto</Text>
 
-      {/* PK: Sms */ }
+      {/* PK: Sms */}
       {/*  <Text style={ styles.subTitle }>Na numer +48{ phone } został wysłany SMS z kodem weryfikacyjnym. Wpisz go w oknie
-        poniżej.</Text> */ }
+        poniżej.</Text> */}
 
-      {/* PK: Email */ }
-      <Text style={ styles.subTitle }>Na adres e-mail { email } został wysłany mail z kodem weryfikacyjnym. Wpisz go w
+      {/* PK: Email */}
+      <Text style={styles.subTitle}>Na adres e-mail {email} został wysłany mail z kodem weryfikacyjnym. Wpisz go w
         oknie poniżej.</Text>
 
       <TextInput
-        style={ styles.textInput }
+        style={styles.textInput}
         autoCapitalize="none"
         autoComplete="one-time-code"
         textContentType="oneTimeCode"
         placeholder="kod"
-        value={ code }
-        onChangeText={ (text) => setCode(text) }
+        value={code}
+        onChangeText={(text) => setCode(text)}
       />
 
       <TouchableHighlight
-        style={ styles.button }
-        onPress={ async () => {
+        style={styles.button}
+        onPress={async () => {
           // PK: SMS
 
           // await checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
@@ -96,9 +94,9 @@ export default function ConfirmScreen({navigation, route}) {
               console.error(error);
             });
           // });
-        } }
+        }}
       >
-        <Text style={ styles.buttonText }>Potwierdź</Text>
+        <Text style={styles.buttonText}>Potwierdź</Text>
       </TouchableHighlight>
 
     </View>
