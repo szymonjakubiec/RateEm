@@ -30,7 +30,6 @@ const getAllRatings = async () => {
  */
 const getUserRatings = async (userId) => {
   const url = `${global.SERVER_URL}/ratings?user_id=${userId}`; // Zmiana URL, aby uwzględnić userId
-  console.log(url);
 
   try {
     const response = await fetch(url);
@@ -113,7 +112,6 @@ const addRating = async (
  */
 const updateRating = async (id, newData = {}) => {
   const url = `${global.SERVER_URL}/ratings/${id}`;
-  console.log(url);
 
   try {
     const response = await fetch(url, {
