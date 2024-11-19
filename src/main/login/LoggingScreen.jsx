@@ -1,15 +1,28 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
-import { useEffect, useRef, useState } from "react";
-import { getAllUsers } from "../../backend/database/Users";
+import {useRoute} from "@react-navigation/native";
+import {StatusBar} from "expo-status-bar";
+import {StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View} from "react-native";
+import {useEffect, useRef, useState} from "react";
+import CheckBox from "react-native-check-box";
+import {getAllUsers} from "../../backend/database/Users";
 
-export default function LoggingScreen({ navigation }) {
+
+
+export default function LoggingScreen({navigation}) {
   const _title = "Rate'Em";
   // const route = useRoute();
+
+  // connection test
+  useEffect(() => {
+    (async () => {
+      console.warn((await getAllUsers())[0]?.name + " moment 💁‍");
+    })();
+  }, []);
+
 
   const [userData, setUserData] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [toggleCheckBox, setToggleCheckBox] = useState(true);
 
   /**
    * Feedback values that appear when the user writes incorrect input
@@ -43,11 +56,11 @@ export default function LoggingScreen({ navigation }) {
    */
   async function checkCredentials() {
     for (const user of userData) {
-      if (user.email == email) {
-        if (user.password == password) {
+      if (user.email === email) {
+        if (user.password === password) {
           setWrongPasswordInfo("");
           this.textInput.clear();
-          await navigation.navigate("MainNav", { screen: "Home", _title }); // domyślny ekran, parametry
+          await navigation.navigate("MainNav", {screen: "Home", _title}); // domyślny ekran, parametry
           return;
         } else {
           setWrongPasswordInfo("Nieprawidłowe hasło");
@@ -82,26 +95,73 @@ export default function LoggingScreen({ navigation }) {
   }, [userData]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{_title}</Text>
-      <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
+    <View style={ styles.container }>
+      <Text style={ styles.title }>{ _title }</Text>
+      <Text style={ styles.subTitle }>Twój polityczny niezbędnik</Text>
 
-      <TextInput style={styles.textInput} placeholder="email" onChangeText={(email) => setEmail(email.trim())} onBlur={() => emailApproved(email)} />
-      <Text style={styles.wrongInputText}>{wrongEmailInfo}</Text>
       <TextInput
-        style={styles.textInput}
-        placeholder="hasło"
-        onChangeText={(email) => setPassword(email.trim())}
-        ref={(input) => {
-          this.textInput = input;
-        }}
+        style={ styles.textInput }
+        autoComplete="email"
+        autoCapitalize="none"
+        placeholder="e-mail"
+        onChangeText={ (email) => setEmail(email.trim()) }
+        onBlur={ () => emailApproved(email) }
       />
-      <Text style={styles.wrongInputText}>{wrongPasswordInfo}</Text>
+      <Text style={ styles.wrongInputText }>{ wrongEmailInfo }</Text>
+      <TextInput
+        style={ styles.textInput }
+        autoComplete="current-password"
+        autoCapitalize="none"
+        placeholder="hasło"
+        secureTextEntry
+        onChangeText={ (email) => setPassword(email.trim()) }
+        ref={ (input) => {
+          this.textInput = input;
+        } }
+      />
+      <Text style={ styles.wrongInputText }>{ wrongPasswordInfo }</Text>
 
-      <TouchableHighlight style={styles.button} onPress={() => handleLogin()}>
-        <Text style={styles.buttonText}>Zaloguj</Text>
+      <TouchableHighlight style={ styles.buttonMain } onPress={ () => handleLogin() }>
+        <Text style={ styles.buttonText }>Zaloguj</Text>
       </TouchableHighlight>
-      <StatusBar style="auto" />
+
+      <View style={ {flexDirection: "row", left: -30} }>
+        <CheckBox
+          isChecked={ !toggleCheckBox }
+          style={ {
+            /* flex: 1, */ padding: 5 /* , justifyContent: "flex-start" */,
+          } }
+          /* rightText='Zapamiętaj' rightTextStyle={{color: '#000000'}} */
+          onClick={ () => {
+            setToggleCheckBox(!toggleCheckBox);
+            console.log(toggleCheckBox);
+          } }
+        />
+        <Text style={ {alignSelf: "center"} }>Zapamiętaj</Text>
+      </View>
+
+      <View style={ {flexDirection: "row", alignItems: "center", marginTop: 20} }>
+        <Text style={ { /* marginTop: 15, marginBottom: 5, */ fontSize: 13} }>Nie masz jeszcze konta?</Text>
+
+        <TouchableOpacity
+          style={ {
+            marginLeft: 10,
+          } }
+          onPress={ () => {
+            navigation.navigate("RegisterNav", {_title}); // domyślny ekran, parametry
+          } }
+        >
+          <Text
+            style={ {
+              color: "blue",
+            } }
+          >
+            Zarejestruj
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <StatusBar style="light"/>
     </View>
   );
 }
@@ -139,8 +199,15 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     paddingLeft: 20,
   },
-  button: {
+  buttonMain: {
     backgroundColor: "#000",
+    paddingTop: 8,
+    paddingBottom: 8,
+    width: "70%",
+    borderRadius: 20,
+  },
+  button: {
+    backgroundColor: "#4a4a4a",
     paddingTop: 8,
     paddingBottom: 8,
     width: "70%",

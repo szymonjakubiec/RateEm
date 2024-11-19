@@ -42,8 +42,7 @@ app.use(express.json());
 
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/ratings", async (req, res) => {
-    const { user_id, politician_id, title, value, description, date } =
-      req.body;
+    const { user_id, politician_id, title, value, description, date } = req.body;
     const weight = req.body.weight || 1;
     let connection;
 
@@ -79,8 +78,7 @@ app.use(express.json());
   // --- update ---------------------------------------------------------------------------
   app.put("/api/ratings/:id", async (req, res) => {
     const { id } = req.params;
-    const { user_id, politician_id, title, value, description, date } =
-      req.body;
+    const { user_id, politician_id, title, value, description, date } = req.body;
 
     let connection;
 
@@ -151,10 +149,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute(
-        "DELETE FROM ratings WHERE id = ?",
-        [parseInt(id)]
-      );
+      const [result] = await connection.execute("DELETE FROM ratings WHERE id = ?", [parseInt(id)]);
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Rating not found" });
@@ -184,9 +179,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM own_ratings"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM own_ratings");
 
       res.json(rows);
     } catch (err) {
@@ -209,14 +202,13 @@ app.use(express.json());
 
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute(
-        "INSERT INTO own_ratings (user_id, politician_id, value) VALUES (?, ?, ?)",
-        [user_id, politician_id, value]
-      );
+      const [result] = await connection.execute("INSERT INTO own_ratings (user_id, politician_id, value) VALUES (?, ?, ?)", [
+        user_id,
+        politician_id,
+        value,
+      ]);
 
-      res
-        .status(201)
-        .json({ id: result.insertId, user_id, politician_id, value });
+      res.status(201).json({ id: result.insertId, user_id, politician_id, value });
     } catch (err) {
       res.status(500).send(err.message);
     } finally {
@@ -293,10 +285,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute(
-        "DELETE FROM own_ratings WHERE id = ?",
-        [parseInt(id)]
-      );
+      const [result] = await connection.execute("DELETE FROM own_ratings WHERE id = ?", [parseInt(id)]);
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Rating not found" });
@@ -326,9 +315,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM politicians"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM politicians");
 
       res.json(rows);
     } catch (err) {
@@ -372,30 +359,14 @@ app.use(express.json());
 
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/users", async (req, res) => {
-    const {
-      name,
-      email,
-      password,
-      phone_number,
-      verified,
-      communication_method,
-      login_method,
-    } = req.body;
+    const { name, email, password, phone_number, verified, communication_method, login_method } = req.body;
     let connection;
 
     try {
       connection = await mysql.createConnection(config);
       const [result] = await connection.execute(
         "INSERT INTO users (name, email, password, phone_number, verified, communication_method, login_method) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [
-          name,
-          email,
-          password,
-          phone_number,
-          verified,
-          communication_method,
-          login_method,
-        ]
+        [name, email, password, phone_number, verified, communication_method, login_method]
       );
 
       res.status(201).json({
@@ -424,15 +395,7 @@ app.use(express.json());
   // --- update ---------------------------------------------------------------------------
   app.put("/api/users/:id", async (req, res) => {
     const { id } = req.params;
-    const {
-      name,
-      email,
-      password,
-      phone_number,
-      verified,
-      communication_method,
-      login_method,
-    } = req.body;
+    const { name, email, password, phone_number, verified, communication_method, login_method } = req.body;
 
     let connection;
     console.log("Request body:", req.body);
@@ -508,10 +471,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute(
-        "DELETE FROM users WHERE id = ?",
-        [parseInt(id)]
-      );
+      const [result] = await connection.execute("DELETE FROM users WHERE id = ?", [parseInt(id)]);
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "User not found" });
@@ -541,9 +501,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM president_elections"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM president_elections");
 
       res.json(rows);
     } catch (err) {
@@ -569,9 +527,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM sejm_elections"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM sejm_elections");
 
       res.json(rows);
     } catch (err) {
@@ -597,11 +553,9 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM eu_elections"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM eu_elections");
 
-      res.json(rows);
+    res.json(rows);
     } catch (err) {
       res.status(500).send(err.message);
     } finally {
@@ -671,6 +625,4 @@ app.get("/api/districts/eu", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, "0.0.0.0", () =>
-  console.log(`Server running on port ${PORT}`)
-);
+app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
