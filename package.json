@@ -13,11 +13,15 @@
   },
   "dependencies": {
     "@emailjs/react-native": "^4.2.2",
+    "@react-native-community/cli-server-api": "^15.0.1",
+    "@react-native-community/geolocation": "^3.4.0",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.7",
+    "dhondt": "^0.1.0",
     "expo": "^51.0.39",
+    "expo-location": "~17.0.1",
     "expo-status-bar": "^1.12.1",
     "express": "^4.21.1",
     "mssql": "^11.0.1",
@@ -27,10 +31,17 @@
     "react-native": "^0.74.5",
     "react-native-check-box": "^2.1.7",
     "react-native-paper": "^5.12.5",
-    "resend": "^4.0.1"
+    "resend": "^4.0.1",
+    "react": "18.2.0",
+    "react-native": "^0.74.5",
+    "react-native-check-box": "^2.1.7",
+    "react-native-dropdown-select-list": "^2.0.5",
+    "react-native-maps": "1.14.0",
+    "expo-system-ui": "~3.0.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "concurrently": "^9.0.1"
   },
   "private": true,
   "keywords": [],
