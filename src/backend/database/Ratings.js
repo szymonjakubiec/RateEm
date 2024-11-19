@@ -5,11 +5,37 @@
  * @returns {Promise<object[]|undefined>} Array of rating objects
  */
 const getAllRatings = async () => {
-  const url = `${ global.SERVER_URL }/ratings`;
+  const url = `${global.SERVER_URL}/all-ratings`;
+
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${ response.status }`);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching ratings:", error);
+    return null;
+  }
+};
+
+/**
+ * Gets ratings for a specific user.
+ *
+ * @async
+ * @function
+ * @param {number} userId - The ID of the user whose ratings are to be fetched.
+ * @returns {Promise<Object[]>} Array of rating objects
+ */
+const getUserRatings = async (userId) => {
+  const url = `${global.SERVER_URL}/ratings?user_id=${userId}`; // Zmiana URL, aby uwzględnić userId
+  console.log(url);
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
     return data;
@@ -31,8 +57,15 @@ const getAllRatings = async () => {
  * @param {string} date - Date in YYYY-MM-DD format
  * @returns {Promise<object|undefined>} New rating data object
  */
-const addRating = async (user_id, politician_id, title, value, description, date) => {
-  const url = `${ global.SERVER_URL }/ratings`;
+const addRating = async (
+  user_id,
+  politician_id,
+  title,
+  value,
+  description,
+  date
+) => {
+  const url = `${global.SERVER_URL}/ratings`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -51,7 +84,7 @@ const addRating = async (user_id, politician_id, title, value, description, date
 
     if (!response.ok) {
       const errorMessage = await response.text();
-      throw new Error(`Error: ${ response.status } - ${ errorMessage }`);
+      throw new Error(`Error: ${response.status} - ${errorMessage}`);
     }
 
     // Reading the added rating data
@@ -79,7 +112,7 @@ const addRating = async (user_id, politician_id, title, value, description, date
  * @returns {Promise<object|undefined>} Updated rating data object
  */
 const updateRating = async (id, newData = {}) => {
-  const url = `${ global.SERVER_URL }/ratings/${ id }`;
+  const url = `${global.SERVER_URL}/ratings/${id}`;
   console.log(url);
 
   try {
@@ -91,7 +124,7 @@ const updateRating = async (id, newData = {}) => {
       body: JSON.stringify(newData),
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${ response.status }`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     const updatedData = await response.json();
     console.log("Rating updated successfully:", updatedData);
@@ -110,7 +143,7 @@ const updateRating = async (id, newData = {}) => {
  * @returns {Promise<object|undefined>} Deleted rating data
  */
 const deleteRating = async (id) => {
-  const url = `${ global.SERVER_URL }/ratings/${ id }`;
+  const url = `${global.SERVER_URL}/ratings/${id}`;
   try {
     const response = await fetch(url, {
       method: "DELETE",
@@ -119,7 +152,7 @@ const deleteRating = async (id) => {
       },
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${ response.status }`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     const deletedData = await response.json();
     console.log("Rating deleted successfully:", deletedData);
@@ -130,4 +163,10 @@ const deleteRating = async (id) => {
   }
 };
 
-module.exports = {addRating, updateRating, deleteRating, getAllRatings};
+module.exports = {
+  addRating,
+  updateRating,
+  deleteRating,
+  getAllRatings,
+  getUserRatings,
+};

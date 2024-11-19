@@ -5,11 +5,11 @@
  * @returns {Promise<object[]|undefined>} Array of user objects
  */
 const getAllUsers = async () => {
-  const url = `${ global.SERVER_URL }/users`;
+  const url = `${global.SERVER_URL}/users`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${ response.status }`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
     return data;
@@ -32,8 +32,16 @@ const getAllUsers = async () => {
  * @param {number} login_method - Method of logging in
  * @returns {Promise<object|undefined>} New user data object
  */
-const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
-  const url = `${ global.SERVER_URL }/users`; // Endpoint URL
+const addUser = async (
+  name,
+  email,
+  password,
+  phone_number,
+  verified,
+  communication_method,
+  login_method
+) => {
+  const url = `${global.SERVER_URL}/users`; // Endpoint URL
   try {
     const response = await fetch(url, {
       method: "POST", // Using POST method
@@ -53,7 +61,7 @@ const addUser = async (name, email, password, phone_number, verified, communicat
 
     if (!response.ok) {
       const errorMessage = await response.text();
-      throw new Error(`Error: ${ response.status } - ${ errorMessage }`);
+      throw new Error(`Error: ${response.status} - ${errorMessage}`);
     }
 
     // Reading the added user data
@@ -82,8 +90,7 @@ const addUser = async (name, email, password, phone_number, verified, communicat
  * @returns {Promise<object|undefined>} Updated user data object
  */
 const updateUser = async (id, newData = {}) => {
-  const url = `${ global.SERVER_URL }/users/${ id }`;
-  console.log(url);
+  const url = `${global.SERVER_URL}/users/${id}`;
 
   try {
     const response = await fetch(url, {
@@ -94,7 +101,7 @@ const updateUser = async (id, newData = {}) => {
       body: JSON.stringify(newData),
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${ response.status }`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     const updatedData = await response.json();
     console.log("User updated successfully:", updatedData);
@@ -113,7 +120,7 @@ const updateUser = async (id, newData = {}) => {
  * @returns {Promise<object|undefined>} Deleted user data object
  */
 const deleteUser = async (id) => {
-  const url = `${ global.SERVER_URL }/users/${ id }`;
+  const url = `${global.SERVER_URL}/users/${id}`;
   try {
     const response = await fetch(url, {
       method: "DELETE",
@@ -122,7 +129,7 @@ const deleteUser = async (id) => {
       },
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${ response.status }`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     const deletedData = await response.json();
     console.log("User deleted successfully:", deletedData);
@@ -133,4 +140,4 @@ const deleteUser = async (id) => {
   }
 };
 
-module.exports = {addUser, updateUser, deleteUser, getAllUsers};
+module.exports = { addUser, updateUser, deleteUser, getAllUsers };

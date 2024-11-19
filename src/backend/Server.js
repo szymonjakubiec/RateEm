@@ -20,11 +20,55 @@ app.use(express.json());
 //
 {
   // --- select ---------------------------------------------------------------------------
-  app.get("/api/ratings", async (req, res) => {
+  app.get("/api/all-ratings", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute("SELECT * FROM ratings");
+      const [rows, fields] = await connection.execute(`
+        SELECT r.id AS rating_id, r.user_id, r.politician_id, r.title, r.value, r.description, r.date,
+        p.id AS politician_id, p.names_surname, p.party, p.global_rating,
+        p.facebook_link, p.twitter_link, p.birth_date, p.name, p.surname, p.party_short, p.picture
+        FROM ratings r
+        JOIN politicians p ON r.politician_id = p.id
+      `);
+
+      res.json(rows);
+    } catch (err) {
+      res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
+      }
+    }
+  });
+
+  app.get("/api/ratings", async (req, res) => {
+    const userId = req.query.user_id; // Pobieranie user_id z parametrów zapytania
+    let connection;
+
+    try {
+      connection = await mysql.createConnection(config);
+
+      // Sprawdzenie, czy user_id jest podane
+      if (!userId) {
+        return res.status(400).json({ error: "User ID is required." });
+      }
+
+      const [rows, fields] = await connection.execute(
+        `
+        SELECT r.id AS rating_id, r.user_id, r.politician_id, r.title, r.value, r.description, r.date,
+        p.id AS politician_id, p.names_surname, p.party, p.global_rating,
+        p.facebook_link, p.twitter_link, p.birth_date, p.name, p.surname, p.party_short, p.picture
+        FROM ratings r
+        JOIN politicians p ON r.politician_id = p.id
+        WHERE r.user_id = ?
+      `,
+        [userId]
+      );
 
       res.json(rows);
     } catch (err) {
@@ -398,11 +442,11 @@ app.use(express.json());
     const { name, email, password, phone_number, verified, communication_method, login_method } = req.body;
 
     let connection;
-    console.log("Request body:", req.body);
 
     const fields = [];
     const values = [];
 
+    console.log("Received a request for /api/test");
     if (name) {
       fields.push("name = ?");
       values.push(name);
@@ -467,6 +511,7 @@ app.use(express.json());
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/users/:id", async (req, res) => {
     const { id } = req.params;
+    console.log("Xd");
 
     let connection;
     try {
