@@ -57,9 +57,6 @@ export default function SummaryScreen() {
             cache: "force-cache",
           }}
           style={styles.ratingImage}
-          onError={(error) =>
-            console.log("Błąd wczytywania obrazu:", error.nativeEvent)
-          }
         />
         <Text style={styles.ratingItemText}>
           {item.names_surname} {item.value}

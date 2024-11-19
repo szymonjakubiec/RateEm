@@ -54,28 +54,7 @@ export default function SettingsScreen() {
         </>
       )}
 
-      <Text>Preferowany sposób komunikacji:</Text>
-      <View style={styles.radioContainer}>
-        <TouchableOpacity onPress={() => setCommunicationRadio(0)}>
-          <Text
-            style={
-              CommunicationRadio === 0 ? styles.selectedRadio : styles.radio
-            }
-          >
-            E-MAIL
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setCommunicationRadio(1)}>
-          <Text
-            style={
-              CommunicationRadio === 1 ? styles.selectedRadio : styles.radio
-            }
-          >
-            SMS
-          </Text>
-        </TouchableOpacity>
-      </View>
-
+      <Text>Zmień hasło:</Text>
       <TextInput
         style={styles.input}
         placeholder="Aktualne hasło"
@@ -98,24 +77,6 @@ export default function SettingsScreen() {
         onChangeText={setRepeatPassword}
       />
 
-      <Text>Sposób Logowania:</Text>
-      <View style={styles.radioContainer}>
-        <TouchableOpacity onPress={() => setLoginRadio(0)}>
-          <Text style={LoginRadio === 0 ? styles.selectedRadio : styles.radio}>
-            Hasło
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setLoginRadio(1)}>
-          <Text style={LoginRadio === 1 ? styles.selectedRadio : styles.radio}>
-            PIN
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setLoginRadio(2)}>
-          <Text style={LoginRadio === 2 ? styles.selectedRadio : styles.radio}>
-            Odcisk palca
-          </Text>
-        </TouchableOpacity>
-      </View>
       <KeyboardAvoidingView style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleSave}>
           <Text style={styles.buttonText}>Zapisz</Text>
