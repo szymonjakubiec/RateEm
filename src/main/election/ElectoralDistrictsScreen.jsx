@@ -1,15 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { StyleSheet, Text, View, ScrollView, RefreshControl, TouchableHighlight, Linking, Alert, AppState } from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, Text, View, ScrollView, Linking, Alert, AppState } from "react-native";
 import * as Location from "expo-location";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import { getUserAddress } from "../../backend/GetAddress";
 import { getSejmDistrict, getEuDistrict } from "../../backend/database/Districts";
 
 export default function ElectoralDistricts() {
-  // const [appState, setAppState] = useState(AppState.currentState);
-
   const [refreshing, setRefreshing] = useState(false);
-  // const [locationCurrent, setLocationCurrent] = useState(null);
   const [addressCurrent, setAddressCurrent] = useState(null);
   const [sejmDistrictCurrent, setSejmDistrictCurrent] = useState("");
   const [euDistrictCurrent, setEuDistrictCurrent] = useState("");
@@ -17,6 +14,7 @@ export default function ElectoralDistricts() {
   const [locationPermission, setLocationPermission] = useState(false);
 
   const [mapComponent, setMapComponent] = useState(null);
+  const [mapActive, setMapActive] = useState("auto");
 
   useEffect(() => {
     AppState.addEventListener("change", handleAppStateChange);
@@ -85,17 +83,35 @@ export default function ElectoralDistricts() {
   };
 
   function setMapLocation(location) {
-    setLocationMap({ latitude: parseFloat(location.latitude.toFixed(5)), longitude: parseFloat(location.longitude.toFixed(5)) });
+    try {
+      setLocationMap({ latitude: parseFloat(location.latitude.toFixed(5)), longitude: parseFloat(location.longitude.toFixed(5)) });
+    } catch (error) {
+      setLocationMap({ latitude: 50.25962, longitude: 19.021725 });
+    }
   }
 
   async function onLocationMapChange(location) {
-    const result = await getAddress(parseFloat(location.latitude), parseFloat(location.longitude));
-    setAddressCurrent(result.address);
-    setSejmDistrictCurrent(result.sejmDistrict);
-    setEuDistrictCurrent(result.euDistrict);
+    try {
+      setMapActive("none");
+      setAddressCurrent("Ładowanie");
+      setSejmDistrictCurrent("Ładowanie");
+      setEuDistrictCurrent("Ładowanie");
+
+      const result = await getAddress(parseFloat(location.latitude.toFixed(5)), parseFloat(location.longitude.toFixed(5)));
+
+      setAddressCurrent(result.address);
+      setSejmDistrictCurrent(result.sejmDistrict);
+      setEuDistrictCurrent(result.euDistrict);
+      setMapActive("auto");
+    } catch (error) {
+      setAddressCurrent("błąd");
+      setSejmDistrictCurrent(0);
+      setEuDistrictCurrent(0);
+      setMapActive("auto");
+    }
   }
 
-  const getAddress = async (latitude, longitude) => {
+  async function getAddress(latitude, longitude) {
     try {
       const adderssData = await getUserAddress(latitude, longitude);
       var countyName = getCountryName(adderssData);
@@ -121,7 +137,7 @@ export default function ElectoralDistricts() {
     } catch (error) {
       return { address: "błąd", sejmDistrict: 0, euDistrict: 0 };
     }
-  };
+  }
 
   const getCountryName = (adderssData) => {
     var returnValue = "";
@@ -158,7 +174,15 @@ export default function ElectoralDistricts() {
         <MapView
           provider={PROVIDER_GOOGLE}
           region={locationMap}
+          showsCompass={true}
           onRegionChange={setMapLocation}
+          onRegionChangeComplete={(region, gesture) => {
+            if (gesture.isGesture) {
+              onLocationMapChange(region);
+            }
+          }}
+          showsMyLocationButton={true}
+          showsUserLocation={true}
           initialRegion={{
             latitude: locationMap.latitude,
             longitude: locationMap.longitude,
@@ -173,7 +197,13 @@ export default function ElectoralDistricts() {
         <MapView
           provider={PROVIDER_GOOGLE}
           region={locationMap}
+          showsCompass={true}
           onRegionChange={setMapLocation}
+          onRegionChangeComplete={(region, gesture) => {
+            if (gesture.isGesture) {
+              onLocationMapChange(region);
+            }
+          }}
           initialRegion={{
             latitude: 50.25962,
             longitude: 19.021725,
@@ -190,22 +220,12 @@ export default function ElectoralDistricts() {
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.districtElementMap}>
-          {mapComponent}
-          {locationMap ? (
-            <View>
-              <Text style={styles.districtElementText}>
-                Latitude: {locationMap.latitude.toFixed(5)}, Longitude: {locationMap.longitude.toFixed(5)}
-              </Text>
-              <Text style={styles.districtElementText}>Powiat name: {addressCurrent}</Text>
-              <Text style={styles.districtElementText}>SEJM District number: {sejmDistrictCurrent}</Text>
-              <Text style={styles.districtElementText}>EU District number: {euDistrictCurrent}</Text>
-              <TouchableHighlight onPress={() => onLocationMapChange(locationMap)} style={styles.applyButton}>
-                <Text>apply</Text>
-              </TouchableHighlight>
-            </View>
-          ) : (
-            <Text style={styles.districtElementText}>Fetching location...</Text>
-          )}
+          <View pointerEvents={`${mapActive}`}>{mapComponent}</View>
+          <View>
+            <Text style={styles.districtElementText}>Powiat: {addressCurrent}</Text>
+            <Text style={styles.districtElementText}>Okręg wyborczy - SEJM: {sejmDistrictCurrent}</Text>
+            <Text style={styles.districtElementText}>Okręg wyborczy - EU: {euDistrictCurrent}</Text>
+          </View>
         </View>
       </ScrollView>
     </View>
