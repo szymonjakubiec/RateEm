@@ -3,8 +3,8 @@ import {useRoute} from "@react-navigation/native";
 import {StatusBar} from "expo-status-bar";
 import {StyleSheet, Text, TouchableHighlight, SafeAreaView} from "react-native";
 import {TextInput} from "react-native-paper";
-import {getAllUsers} from "../../backend/database/Users";
-import {alert} from "../../backend/CommonMethods";
+import {getAllUsers} from "../../../backend/database/Users";
+import {alert} from "../../../backend/CommonMethods";
 
 
 

@@ -1,13 +1,13 @@
 import {StyleSheet, Text, TextInput, TouchableHighlight, View, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
-import {alert, checkVerificationSMS, sendVerificationMail, sendVerificationSMS} from "../../backend/CommonMethods";
-import {addUser} from "../../backend/database/Users";
+import {alert, checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
+import {updateUser} from "../../../backend/database/Users";
 
 
 
-export default function ConfirmScreen({navigation, route}) {
+export default function ResetConfirmScreen({navigation, route}) {
   // const route = useRoute();
-  const {name, email, phone, password} = route.params;
+  const {email, phone} = route.params;
   let _code = useRef('');
 
   const createCode = () => {
@@ -33,9 +33,9 @@ export default function ConfirmScreen({navigation, route}) {
       // Pk: SMS - Twilio
       // sendVerificationSMS(`+48${ phone }`);
 
-      // Pk: EMAIL - Resend
-      sendVerificationMail(email, _code.current).then((status) => {
-        status === 200 ? console.warn("Mail wysłany.") : console.warn("Błąd!");
+      // Pk: EMAIL - Email.js
+      sendMail(email, _code.current, "reset").then((status) => {
+        status === 200 ? console.warn("Mail wysłany.") : console.warn("Błąd wysyłania maila!");
       }).catch((err) => {
         console.error(err);
       });
@@ -46,15 +46,15 @@ export default function ConfirmScreen({navigation, route}) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.subTitle}>Potwierdź konto</Text>
+      <Text style={styles.subTitle}>Potwierdź reset hasła</Text>
 
       {/* PK: Sms */}
-      {/*  <Text style={ styles.subTitle }>Na numer +48{ phone } został wysłany SMS z kodem weryfikacyjnym. Wpisz go w oknie
-        poniżej.</Text> */}
+      {/*  <Text style={ styles.subTitle }>Na numer +48{ phone } został wysłany SMS z kodem weryfikacyjnym do zresetowania hasła.
+      Wpisz go w oknie poniżej.</Text> */}
 
       {/* PK: Email */}
-      <Text style={styles.subTitle}>Na adres e-mail {email} został wysłany mail z kodem weryfikacyjnym. Wpisz go w
-        oknie poniżej.</Text>
+      <Text style={styles.subTitle}>Na adres e-mail {email} został wysłany mail z kodem weryfikacyjnym do resetu hasła.
+        Wpisz go w oknie poniżej.</Text>
 
       <TextInput
         style={styles.textInput}
@@ -69,6 +69,7 @@ export default function ConfirmScreen({navigation, route}) {
       <TouchableHighlight
         style={styles.button}
         onPress={async () => {
+
           // PK: SMS
 
           // await checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
@@ -84,15 +85,7 @@ export default function ConfirmScreen({navigation, route}) {
             return false;
           }
 
-          await addUser(name, email, password, phone, 1, 1, 1)
-            .then((result) => {
-              if (result) {
-                navigation.navigate("Success");
-              }
-            })
-            .catch((error) => {
-              console.error(error);
-            });
+          navigation.navigate("ChangePass", {email});
           // });
         }}
       >

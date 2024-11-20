@@ -79,9 +79,10 @@ const checkVerificationSMS = async (phone, code) => {
  * @async
  * @param {string} mail - Mail to send verification code to.
  * @param {string} code - Code to verify.
+ * @param {"verify"|"reset"} mode - e-mail mode.
  * @returns {Promise<number>} status code.
  */
-const sendVerificationMail = async (mail, code) => {
+const sendMail = async (mail, code, mode) => {
   // PK: Nodemailer
 
   // const transporter = nodemailer.createTransport({
@@ -128,9 +129,8 @@ const sendVerificationMail = async (mail, code) => {
   // return data;
 
   // PK: Email.js
-
   try {
-    const res = await emailjs.send("service_nn7mz3o", "template_za4zsi5",
+    const res = await emailjs.send("service_nn7mz3o", mode === "verify" ? "template_za4zsi5" : "template_0x5vgf6",
       {
         mail,
         code
@@ -209,4 +209,4 @@ function goBack(navigation) {
   }, [navigation]);
 }
 
-module.exports = {sendVerificationSMS, checkVerificationSMS, sendVerificationMail, alert, goBack, getUserAddress};
+module.exports = {sendVerificationSMS, checkVerificationSMS, sendMail, alert, goBack, getUserAddress};
