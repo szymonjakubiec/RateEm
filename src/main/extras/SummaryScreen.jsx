@@ -9,7 +9,7 @@ import {
   FlatList,
 } from "react-native";
 import {useEffect, useState} from "react";
-import {getUserRatings} from "../../backend/database/Ratings";
+import {getRatingsUserId} from "../../backend/database/Ratings";
 import {goBack} from "../../backend/CommonMethods";
 
 
@@ -28,7 +28,7 @@ export default function SummaryScreen({navigation}) {
 
   useEffect(() => {
     const fetchRatings = async () => {
-      const fetchedRatings = await getUserRatings(2);
+      const fetchedRatings = await getRatingsUserId(2);
       setRatings(fetchedRatings);
 
       if (fetchedRatings.length > 0) {

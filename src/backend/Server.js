@@ -19,7 +19,7 @@ app.use(express.json());
 // === RATINGS TABLE ======================================================================
 //
 {
-  // --- select ---------------------------------------------------------------------------
+  // --- select ALL -----------------------------------------------------------------------
   app.get("/api/all-ratings", async (req, res) => {
     let connection;
     try {
@@ -46,7 +46,8 @@ app.use(express.json());
     }
   });
 
-  app.get("/api/ratings", async (req, res) => {
+  // --- select USER_ID -------------------------------------------------------------------
+  app.get("/api/ratings-user-id", async (req, res) => {
     const userId = req.query.user_id; // Pobieranie user_id z parametrów zapytania
     let connection;
 
@@ -83,7 +84,52 @@ app.use(express.json());
       }
     }
   });
+  
+  // --- select USER_ID POLITICIAN_ID -----------------------------------------------------
+  app.get("/api/ratings-user-id-politician-id", async (req, res) => {
+    const { user_id, politician_id } = req.query; // Używamy req.query do pobrania parametrów
 
+    // Walidacja danych
+    if (!user_id || !politician_id) {
+      return res.status(400).json({
+        message: "Both user_id and politician_id must be provided",
+        missing: {
+          user_id: !user_id ? "Missing" : "Provided",
+          politician_id: !politician_id ? "Missing" : "Provided",
+        },
+      });
+    }
+
+    let connection;
+    try {
+      connection = await mysql.createConnection(config);
+      const [rows] = await connection.execute(
+        "SELECT * FROM ratings WHERE user_id = ? AND politician_id = ?",
+        [user_id, politician_id]
+      );
+
+      // Sprawdzenie, czy wynik nie jest pusty
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Rating not found" });
+      }
+
+      res.json(rows);
+    } catch (err) {
+      console.error("Database error:", err);
+      res
+        .status(500)
+        .json({ message: "Internal Server Error", error: err.message });
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
+      }
+    }
+  });
+  
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/ratings", async (req, res) => {
     const { user_id, politician_id, title, value, description, date } = req.body;
