@@ -799,27 +799,25 @@ app.get("/api/politicians", async (req, res) => {
 
 //   POLITYCY TABLE
 //select
-app.get("/api/politicians", async (req, res) => {
-  let connection;
-  try {
-    connection = await mysql.createConnection(config);
-    const [rows, fields] = await connection.execute(
-      "SELECT * FROM politycy limit 500"
-    );
+// app.get("/api/politicians", async (req, res) => {
+//   let connection;
+//   try {
+//     connection = await mysql.createConnection(config);
+//     const [rows, fields] = await connection.execute("SELECT * FROM politycy");
 
-    res.json(rows);
-  } catch (err) {
-    res.status(500).send(err.message);
-  } finally {
-    if (connection) {
-      try {
-        await connection.end();
-      } catch (err) {
-        console.error("Error closing connection:", err.message);
-      }
-    }
-  }
-});
+//     res.json(rows);
+//   } catch (err) {
+//     res.status(500).send(err.message);
+//   } finally {
+//     if (connection) {
+//       try {
+//         await connection.end();
+//       } catch (err) {
+//         console.error("Error closing connection:", err.message);
+//       }
+//     }
+//   }
+// });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () =>

@@ -19,6 +19,26 @@ const getAllOwnRatings = async () => {
   }
 };
 
+const getOwnRating = async (user_id, politician_id) => {
+  const url = `${global.SERVER_URL}/own-ratings?user_id=${user_id}&politician_id=${politician_id}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching own ratings:", error);
+    return null;
+  }
+};
+
 /**
  * Gets all politician's ratings.
  *

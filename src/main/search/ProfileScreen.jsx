@@ -14,7 +14,11 @@ import {
   addOwnRating,
   updateOwnRating,
 } from "../../backend/database/OwnRatings";
-import { getRating, addRating } from "../../backend/database/Ratings";
+import {
+  getRating,
+  getRatingsUserIdPoliticianId,
+  addRating,
+} from "../../backend/database/Ratings";
 import { getPolitician } from "../../backend/database/Politicians";
 import StarRating from "react-native-star-rating-widget";
 
@@ -101,7 +105,10 @@ export default function ProfileScreen({ navigation, route }) {
    */
   async function loadSingleRatings() {
     try {
-      const data = await getRating(userId, selectedPoliticianId);
+      const data = await getRatingsUserIdPoliticianId(
+        userId,
+        selectedPoliticianId
+      );
       if (data !== null) {
         setSingleRatings(data);
       }

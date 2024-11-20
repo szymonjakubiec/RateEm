@@ -4,7 +4,6 @@ import { FlatList, TextInput, View } from "react-native";
 
 export default function SearchFlatList({ data, handleOnPress }) {
   const [filteredData, setFilteredData] = useState([]);
-
   function handleInput(input) {
     if (input.length !== 0) {
       setFilteredData(
