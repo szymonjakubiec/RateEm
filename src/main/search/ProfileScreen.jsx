@@ -70,47 +70,44 @@ export default function ProfileScreen({ navigation, route }) {
    * @async
    */
   async function loadPoliticianData() {
-    // try {
-    const data = await getPolitician(selectedPoliticianId);
-    setPoliticianData(data);
-    if (data.at(0).global_rating != null)
-      setGlobalRating(data.at(0).global_rating);
-    if (data.at(0).party != null) {
-      setParty(data.at(0).party);
-      displayNoOpinionComponent();
-    } else {
-      displayYourOpinionsComponent();
+    try {
+      const data = await getPolitician(selectedPoliticianId);
+      setPoliticianData(data);
+      if (data.at(0).global_rating != null)
+        setGlobalRating(data.at(0).global_rating);
+      if (data.at(0).party != null) {
+        setParty(data.at(0).party);
+      }
+      setPoliticianNames(data.at(0).name);
+      setPoliticianSurname(data.at(0).surname);
+    } catch (error) {
+      console.log("Error with loading politician data: " + error);
     }
-    setPoliticianNames(data.at(0).name);
-    setPoliticianSurname(data.at(0).surname);
-    // } catch (error) {
-    //   console.log("Error with loading politician data: " + error);
-    // }
   }
 
   async function loadOwnRating() {
-    // try {
-    const ownRating = (await getOwnRating(userId, selectedPoliticianId)).at(
-      0
-    ).value;
-    setOwnRating(ownRating);
-    // } catch (error) {
-    //   console.log("Error with loading own rating: " + error);
-    // }
+    try {
+      const ownRating = (await getOwnRating(userId, selectedPoliticianId)).at(
+        0
+      ).value;
+      setOwnRating(ownRating.toFixed(2));
+    } catch (error) {
+      console.log("Error with loading own rating: " + error);
+    }
   }
 
   /**
    * Loads asynchronously all single ratings from Ratings.js from a user about politician into singleRatings array.
    */
   async function loadSingleRatings() {
-    // try {
-    const data = await getRating(userId, selectedPoliticianId);
-    if (data !== null) {
-      setSingleRatings(data);
+    try {
+      const data = await getRating(userId, selectedPoliticianId);
+      if (data !== null) {
+        setSingleRatings(data);
+      }
+    } catch (error) {
+      console.log("Error with loading single ratings: " + error);
     }
-    // } catch (error) {
-    //   console.log("Error with loading single ratings: " + error);
-    // }
   }
 
   /**
@@ -325,7 +322,7 @@ export default function ProfileScreen({ navigation, route }) {
     }
     numerator = numerator + newSingleRating * 1;
     denominator = denominator + 1;
-    let weightedAverage = numerator / denominator;
+    let weightedAverage = Math.round((numerator * 100) / denominator) / 100; // round number to 2 decimal places
     console.log("Srednia ważona wychodzi: " + weightedAverage);
     setOwnRating(weightedAverage);
 

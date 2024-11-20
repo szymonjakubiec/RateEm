@@ -13,13 +13,13 @@ import {
   useState,
 } from "react";
 import { PoliticianNameContext } from "./PoliticianNameContext.jsx";
-import SearchFlatList from "./SearchFlatList.jsx";
+import SearchFlatList from "./searchScreenComponents/SearchFlatList.jsx";
 
 export default function SearchScreen({ navigation }) {
   const politicianNameData = useContext(PoliticianNameContext);
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
-  function handle(selected) {
+  function handlePress(selected) {
     setSelectedPoliticianId(selected);
   }
 
@@ -40,7 +40,7 @@ export default function SearchScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <SearchFlatList data={politicianNameData} handleOnPress={handle} />
+      <SearchFlatList data={politicianNameData} handleOnPress={handlePress} />
     </View>
   );
 }
