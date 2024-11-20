@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, TouchableHighlight, StyleSheet } from "react-native";
+import {View, Text, TouchableHighlight, StyleSheet} from "react-native";
 
-export default function ExtrasScreen({ navigation }) {
+
+
+export default function ExtrasScreen({navigation}) {
   return (
     <View style={styles.container}>
       <TouchableHighlight
@@ -31,7 +33,7 @@ export default function ExtrasScreen({ navigation }) {
       <TouchableHighlight
         style={styles.button}
         onPress={() => {
-          // TO DO - WYLOGOWANIE
+          navigation.popToTop(); //todo większa logika
         }}
         underlayColor="#D23F3F" // feedback when pressed
       >
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 6,

@@ -8,10 +8,17 @@ import {
   Image,
   FlatList,
 } from "react-native";
-import { useEffect, useState } from "react";
-import { getUserRatings } from "../../backend/database/Ratings";
+import {useEffect, useState} from "react";
+import {getRatingsUserId} from "../../backend/database/Ratings";
+import {goBack} from "../../backend/CommonMethods";
 
-export default function SummaryScreen() {
+
+
+export default function SummaryScreen({navigation}) {
+
+  // Pk: Going back
+  goBack(navigation);
+
   const [ratings, setRatings] = useState([]);
   const [highestRating, setHighestRating] = useState(null);
   const [lowestRating, setLowestRating] = useState(null);
@@ -21,7 +28,7 @@ export default function SummaryScreen() {
 
   useEffect(() => {
     const fetchRatings = async () => {
-      const fetchedRatings = await getUserRatings(2);
+      const fetchedRatings = await getRatingsUserId(2);
       setRatings(fetchedRatings);
 
       if (fetchedRatings.length > 0) {
@@ -45,7 +52,7 @@ export default function SummaryScreen() {
     fetchRatings();
   }, []);
 
-  const renderRatingItem = ({ item }) => (
+  const renderRatingItem = ({item}) => (
     <View style={styles.ratingItemContainer}>
       <TouchableOpacity
         style={styles.ratingItem}
@@ -181,7 +188,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 8,
     elevation: 3,
   },
@@ -199,7 +206,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 8,
     elevation: 3,
   },
@@ -219,7 +226,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 8,
     elevation: 3,
   },
@@ -240,7 +247,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     elevation: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 5,
     maxHeight: "80%",

@@ -50,18 +50,47 @@ const getRating = async (user_id, politician_id) => {
 };
 
 /**
- * Gets ratings for a specific user.
+ * Gets ratings for a specific user id.
  *
  * @async
  * @function
  * @param {number} userId - The ID of the user whose ratings are to be fetched.
- * @returns {Promise<Object[]>} Array of rating objects
+ * @returns {Promise<object[]|undefined>} Array of rating objects
  */
-const getUserRatings = async (userId) => {
-  const url = `${global.SERVER_URL}/ratings?user_id=${userId}`; // Zmiana URL, aby uwzględnić userId
+const getRatingsUserId = async (userId) => {
+  // następca getUserRatings
+  const url = `${global.SERVER_URL}/ratings-user-id?user_id=${userId}`; // Zmiana URL, aby uwzględnić userId
 
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching ratings:", error);
+    return undefined;
+  }
+};
+
+/**
+ * Gets ratings for a specific user id and politician id.
+ *
+ * @async
+ * @param {number} user_id - ID of the user
+ * @param {number} politician_id - ID of the politician
+ * @returns {Promise<object[]|undefined>} Array of own rating objects
+ */
+const getRatingsUserIdPoliticianId = async (user_id, politician_id) => {
+  const url = `${global.SERVER_URL}/ratings-user-id-politician-id?user_id=${user_id}&politician_id=${politician_id}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -196,5 +225,6 @@ module.exports = {
   deleteRating,
   getAllRatings,
   getRating,
-  getUserRatings,
+  getRatingsUserId,
+  getRatingsUserIdPoliticianId,
 };

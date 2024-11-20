@@ -19,7 +19,7 @@ app.use(express.json());
 // === RATINGS TABLE ======================================================================
 //
 {
-  // --- select ---------------------------------------------------------------------------
+  // --- select ALL -----------------------------------------------------------------------
   app.get("/api/all-ratings", async (req, res) => {
     let connection;
     try {
@@ -40,7 +40,47 @@ app.use(express.json());
     }
   });
 
-  app.get("/api/ratings", async (req, res) => {
+  // --- select USER_ID -------------------------------------------------------------------
+  app.get("/api/ratings-user-id", async (req, res) => {
+    const userId = req.query.user_id; // Pobieranie user_id z parametrów zapytania
+    let connection;
+
+    try {
+      connection = await mysql.createConnection(config);
+
+      // Sprawdzenie, czy user_id jest podane
+      if (!userId) {
+        return res.status(400).json({ error: "User ID is required." });
+      }
+
+      const [rows, fields] = await connection.execute(
+        `
+        SELECT r.id AS rating_id, r.user_id, r.politician_id, r.title, r.value, r.description, r.date,
+        p.id AS politician_id, p.names_surname, p.party, p.global_rating,
+        p.facebook_link, p.twitter_link, p.birth_date, p.name, p.surname, p.party_short, p.picture
+        FROM ratings r
+        JOIN politicians p ON r.politician_id = p.id
+        WHERE r.user_id = ?
+      `,
+        [userId]
+      );
+
+      res.json(rows);
+    } catch (err) {
+      res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
+      }
+    }
+  });
+
+  // --- select USER_ID POLITICIAN_ID -----------------------------------------------------
+  app.get("/api/ratings-user-id-politician-id", async (req, res) => {
     const { user_id, politician_id } = req.query; // Używamy req.query do pobrania parametrów
 
     // Walidacja danych

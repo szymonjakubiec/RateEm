@@ -1,16 +1,16 @@
-import {useRoute} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import ExtrasScreen from "../ExtrasScreen";
 import GuideScreen from "../GuideScreen";
 import SettingsScreen from "../SettingsScreen";
 import SummaryScreen from "../SummaryScreen";
-import {Icon} from "react-native-paper";
 
 
 
-var Stack = createStackNavigator();
+const Stack = createStackNavigator();
 
 export default function ExtrasNavigation({route}) {
+
+
   const _title = route.params?._title;
   return (
     <Stack.Navigator>

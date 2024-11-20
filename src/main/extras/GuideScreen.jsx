@@ -7,8 +7,15 @@ import {
   ScrollView,
   Linking,
 } from "react-native";
+import {goBack} from "../../backend/CommonMethods";
 
-export default function GuideScreen({ navigation }) {
+
+
+export default function GuideScreen({navigation}) {
+
+  // Pk: Going back
+  goBack(navigation);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Przewodnik po aplikacji</Text>
@@ -23,7 +30,10 @@ export default function GuideScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.section}
-        onPress={() => navigation.navigate("SearchNav")}
+        onPress={() => {
+          navigation.navigate("SearchNav");
+          navigation.pop();
+        }}
       >
         <Text style={styles.sectionTitle}>🔍 Wyszukiwarka</Text>
         <Text style={styles.sectionDescription}>
@@ -33,7 +43,10 @@ export default function GuideScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.section}
-        onPress={() => navigation.navigate("Election")}
+        onPress={() => {
+          navigation.navigate("Election");
+          navigation.pop();
+        }}
       >
         <Text style={styles.sectionTitle}>📄 Wyborcze ABC</Text>
         <Text style={styles.sectionDescription}>
@@ -44,7 +57,10 @@ export default function GuideScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.section}
-        onPress={() => navigation.navigate("Trending")}
+        onPress={() => {
+          navigation.navigate("Trending");
+          navigation.pop();
+        }}
       >
         <Text style={styles.sectionTitle}>📰 Tablica</Text>
         <Text style={styles.sectionDescription}>
@@ -93,7 +109,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 8,
     elevation: 3,
   },
