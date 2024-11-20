@@ -34,7 +34,10 @@ export default function MainNavigation({ route }) {
 
   return (
     <PoliticianNameContext.Provider value={namesData}>
-      <Tab.Navigator>
+      <Tab.Navigator backBehavior="initialRoute"
+        initialRouteName="Home"
+        screenOptions={{ unmountOnBlur: true }}
+      >
         <Tab.Screen
           name="SearchNav"
           component={SearchNavigation}
