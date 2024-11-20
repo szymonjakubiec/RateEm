@@ -52,7 +52,7 @@ const getRatingsUserId = async (userId) => {
  * @returns {Promise<object[]|undefined>} Array of own rating objects
  */
 const getRatingsUserIdPoliticianId = async (user_id, politician_id) => {
-  const url = `${global.SERVER_URL}/ratings?user_id=${user_id}&politician_id=${politician_id}`;
+  const url = `${global.SERVER_URL}/ratings-user-id-politician-id?user_id=${user_id}&politician_id=${politician_id}`;
   try {
     const response = await fetch(url, {
       method: "GET",
