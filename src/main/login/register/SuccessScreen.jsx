@@ -14,22 +14,22 @@ export default function SuccessScreen({navigation, route}) {
   }, [navigation]);
 
   return (
-    <View style={ styles.container }>
-      <Text style={ styles.title }>Sukces!</Text>
-      <Text style={ styles.subTitle }>Konto zostało założone.</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Sukces!</Text>
+      <Text style={styles.subTitle}>Konto zostało założone.</Text>
 
       <TouchableHighlight
-        style={ styles.button }
+        style={styles.button}
 
         // PK: Goes to logging screen with clearing the navigation stack
-        onPress={ () => {
+        onPress={() => {
           navigation.popToTop();
           navigation.goBack();
-        } }
+        }}
       >
-        <Text style={ styles.buttonText }>Powrót do menu</Text>
+        <Text style={styles.buttonText}>Powrót do menu</Text>
       </TouchableHighlight>
-      
+
     </View>
   );
 }
