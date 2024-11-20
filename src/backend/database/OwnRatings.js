@@ -2,8 +2,7 @@
  * Gets all own ratings.
  *
  * @async
- * @function
- * @returns {Promise<Object[]>} Array of own rating objects
+ * @returns {Promise<object[]|undefined>} Array of own rating objects
  */
 const getAllOwnRatings = async () => {
   const url = `${global.SERVER_URL}/all-own-ratings`;
@@ -40,36 +39,7 @@ const getAllPoliticianOwnRatings = async (politician_id) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching own ratings:", error);
-    return null;
-  }
-};
-
-/**
- * Gets specific own ratings.
- *
- * @async
- * @function
- * @param {number} user_id - ID of the user
- * @param {number} politician_id - ID of the politician
- * @returns {Promise<Object[]>} Array of own rating objects
- */
-const getOwnRating = async (user_id, politician_id) => {
-  const url = `${global.SERVER_URL}/own-ratings?user_id=${user_id}&politician_id=${politician_id}`;
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching own ratings:", error);
+    console.error("Error fetching ratings:", error);
     return null;
   }
 };
@@ -78,11 +48,10 @@ const getOwnRating = async (user_id, politician_id) => {
  * Adds own rating.
  *
  * @async
- * @function
  * @param {number} user_id - ID of the user
  * @param {number} politician_id - ID of the politician
  * @param {float} value - Value of the rating
- * @returns {Promise<Object>} Added rating data
+ * @returns {Promise<object|undefined>} New rating data object
  */
 const addOwnRating = async (user_id, politician_id, value) => {
   const url = `${global.SERVER_URL}/own-ratings`; // Endpoint URL
@@ -102,9 +71,11 @@ const addOwnRating = async (user_id, politician_id, value) => {
 
     // Reading updated data
     const newRating = await response.json();
-    console.log("New rating added:", newRating);
+    console.log("New own rating added:", newRating);
+    return newRating;
   } catch (error) {
     console.error("An error occurred while adding the rating:", error.message);
+    return undefined;
   }
 };
 
@@ -119,7 +90,7 @@ const addOwnRating = async (user_id, politician_id, value) => {
  * * {number} user_id - ID of the user
  * * {number} politician_id - ID of the politician
  * * {float} value - Value of the rating
- * @returns {Promise<Object>} Updated rating data
+ * @returns {Promise<object|undefined>} Updated rating data object
  */
 const updateOwnRating = async (politician_id, user_id, rating) => {
   const url = `${global.SERVER_URL}/own-ratings`;
@@ -137,11 +108,11 @@ const updateOwnRating = async (politician_id, user_id, rating) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const updatedData = await response.json();
-    console.log("Rating updated successfully:", updatedData);
+    console.log("Own rating updated successfully:", updatedData);
     return updatedData;
   } catch (error) {
     console.error("Error updating rating:", error);
-    return null;
+    return undefined;
   }
 };
 
@@ -149,9 +120,8 @@ const updateOwnRating = async (politician_id, user_id, rating) => {
  * Deletes own rating.
  *
  * @async
- * @function
  * @param {string} id - ID of the rating to delete
- * @returns {Promise<Object>} Deleted rating data
+ * @returns {Promise<object|undefined>} Deleted rating data object
  */
 const deleteOwnRating = async (id) => {
   const url = `${global.SERVER_URL}/own-ratings/${id}`;
@@ -166,11 +136,11 @@ const deleteOwnRating = async (id) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const deletedData = await response.json();
-    console.log("Rating deleted successfully:", deletedData);
+    console.log("Own rating deleted successfully:", deletedData);
     return deletedData;
   } catch (error) {
     console.error("Error deleting rating:", error);
-    return null;
+    return undefined;
   }
 };
 

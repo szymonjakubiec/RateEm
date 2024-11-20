@@ -2,8 +2,7 @@
  * Gets all users.
  *
  * @async
- * @function
- * @returns {Promise<Object[]>} Array of user objects
+ * @returns {Promise<object[]|undefined>} Array of user objects
  */
 const getAllUsers = async () => {
   const url = `${global.SERVER_URL}/users`;
@@ -16,7 +15,7 @@ const getAllUsers = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching users:", error);
-    return null;
+    return undefined;
   }
 };
 
@@ -24,17 +23,24 @@ const getAllUsers = async () => {
  * Adds a user.
  *
  * @async
- * @function
- * @param {string} name - First name of the user
+ * @param {string} name - Name of the user
  * @param {string} email - Email of the user
  * @param {string} password - Password of the user
  * @param {string} phone_number - Phone number of the user
- * @param {boolean} verified - Whether the user is verified
- * @param {string} communication_method - Method of communication
- * @param {string} login_method - Method of logging in
- * @returns {Promise<void>}
+ * @param {number} verified - Whether the user is verified
+ * @param {number} communication_method - Method of communication
+ * @param {number} login_method - Method of logging in
+ * @returns {Promise<object|undefined>} New user data object
  */
-const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
+const addUser = async (
+  name,
+  email,
+  password,
+  phone_number,
+  verified,
+  communication_method,
+  login_method
+) => {
   const url = `${global.SERVER_URL}/users`; // Endpoint URL
   try {
     const response = await fetch(url, {
@@ -61,8 +67,10 @@ const addUser = async (name, email, password, phone_number, verified, communicat
     // Reading the added user data
     const newUser = await response.json();
     console.log("New user added:", newUser);
+    return newUser;
   } catch (error) {
     console.error("An error occurred while adding a user:", error.message);
+    return undefined;
   }
 };
 
@@ -70,21 +78,19 @@ const addUser = async (name, email, password, phone_number, verified, communicat
  * Updates a user.
  *
  * @async
- * @function
  * @param {string} id - ID of the user to update
  * @param {Object} newData - New data for the user. Possible keys:
- * * {string} name - First name of the user
+ * * {string} name - Name of the user
  * * {string} email - Email of the user
  * * {string} password - Password of the user
  * * {string} phone_number - Phone number of the user
- * * {boolean} verified - Whether the user is verified
- * * {string} communication_method - Method of communication
- * * {string} login_method - Method of logging in
- * @returns {Promise<Object>} Updated user data
+ * * {number} verified - Whether the user is verified
+ * * {number} communication_method - Method of communication
+ * * {number} login_method - Method of logging in
+ * @returns {Promise<object|undefined>} Updated user data object
  */
 const updateUser = async (id, newData = {}) => {
   const url = `${global.SERVER_URL}/users/${id}`;
-  console.log(url);
 
   try {
     const response = await fetch(url, {
@@ -102,7 +108,7 @@ const updateUser = async (id, newData = {}) => {
     return updatedData;
   } catch (error) {
     console.error("Error updating user:", error);
-    return null;
+    return undefined;
   }
 };
 
@@ -110,9 +116,8 @@ const updateUser = async (id, newData = {}) => {
  * Deletes a user.
  *
  * @async
- * @function
  * @param {string} id - ID of the user to delete
- * @returns {Promise<Object>} Deleted user data
+ * @returns {Promise<object|undefined>} Deleted user data object
  */
 const deleteUser = async (id) => {
   const url = `${global.SERVER_URL}/users/${id}`;
@@ -131,7 +136,7 @@ const deleteUser = async (id) => {
     return deletedData;
   } catch (error) {
     console.error("Error deleting user:", error);
-    return null;
+    return undefined;
   }
 };
 

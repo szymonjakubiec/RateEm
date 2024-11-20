@@ -2,11 +2,10 @@
  * Gets all politicians.
  *
  * @async
- * @function
- * @returns {Promise<Object[]>} Array of politician objects
+ * @returns {Promise<object[]|undefined>} Array of politician objects
  */
 const getAllPoliticians = async () => {
-  const url = `${global.SERVER_URL}/all-politicians`;
+  const url = `${global.SERVER_URL}/politicians`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -28,7 +27,7 @@ const getAllPoliticians = async () => {
  * @returns {Promise<Object[]>} Array of politician name objects
  */
 const getAllPoliticianNames = async () => {
-  const url = `${global.SERVER_URL}/all-politicians`;
+  const url = `${global.SERVER_URL}/politicians`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
