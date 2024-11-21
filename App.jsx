@@ -14,6 +14,7 @@ const Stack = createStackNavigator();
 // Setting global parameters
 
 // PK
+// global.SERVER_URL = "http://10.10.17.22:3000/api"; // ms
 // global.SERVER_URL = "http://157.158.168.62:3000/api"; // aka
 // global.SERVER_URL = "http://192.168.1.22:3000/api"; // cn
 
