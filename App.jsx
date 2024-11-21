@@ -1,16 +1,20 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import { NavigationContainer } from "@react-navigation/native";
+import {createStackNavigator} from "@react-navigation/stack";
+import {NavigationContainer} from "@react-navigation/native";
 import LoggingScreen from "./src/main/login/LoggingScreen";
 import MainNavigation from "./src/main/nav/MainNavigation";
-import RegisterNavigation from "./src/main/login/nav/RegisterNavigation";
-import { PaperProvider } from "react-native-paper";
+import RegisterNavigation from "./src/main/login/register/nav/RegisterNavigation";
+import {PaperProvider} from "react-native-paper";
+import ResetPassNavigation from "./src/main/login/resetPass/nav/ResetPassNavigation";
+
+
 
 const Stack = createStackNavigator();
 
 // Setting global parameters
 
 // PK
+// global.SERVER_URL = "http://10.10.17.22:3000/api"; // ms
 // global.SERVER_URL = "http://157.158.168.62:3000/api"; // aka
 // global.SERVER_URL = "http://192.168.1.22:3000/api"; // cn
 
@@ -63,6 +67,17 @@ export default function App() {
             // initialParams={{_title}}
             options={() => ({
               title: "Zarejestruj", // tytuł na dole ekranu
+              headerShown: false,
+              // headerLeft: () => null,
+              gestureEnabled: false, // wyłącza swipe back na IOS
+            })}
+          />
+          <Stack.Screen
+            name="ResetNav"
+            component={ResetPassNavigation}
+            // initialParams={{_title}}
+            options={() => ({
+              title: "Zresetuj hasło", // tytuł na dole ekranu
               headerShown: false,
               // headerLeft: () => null,
               gestureEnabled: false, // wyłącza swipe back na IOS

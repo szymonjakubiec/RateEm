@@ -154,19 +154,26 @@ export default function LoggingScreen({ navigation }) {
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
 
-      <View style={{ flexDirection: "row", left: -30 }}>
-        <CheckBox
-          isChecked={!toggleCheckBox}
+      <View style={{ marginTop: 20 }}>
+        <TouchableOpacity
+          // disabled
           style={{
-            /* flex: 1, */ padding: 5 /* , justifyContent: "flex-start" */,
+            marginLeft: 10,
           }}
-          /* rightText='Zapamiętaj' rightTextStyle={{color: '#000000'}} */
-          onClick={() => {
-            setToggleCheckBox(!toggleCheckBox);
-            console.log(toggleCheckBox);
+          onPress={() => {
+            navigation.navigate("ResetNav", { _title }); // domyślny ekran, parametry
           }}
-        />
-        <Text style={{ alignSelf: "center" }}>Zapamiętaj</Text>
+        >
+          <Text
+            style={{
+              color: "blue",
+              // color: "#232323",
+              // opacity: 0.5,
+            }}
+          >
+            Zapomniałeś hasła?
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View

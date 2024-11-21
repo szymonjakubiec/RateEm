@@ -24,7 +24,28 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute("SELECT * FROM ratings");
+      const [rows, fields] = await connection.execute(`
+          SELECT r.id AS rating_id,
+                 r.user_id,
+                 r.politician_id,
+                 r.title,
+                 r.value,
+                 r.description,
+                 r.date,
+                 p.id AS politician_id,
+                 p.names_surname,
+                 p.party,
+                 p.global_rating,
+                 p.facebook_link,
+                 p.twitter_link,
+                 p.birth_date,
+                 p.name,
+                 p.surname,
+                 p.party_short,
+                 p.picture
+          FROM ratings r
+                   JOIN politicians p ON r.politician_id = p.id
+      `);
 
       res.json(rows);
     } catch (err) {
@@ -55,13 +76,28 @@ app.use(express.json());
 
       const [rows, fields] = await connection.execute(
         `
-        SELECT r.id AS rating_id, r.user_id, r.politician_id, r.title, r.value, r.description, r.date,
-        p.id AS politician_id, p.names_surname, p.party, p.global_rating,
-        p.facebook_link, p.twitter_link, p.birth_date, p.name, p.surname, p.party_short, p.picture
-        FROM ratings r
-        JOIN politicians p ON r.politician_id = p.id
-        WHERE r.user_id = ?
-      `,
+            SELECT r.id AS rating_id,
+                   r.user_id,
+                   r.politician_id,
+                   r.title,
+                   r.value,
+                   r.description,
+                   r.date,
+                   p.id AS politician_id,
+                   p.names_surname,
+                   p.party,
+                   p.global_rating,
+                   p.facebook_link,
+                   p.twitter_link,
+                   p.birth_date,
+                   p.name,
+                   p.surname,
+                   p.party_short,
+                   p.picture
+            FROM ratings r
+                     JOIN politicians p ON r.politician_id = p.id
+            WHERE r.user_id = ?
+        `,
         [userId]
       );
 
@@ -202,7 +238,9 @@ app.use(express.json());
 
     values.push(parseInt(id));
 
-    const query = `UPDATE ratings SET ${fields.join(", ")} WHERE id = ?`;
+    const query = `UPDATE ratings
+                   SET ${fields.join(", ")}
+                   WHERE id = ?`;
 
     try {
       connection = await mysql.createConnection(config);
@@ -385,16 +423,39 @@ app.use(express.json());
   });
 
   // --- update ---------------------------------------------------------------------------
-  app.put("/api/own-ratings", async (req, res) => {
-    const { politician_id, user_id, rating } = req.body;
-
-    if (!politician_id || !user_id || rating === undefined) {
-      return res
-        .status(400)
-        .json({ message: "politician_id, user_id, and rating are required" });
-    }
+  app.put(`/api/own-ratings/:id`, async (req, res) => {
+    const { id } = req.params;
+    const { user_id, politician_id, value } = req.body;
 
     let connection;
+    console.log("Request body:", req.body);
+
+    const fields = [];
+    const values = [];
+
+    if (user_id) {
+      fields.push("user_id = ?");
+      values.push(user_id);
+    }
+    if (politician_id) {
+      fields.push("politician_id = ?");
+      values.push(politician_id);
+    }
+    if (value) {
+      fields.push("value = ?");
+      values.push(value);
+    }
+
+    if (fields.length === 0) {
+      return res.status(400).json({ message: "No data provided to update" });
+    }
+
+    values.push(parseInt(id));
+
+    const query = `UPDATE own_ratings
+                   SET ${fields.join(", ")}
+                   WHERE id = ?`;
+
     try {
       connection = await mysql.createConnection(config);
 
@@ -408,7 +469,7 @@ app.use(express.json());
       ]);
 
       if (result.affectedRows > 0) {
-        res.json({ politician_id, user_id, rating });
+        res.json({ id, ...req.body });
       } else {
         res.status(404).json({ message: "Record not found" });
       }
@@ -654,9 +715,11 @@ app.get("/api/politicians", async (req, res) => {
       return res.status(400).json({ message: "No data provided to update" });
     }
 
-    values.push(parseInt(id));
+    values.push(id);
 
-    const query = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
+    const query = `UPDATE users
+                   SET ${fields.join(", ")}
+                   WHERE ${id.includes("@") ? "email" : "id"} = ?`;
 
     try {
       connection = await mysql.createConnection(config);
@@ -685,6 +748,7 @@ app.get("/api/politicians", async (req, res) => {
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/users/:id", async (req, res) => {
     const { id } = req.params;
+    console.log("Xd");
 
     let connection;
     try {
@@ -796,28 +860,59 @@ app.get("/api/politicians", async (req, res) => {
     }
   });
 }
-
-//   POLITYCY TABLE
+//   SEJM_DISTRICTS TABLE
 //select
-// app.get("/api/politicians", async (req, res) => {
-//   let connection;
-//   try {
-//     connection = await mysql.createConnection(config);
-//     const [rows, fields] = await connection.execute("SELECT * FROM politycy");
+app.get("/api/districts/sejm", async (req, res) => {
+  let connection;
 
-//     res.json(rows);
-//   } catch (err) {
-//     res.status(500).send(err.message);
-//   } finally {
-//     if (connection) {
-//       try {
-//         await connection.end();
-//       } catch (err) {
-//         console.error("Error closing connection:", err.message);
-//       }
-//     }
-//   }
-// });
+  try {
+    connection = await mysql.createConnection(config);
+    const [result] = await connection.execute("SELECT * FROM sejm_districts");
+
+    if (result.length > 0) {
+      res.json(result);
+    } else {
+      res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+    }
+  } catch (err) {
+    res.status(500).send(err.message);
+  } finally {
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+        console.error("Error closing connection:", err.message);
+      }
+    }
+  }
+});
+
+//   EU_DISTRICTS TABLE
+//select
+app.get("/api/districts/eu", async (req, res) => {
+  let connection;
+
+  try {
+    connection = await mysql.createConnection(config);
+    const [result] = await connection.execute("SELECT * FROM eu_districts");
+
+    if (result.length > 0) {
+      res.json(result);
+    } else {
+      res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+    }
+  } catch (err) {
+    res.status(500).send(err.message);
+  } finally {
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+        console.error("Error closing connection:", err.message);
+      }
+    }
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () =>

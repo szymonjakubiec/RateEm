@@ -78,7 +78,7 @@ const addUser = async (
  * Updates a user.
  *
  * @async
- * @param {string} id - ID of the user to update
+ * @param {string} id - ID or Email of the user to update
  * @param {Object} newData - New data for the user. Possible keys:
  * * {string} name - Name of the user
  * * {string} email - Email of the user
@@ -140,4 +140,4 @@ const deleteUser = async (id) => {
   }
 };
 
-module.exports = { addUser, updateUser, deleteUser, getAllUsers };
+module.exports = {addUser, updateUser, deleteUser, getAllUsers};
