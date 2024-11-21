@@ -5,7 +5,52 @@
  * @returns {Promise<object[]|undefined>} Array of own rating objects
  */
 const getAllOwnRatings = async () => {
-  const url = `${global.SERVER_URL}/own-ratings`;
+  const url = `${global.SERVER_URL}/all-own-ratings`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching own ratings:", error);
+    return null;
+  }
+};
+
+const getOwnRating = async (user_id, politician_id) => {
+  const url = `${global.SERVER_URL}/own-ratings?user_id=${user_id}&politician_id=${politician_id}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching own ratings:", error);
+    return null;
+  }
+};
+
+/**
+ * Gets all politician's ratings.
+ *
+ * @async
+ * @function
+ * @param {number} politician_id - ID of the politician
+ * @returns {Promise<Object[]>} Array of own rating objects
+ */
+const getAllPoliticianOwnRatings = async (politician_id) => {
+  const url = `${global.SERVER_URL}/all-politician-own-ratings?politician_id=${politician_id}`;
+  console.log(url);
+
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -15,7 +60,7 @@ const getAllOwnRatings = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching ratings:", error);
-    return undefined;
+    return null;
   }
 };
 
@@ -36,7 +81,7 @@ const addOwnRating = async (user_id, politician_id, value) => {
       headers: {
         "Content-Type": "application/json", // Indicate JSON format
       },
-      body: JSON.stringify({user_id, politician_id, value}), // Send data in JSON format
+      body: JSON.stringify({ user_id, politician_id, value }), // Send data in JSON format
     });
 
     if (!response.ok) {
@@ -58,15 +103,18 @@ const addOwnRating = async (user_id, politician_id, value) => {
  * Updates own rating.
  *
  * @async
- * @param {string} id - ID of the rating to update
- * @param {Object} newData - New data for the rating. Possible keys:
+ * @function
+ * @param {string} user_id - ID of the user
+ * @param {string} politician_id - ID of the politician
+ * @param {number} rating - New data for the rating. Possible keys:
  * * {number} user_id - ID of the user
  * * {number} politician_id - ID of the politician
  * * {float} value - Value of the rating
  * @returns {Promise<object|undefined>} Updated rating data object
  */
-const updateOwnRating = async (id, newData = {}) => {
-  const url = `${global.SERVER_URL}/own-ratings/${id}`;
+const updateOwnRating = async (politician_id, user_id, rating) => {
+  const url = `${global.SERVER_URL}/own-ratings`;
+  console.log(url);
 
   try {
     const response = await fetch(url, {
@@ -74,7 +122,7 @@ const updateOwnRating = async (id, newData = {}) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newData),
+      body: JSON.stringify({ politician_id, user_id, rating }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -121,4 +169,6 @@ module.exports = {
   updateOwnRating,
   deleteOwnRating,
   getAllOwnRatings,
+  getAllPoliticianOwnRatings,
+  getOwnRating,
 };

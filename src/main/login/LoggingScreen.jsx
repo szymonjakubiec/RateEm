@@ -1,12 +1,18 @@
-import {StatusBar} from "expo-status-bar";
-import {StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View} from "react-native";
-import {useEffect, useRef, useState} from "react";
+import { useRoute } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useEffect, useRef, useState } from "react";
 import CheckBox from "react-native-check-box";
-import {getAllUsers} from "../../backend/database/Users";
+import { getAllUsers } from "../../backend/database/Users";
 
-
-
-export default function LoggingScreen({navigation}) {
+export default function LoggingScreen({ navigation }) {
   const _title = "Rate'Em";
   // const route = useRoute();
 
@@ -16,7 +22,6 @@ export default function LoggingScreen({navigation}) {
       console.warn((await getAllUsers())[0]?.name + " moment 💁‍");
     })();
   }, []);
-
 
   const [userData, setUserData] = useState([]);
   const [email, setEmail] = useState("");
@@ -51,7 +56,7 @@ export default function LoggingScreen({navigation}) {
   }
 
   /**
-   * Iterates asynchronously through users in userData checking if email and password are correct. If they are then user navigates to the main screen.
+   * Iterates through users in userData checking if email and password are correct.
    */
   async function checkCredentials() {
     for (const user of userData) {
@@ -59,13 +64,13 @@ export default function LoggingScreen({navigation}) {
         if (user.password === password) {
           setWrongPasswordInfo("");
           this.textInput.clear();
-          navigation.navigate("MainNav", {screen: "Home", _title}); // domyślny ekran, parametry
+          await navigation.navigate("MainNav", { screen: "Home", _title }); // domyślny ekran, parametry
           return;
         } else {
           setWrongPasswordInfo("Nieprawidłowe hasło");
           setPassword("");
           this.textInput.clear();
-          return;
+          return false;
         }
       }
     }
@@ -75,9 +80,31 @@ export default function LoggingScreen({navigation}) {
   }
 
   /**
-   * Gets userData from getUsers() and sets it which triggers the useEffect hook with checkCredentials() function.
+   * Navigates to the main screen.
+   * @async
    */
-  async function handleLogin() {
+  async function navigateToProfileScreen() {
+    await navigation.navigate("MainNav", {
+      screen: "Home",
+      params: {
+        _title: _title,
+      },
+    }); // default screen, parameters
+  }
+
+  /**
+   * Calls the checkCredentials() function. If the credentials are correct then user navigates to the main screen.
+   */
+  function handleLogin() {
+    if (checkCredentials()) {
+      navigateToProfileScreen();
+    }
+  }
+  /**
+   * Asynchronously gets userData from getUsers() and sets it which triggers the useEffect hook with handleLogin() function.
+   * @async
+   */
+  async function setCredentials() {
     const data = await getAllUsers();
     setUserData(data);
   }
@@ -87,7 +114,7 @@ export default function LoggingScreen({navigation}) {
    */
   useEffect(() => {
     if (!firstCheck.current) {
-      checkCredentials();
+      handleLogin();
     } else {
       firstCheck.current = false;
     }
@@ -120,18 +147,21 @@ export default function LoggingScreen({navigation}) {
       />
       <Text style={styles.wrongInputText}>{wrongPasswordInfo}</Text>
 
-      <TouchableHighlight style={styles.buttonMain} onPress={() => handleLogin()}>
+      <TouchableHighlight
+        style={styles.buttonMain}
+        onPress={() => handleLogin()}
+      >
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
 
-      <View style={{marginTop: 20}}>
+      <View style={{ marginTop: 20 }}>
         <TouchableOpacity
           // disabled
           style={{
             marginLeft: 10,
           }}
           onPress={() => {
-            navigation.navigate("ResetNav", {_title}); // domyślny ekran, parametry
+            navigation.navigate("ResetNav", { _title }); // domyślny ekran, parametry
           }}
         >
           <Text
@@ -146,15 +176,19 @@ export default function LoggingScreen({navigation}) {
         </TouchableOpacity>
       </View>
 
-      <View style={{flexDirection: "row", alignItems: "center", marginTop: 20}}>
-        <Text style={{ /* marginTop: 15, marginBottom: 5, */ fontSize: 13}}>Nie masz jeszcze konta?</Text>
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginTop: 20 }}
+      >
+        <Text style={{ /* marginTop: 15, marginBottom: 5, */ fontSize: 13 }}>
+          Nie masz jeszcze konta?
+        </Text>
 
         <TouchableOpacity
           style={{
             marginLeft: 10,
           }}
           onPress={() => {
-            navigation.navigate("RegisterNav", {_title}); // domyślny ekran, parametry
+            navigation.navigate("RegisterNav", { _title }); // domyślny ekran, parametry
           }}
         >
           <Text
@@ -167,7 +201,7 @@ export default function LoggingScreen({navigation}) {
         </TouchableOpacity>
       </View>
 
-      <StatusBar style="light"/>
+      <StatusBar style="light" />
     </View>
   );
 }

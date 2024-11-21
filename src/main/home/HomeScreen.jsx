@@ -1,14 +1,10 @@
-import {BackHandler, StyleSheet, Text, View} from "react-native";
-import {useEffect} from "react";
+import { BackHandler, StyleSheet, Text, View } from "react-native";
+import { useEffect } from "react";
 
-
-
-export default function HomeScreen({navigation}) {
-
+export default function HomeScreen({ navigation }) {
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
     const backAction = () => {
-
       if (navigation.getState().index === 2) {
         BackHandler.exitApp();
         return true;
@@ -17,7 +13,10 @@ export default function HomeScreen({navigation}) {
 
       return true;
     };
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
     return () => backHandler.remove();
   }, []);
 
@@ -31,9 +30,9 @@ export default function HomeScreen({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
     padding: 70,
   },
 });
