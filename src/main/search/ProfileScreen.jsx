@@ -122,6 +122,7 @@ export default function ProfileScreen({ navigation, route }) {
    * @returns {number}
    */
   function calculateFontSize() {
+    console.log(surnameTextHeight);
     if (surnameTextHeight > 32) {
       return 21;
     }
@@ -380,16 +381,17 @@ export default function ProfileScreen({ navigation, route }) {
           <View style={styles.nameContainer}>
             <View style={styles.nameSurnameColumn}>
               <Text
-                style={[styles.surname, { fontSize: calculateFontSize() }]}
-                onLayout={(event) =>
-                  setSurnameTextHeight(event.nativeEvent.layout.height)
-                }
+                style={[styles.surname, { fontSize: surnameTextHeight }]}
+                onLayout={(event) => {
+                  const height = event.nativeEvent.layout.height;
+                  const fontSize = height > 32 ? 21 : 24;
+                  console.log(fontSize);
+                  setSurnameTextHeight(fontSize);
+                }}
               >
                 {politicianSurname}
               </Text>
-              <Text
-                style={[styles.names, { fontSize: calculateFontSize() - 2 }]}
-              >
+              <Text style={[styles.names, { fontSize: surnameTextHeight - 2 }]}>
                 {politicianNames}
               </Text>
             </View>
