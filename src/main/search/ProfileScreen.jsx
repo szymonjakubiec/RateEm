@@ -22,10 +22,8 @@ import {
 import {getPolitician} from "../../backend/database/Politicians";
 import StarRating from "react-native-star-rating-widget";
 
-
-
-export default function ProfileScreen({navigation, route}) {
-  const {selectedPoliticianId} = route.params;
+export default function ProfileScreen({ navigation, route }) {
+  const { selectedPoliticianId } = route.params;
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
   const [politicianSurname, setPoliticianSurname] = useState();

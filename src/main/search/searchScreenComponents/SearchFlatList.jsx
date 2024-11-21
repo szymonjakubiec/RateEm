@@ -4,6 +4,10 @@ import { FlatList, TextInput, View } from "react-native";
 
 export default function SearchFlatList({ data, handleOnPress }) {
   const [filteredData, setFilteredData] = useState([]);
+  /**
+   * Filters through the array of politician names
+   * @param {object} input
+   */
   function handleInput(input) {
     if (input.length !== 0) {
       setFilteredData(
