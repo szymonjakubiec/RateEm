@@ -7,8 +7,8 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
-import { Image } from "react-native";
+import {useEffect, useRef, useState} from "react";
+import {Image} from "react-native";
 import {
   getOwnRating,
   addOwnRating,
@@ -19,11 +19,13 @@ import {
   getRatingsUserIdPoliticianId,
   addRating,
 } from "../../backend/database/Ratings";
-import { getPolitician } from "../../backend/database/Politicians";
+import {getPolitician} from "../../backend/database/Politicians";
 import StarRating from "react-native-star-rating-widget";
 
-export default function ProfileScreen({ navigation, route }) {
-  const { selectedPoliticianId } = route.params;
+
+
+export default function ProfileScreen({navigation, route}) {
+  const {selectedPoliticianId} = route.params;
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
   const [politicianSurname, setPoliticianSurname] = useState();
@@ -167,16 +169,17 @@ export default function ProfileScreen({ navigation, route }) {
               setExpandedRatingList(!expandedRatingList);
             }}
           >
-            <Text style={{ fontWeight: "500", fontSize: 20 }}>
+            <Text style={{fontWeight: "500", fontSize: 20}}>
               Twoje opinie
             </Text>
           </TouchableHighlight>
         </View>
-        <RatingsList />
-        <AddOpinion />
+        <RatingsList/>
+        <AddOpinion/>
       </View>
     );
   }
+
   /**
    * Component with a FlatList of single ratings.
    * @returns
@@ -193,12 +196,13 @@ export default function ProfileScreen({ navigation, route }) {
       );
     }
   }
+
   /**
    * Component
    * @param {object} item
    * @returns
    */
-  function RatingItem({ item }) {
+  function RatingItem({item}) {
     return (
       <TouchableHighlight
         onPress={() => {
@@ -216,16 +220,16 @@ export default function ProfileScreen({ navigation, route }) {
               <Text>{item.value}</Text>
             </View>
           </View>
-          <ItemExtension item={item} />
+          <ItemExtension item={item}/>
         </View>
       </TouchableHighlight>
     );
   }
 
-  function ItemExtension({ item }) {
+  function ItemExtension({item}) {
     if (selectedItemId === item.id) {
       return (
-        <View style={{ backgroundColor: "gray", padding: 10 }}>
+        <View style={{backgroundColor: "gray", padding: 10}}>
           <Text>{item.description}</Text>
           <TouchableHighlight
             style={styles.button}
@@ -246,7 +250,7 @@ export default function ProfileScreen({ navigation, route }) {
           onPress={() => setExpandedAddOpinion(true)}
         >
           <Text
-            style={{ fontWeight: "500", fontSize: 20, alignSelf: "center" }}
+            style={{fontWeight: "500", fontSize: 20, alignSelf: "center"}}
           >
             Dodaj opinię
           </Text>
@@ -298,6 +302,7 @@ export default function ProfileScreen({ navigation, route }) {
       );
     }
   }
+
   /**
    * Checks if the starRating is at least 1 and set it into firstOwnRating, which fires
    */
@@ -380,15 +385,20 @@ export default function ProfileScreen({ navigation, route }) {
           <View style={styles.nameContainer}>
             <View style={styles.nameSurnameColumn}>
               <Text
-                style={[styles.surname, { fontSize: calculateFontSize() }]}
-                onLayout={(event) =>
-                  setSurnameTextHeight(event.nativeEvent.layout.height)
-                }
+                adjustsFontSizeToFit={true}
+                numberOfLines={1}
+                style={styles.surname}
+                // onLayout={(event) => {
+                //   const height = event.nativeEvent.layout.height;
+                //   const fontSize = height > 33 ? 21 : 24;
+                //   console.log(height);
+                //   setSurnameTextHeight(fontSize);
+                // }}
               >
                 {politicianSurname}
               </Text>
               <Text
-                style={[styles.names, { fontSize: calculateFontSize() - 2 }]}
+                style={styles.names}
               >
                 {politicianNames}
               </Text>
@@ -422,7 +432,7 @@ export default function ProfileScreen({ navigation, route }) {
             <Text>{party}.</Text>
           </View>
         </View>
-        <OpinionsTile />
+        <OpinionsTile/>
       </View>
     </ScrollView>
   );
