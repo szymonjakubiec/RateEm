@@ -425,7 +425,6 @@ app.use(express.json());
 
   // --- update ---------------------------------------------------------------------------
   app.put(`/api/own-ratings/:id`, async (req, res) => {
-    const { id } = req.params;
     const { user_id, politician_id, value } = req.body;
 
     let connection;
@@ -446,12 +445,12 @@ app.use(express.json());
       fields.push("value = ?");
       values.push(value);
     }
+      console.log("after ifs:" + value);
 
     if (fields.length === 0) {
       return res.status(400).json({ message: "No data provided to update" });
     }
 
-    values.push(parseInt(id));
 
     const query = `UPDATE own_ratings
                    SET ${fields.join(", ")}
@@ -464,13 +463,13 @@ app.use(express.json());
       const query =
         "UPDATE own_ratings SET value = ? WHERE politician_id = ? AND user_id = ?";
       const [result] = await connection.execute(query, [
-        rating,
+        value,
         politician_id,
         user_id,
       ]);
 
       if (result.affectedRows > 0) {
-        res.json({ id, ...req.body });
+        res.json({ ...req.body });
       } else {
         res.status(404).json({ message: "Record not found" });
       }

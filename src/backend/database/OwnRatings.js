@@ -106,23 +106,23 @@ const addOwnRating = async (user_id, politician_id, value) => {
  * @function
  * @param {string} user_id - ID of the user
  * @param {string} politician_id - ID of the politician
- * @param {number} rating - New data for the rating. Possible keys:
+ * @param {float} rating - New data for the rating. Possible keys:
  * * {number} user_id - ID of the user
  * * {number} politician_id - ID of the politician
  * * {float} value - Value of the rating
  * @returns {Promise<object|undefined>} Updated rating data object
  */
-const updateOwnRating = async (politician_id, user_id, rating) => {
-  const url = `${global.SERVER_URL}/own-ratings`;
+const updateOwnRating = async (politician_id, user_id, value) => {
+  const url = `${global.SERVER_URL}/own-ratings/:id`;
   console.log(url);
-
+  console.log("in updateOwnRating: " + value);
   try {
     const response = await fetch(url, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ politician_id, user_id, rating }),
+      body: JSON.stringify({ politician_id, user_id, value }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
