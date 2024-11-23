@@ -7,8 +7,8 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import {useEffect, useRef, useState} from "react";
-import {Image} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Image } from "react-native";
 import {
   getOwnRating,
   addOwnRating,
@@ -19,7 +19,7 @@ import {
   getRatingsUserIdPoliticianId,
   addRating,
 } from "../../backend/database/Ratings";
-import {getPolitician} from "../../backend/database/Politicians";
+import { getPolitician } from "../../backend/database/Politicians";
 import StarRating from "react-native-star-rating-widget";
 
 export default function ProfileScreen({ navigation, route }) {
@@ -61,10 +61,10 @@ export default function ProfileScreen({ navigation, route }) {
     init();
   }, []);
 
-  async function init() {
-    await loadPoliticianData();
-    await loadOwnRating();
-    await loadSingleRatings();
+  function init() {
+    loadPoliticianData();
+    loadOwnRating();
+    loadSingleRatings();
   }
 
   /**
@@ -167,13 +167,13 @@ export default function ProfileScreen({ navigation, route }) {
               setExpandedRatingList(!expandedRatingList);
             }}
           >
-            <Text style={{fontWeight: "500", fontSize: 20}}>
+            <Text style={{ fontWeight: "500", fontSize: 20 }}>
               Twoje opinie
             </Text>
           </TouchableHighlight>
         </View>
-        <RatingsList/>
-        <AddOpinion/>
+        <RatingsList />
+        <AddOpinion />
       </View>
     );
   }
@@ -200,7 +200,7 @@ export default function ProfileScreen({ navigation, route }) {
    * @param {object} item
    * @returns
    */
-  function RatingItem({item}) {
+  function RatingItem({ item }) {
     return (
       <TouchableHighlight
         onPress={() => {
@@ -218,16 +218,16 @@ export default function ProfileScreen({ navigation, route }) {
               <Text>{item.value}</Text>
             </View>
           </View>
-          <ItemExtension item={item}/>
+          <ItemExtension item={item} />
         </View>
       </TouchableHighlight>
     );
   }
 
-  function ItemExtension({item}) {
+  function ItemExtension({ item }) {
     if (selectedItemId === item.id) {
       return (
-        <View style={{backgroundColor: "gray", padding: 10}}>
+        <View style={{ backgroundColor: "gray", padding: 10 }}>
           <Text>{item.description}</Text>
           <TouchableHighlight
             style={styles.button}
@@ -248,7 +248,7 @@ export default function ProfileScreen({ navigation, route }) {
           onPress={() => setExpandedAddOpinion(true)}
         >
           <Text
-            style={{fontWeight: "500", fontSize: 20, alignSelf: "center"}}
+            style={{ fontWeight: "500", fontSize: 20, alignSelf: "center" }}
           >
             Dodaj opinię
           </Text>
@@ -339,43 +339,52 @@ export default function ProfileScreen({ navigation, route }) {
     updateOwnRating(selectedPoliticianId, userId, weightedAverage);
   }
 
+  async function handleFirstOwnRating() {
+    await addRating(
+      userId,
+      selectedPoliticianId,
+      `Bazowa opinia o ${politicianNames} ${politicianSurname}`,
+      firstOwnRating,
+      "Użytkownik ma już wyrobione zdanie.",
+      currentDate,
+      10
+    );
+    addOwnRating(userId, selectedPoliticianId, firstOwnRating);
+    setOwnRating(firstOwnRating);
+    setFirstOwnRating(0);
+    loadSingleRatings();
+  }
+
+  async function handleNewSingleRating(){
+    await addRating(
+      userId,
+      selectedPoliticianId,
+      newTitle,
+      newSingleRating,
+      newDescription,
+      currentDate,
+      1
+    );
+    countOwnRating(newSingleRating);
+    setNewSingleRating(0);
+    setNewTitle("");
+    setNewDescription("");
+    loadSingleRatings();
+  }
+  
   useEffect(() => {
     if (firstOwnRating) {
-      addRating(
-        userId,
-        selectedPoliticianId,
-        `Bazowa opinia o ${politicianNames} ${politicianSurname}`,
-        firstOwnRating,
-        "Użytkownik ma już wyrobione zdanie.",
-        currentDate,
-        10
-      );
-      addOwnRating(userId, selectedPoliticianId, firstOwnRating);
-      setOwnRating(firstOwnRating);
-      setFirstOwnRating(0);
-      loadSingleRatings();
+      handleFirstOwnRating()
     }
   }, [firstOwnRating]);
-
+  
   useEffect(() => {
     if (newSingleRating && newTitle && newDescription) {
-      addRating(
-        userId,
-        selectedPoliticianId,
-        newTitle,
-        newSingleRating,
-        newDescription,
-        currentDate,
-        1
-      );
-      countOwnRating(newSingleRating);
-      setNewSingleRating(0);
-      setNewTitle("");
-      setNewDescription("");
-      loadSingleRatings();
+      handleNewSingleRating()
     }
   }, [newSingleRating, newTitle, newDescription]);
-
+  
+  
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -395,11 +404,7 @@ export default function ProfileScreen({ navigation, route }) {
               >
                 {politicianSurname}
               </Text>
-              <Text
-                style={styles.names}
-              >
-                {politicianNames}
-              </Text>
+              <Text style={styles.names}>{politicianNames}</Text>
             </View>
             <View style={styles.imageContainer}>
               <Image
@@ -430,7 +435,7 @@ export default function ProfileScreen({ navigation, route }) {
             <Text>{party}.</Text>
           </View>
         </View>
-        <OpinionsTile/>
+        <OpinionsTile />
       </View>
     </ScrollView>
   );
