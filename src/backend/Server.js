@@ -423,7 +423,7 @@ app.use(express.json());
   });
 
   // --- update ---------------------------------------------------------------------------
-  app.put(`/api/own-ratings/:id`, async (req, res) => {
+  app.put(`/api/own-ratings`, async (req, res) => {
     const { user_id, politician_id, value } = req.body;
 
     let connection;
