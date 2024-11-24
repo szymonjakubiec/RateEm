@@ -16,10 +16,12 @@ const getAllUsers = async () => {
     const data = await response.json();
 
     data.forEach((user) => {
+      console.log(user);
       user.name = decrypt(user.name);
       user.email = decrypt(user.email);
       user.password = decrypt(user.password);
       user.phone_number = decrypt(user.phone_number);
+      console.log(user);
     });
 
     return data;

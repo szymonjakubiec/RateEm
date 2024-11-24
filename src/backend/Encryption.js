@@ -9,7 +9,7 @@ const key = "kvsincfsbcdysukbcvdskncudfh";
  * @param {string} string - text to encrypt
  * @returns {string} encrypted text
  */
-export function encrypt(string) {
+function encrypt(string) {
   return CryptoJS.AES.encrypt(string, key).toString();
 }
 
@@ -20,6 +20,8 @@ export function encrypt(string) {
  * @param {string} string - text to decrypt
  * @returns {string} decrypted text
  */
-export function decrypt(string) {
+function decrypt(string) {
   return CryptoJS.AES.decrypt(string, key).toString(CryptoJS.enc.Utf8);
 }
+
+module.exports = { encrypt, decrypt };

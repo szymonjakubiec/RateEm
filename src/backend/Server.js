@@ -1,6 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
-const { encrypt, decrypt } = require("./Encryption");
+const { encrypt } = require("./Encryption");
 const app = express();
 
 const config = {
@@ -801,59 +801,68 @@ app.get("/api/politicians", async (req, res) => {
     }
   });
 }
+
+//
 //   SEJM_DISTRICTS TABLE
-//select
-app.get("/api/districts/sejm", async (req, res) => {
-  let connection;
+//
+{
+  //select
+  app.get("/api/districts/sejm", async (req, res) => {
+    let connection;
 
-  try {
-    connection = await mysql.createConnection(config);
-    const [result] = await connection.execute("SELECT * FROM sejm_districts");
+    try {
+      connection = await mysql.createConnection(config);
+      const [result] = await connection.execute("SELECT * FROM sejm_districts");
 
-    if (result.length > 0) {
-      res.json(result);
-    } else {
-      res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
-    }
-  } catch (err) {
-    res.status(500).send(err.message);
-  } finally {
-    if (connection) {
-      try {
-        await connection.end();
-      } catch (err) {
-        console.error("Error closing connection:", err.message);
+      if (result.length > 0) {
+        res.json(result);
+      } else {
+        res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+      }
+    } catch (err) {
+      res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
       }
     }
-  }
-});
+  });
+}
 
+//
 //   EU_DISTRICTS TABLE
-//select
-app.get("/api/districts/eu", async (req, res) => {
-  let connection;
+//
+{
+  //select
+  app.get("/api/districts/eu", async (req, res) => {
+    let connection;
 
-  try {
-    connection = await mysql.createConnection(config);
-    const [result] = await connection.execute("SELECT * FROM eu_districts");
+    try {
+      connection = await mysql.createConnection(config);
+      const [result] = await connection.execute("SELECT * FROM eu_districts");
 
-    if (result.length > 0) {
-      res.json(result);
-    } else {
-      res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
-    }
-  } catch (err) {
-    res.status(500).send(err.message);
-  } finally {
-    if (connection) {
-      try {
-        await connection.end();
-      } catch (err) {
-        console.error("Error closing connection:", err.message);
+      if (result.length > 0) {
+        res.json(result);
+      } else {
+        res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+      }
+    } catch (err) {
+      res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
       }
     }
-  }
-});
+  });
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
