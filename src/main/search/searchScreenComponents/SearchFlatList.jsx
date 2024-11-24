@@ -4,15 +4,21 @@ import { FlatList, TextInput, View } from "react-native";
 
 export default function SearchFlatList({ data, handleOnPress }) {
   const [filteredData, setFilteredData] = useState([]);
+  
   /**
-   * Filters through the array of politician names
+   * Filters through the array of politician names, through splitting each full name by " " and "-" into array of strings. 
+   * Then iterates through each string checking if any of them matches.
    * @param {object} input
    */
   function handleInput(input) {
     if (input.length !== 0) {
       setFilteredData(
         data.filter((obj) =>
-          obj.value.toLowerCase().includes(input.toLowerCase())
+          obj.value.toLowerCase()
+            .split(/[\s-]+/)
+            .some(
+              (v) => v.startsWith(input.toLowerCase())
+            )              
         )
       );
     } else {
