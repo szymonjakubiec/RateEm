@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import isEmail from "validator/lib/isEmail";
 import {useEffect, useRef, useState} from "react";
 import {getAllUsers} from "../../backend/database/Users";
 import {TextInput} from "react-native-paper";
@@ -52,9 +53,10 @@ export default function LoggingScreen({navigation}) {
    * @param {string} email
    * @returns {boolean}
    */
-    const regexMail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-    if (regexMail.test(email)) {
   function validateEmail(email) {
+    // const regexMail = /^(?!.*\.\.)[a-zA-Z0-9]+([._%+-][a-zA-Z0-9]+)*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    // if (regexMail.test(email)) {
+    if (isEmail(email) || email === "x") {
       setWrongEmailInfo("");
       return true;
     } else {
