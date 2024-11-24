@@ -1,5 +1,5 @@
-import { useRoute } from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
+import {useRoute} from "@react-navigation/native";
+import {StatusBar} from "expo-status-bar";
 import {
   StyleSheet,
   Text,
@@ -8,18 +8,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import CheckBox from "react-native-check-box";
-import { getAllUsers } from "../../backend/database/Users";
+import {getAllUsers} from "../../backend/database/Users";
 
-export default function LoggingScreen({ navigation }) {
+
+
+export default function LoggingScreen({navigation}) {
   const _title = "Rate'Em";
   // const route = useRoute();
 
   // connection test
   useEffect(() => {
     (async () => {
-      console.warn((await getAllUsers())[0]?.name + " moment 💁‍");
+      console.info("E-mail: " + (await getAllUsers())[1]?.email);
     })();
   }, []);
 
@@ -64,8 +66,8 @@ export default function LoggingScreen({ navigation }) {
         if (user.password === password) {
           setWrongPasswordInfo("");
           this.textInput.clear();
-          await navigation.navigate("MainNav", { screen: "Home", _title }); // domyślny ekran, parametry
-          return;
+          await navigation.navigate("MainNav", {screen: "Home", _title}); // domyślny ekran, parametry
+          return true;
         } else {
           setWrongPasswordInfo("Nieprawidłowe hasło");
           setPassword("");
@@ -100,6 +102,7 @@ export default function LoggingScreen({ navigation }) {
       navigateToProfileScreen();
     }
   }
+
   /**
    * Asynchronously gets userData from getUsers() and sets it which triggers the useEffect hook with handleLogin() function.
    * @async
@@ -154,14 +157,14 @@ export default function LoggingScreen({ navigation }) {
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
 
-      <View style={{ marginTop: 20 }}>
+      <View style={{marginTop: 20}}>
         <TouchableOpacity
           // disabled
           style={{
             marginLeft: 10,
           }}
           onPress={() => {
-            navigation.navigate("ResetNav", { _title }); // domyślny ekran, parametry
+            navigation.navigate("ResetNav", {_title}); // domyślny ekran, parametry
           }}
         >
           <Text
@@ -177,9 +180,9 @@ export default function LoggingScreen({ navigation }) {
       </View>
 
       <View
-        style={{ flexDirection: "row", alignItems: "center", marginTop: 20 }}
+        style={{flexDirection: "row", alignItems: "center", marginTop: 20}}
       >
-        <Text style={{ /* marginTop: 15, marginBottom: 5, */ fontSize: 13 }}>
+        <Text style={{ /* marginTop: 15, marginBottom: 5, */ fontSize: 13}}>
           Nie masz jeszcze konta?
         </Text>
 
@@ -188,7 +191,7 @@ export default function LoggingScreen({ navigation }) {
             marginLeft: 10,
           }}
           onPress={() => {
-            navigation.navigate("RegisterNav", { _title }); // domyślny ekran, parametry
+            navigation.navigate("RegisterNav", {_title}); // domyślny ekran, parametry
           }}
         >
           <Text
@@ -201,7 +204,7 @@ export default function LoggingScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <StatusBar style="light" />
+      <StatusBar style="light"/>
     </View>
   );
 }
