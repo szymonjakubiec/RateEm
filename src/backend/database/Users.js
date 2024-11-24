@@ -1,4 +1,6 @@
-import { encrypt, decrypt } from "../Encryption";
+import {encrypt, decrypt} from "../Encryption";
+
+
 
 /**
  * Gets all users.
@@ -80,8 +82,8 @@ const addUser = async (name, email, password, phone_number, verified, communicat
  * Updates a user.
  *
  * @async
- * @param {string} id - ID or Email of the user to update
- * @param {Object} newData - New data for the user. Possible keys:
+ * @param {number} id - ID or Email of the user to update
+ * @param {{name, email, password, phone_number, verified, communication_method, login_method}} newData - New data for the user. Possible keys:
  * * {string} name - Name of the user
  * * {string} email - Email of the user
  * * {string} password - Password of the user
@@ -142,4 +144,4 @@ const deleteUser = async (id) => {
   }
 };
 
-module.exports = { addUser, updateUser, deleteUser, getAllUsers };
+module.exports = {addUser, updateUser, deleteUser, getAllUsers};

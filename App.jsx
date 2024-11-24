@@ -24,7 +24,9 @@ global.SERVER_URL = "http://192.168.1.20:3000/api"; // cn
 // MM
 // global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
 
+
 console.log(global.SERVER_URL);
+
 
 export default function App() {
   return (
