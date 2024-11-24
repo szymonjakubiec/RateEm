@@ -1,3 +1,5 @@
+import { encrypt, decrypt } from "../Encryption";
+
 /**
  * Gets all users.
  *
@@ -12,6 +14,14 @@ const getAllUsers = async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
+
+    data.forEach((user) => {
+      user.name = decrypt(user.name);
+      user.email = decrypt(user.email);
+      user.password = decrypt(user.password);
+      user.phone_number = decrypt(user.phone_number);
+    });
+
     return data;
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -32,15 +42,7 @@ const getAllUsers = async () => {
  * @param {number} login_method - Method of logging in
  * @returns {Promise<object|undefined>} New user data object
  */
-const addUser = async (
-  name,
-  email,
-  password,
-  phone_number,
-  verified,
-  communication_method,
-  login_method
-) => {
+const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
   const url = `${global.SERVER_URL}/users`; // Endpoint URL
   try {
     const response = await fetch(url, {
@@ -140,4 +142,4 @@ const deleteUser = async (id) => {
   }
 };
 
-module.exports = {addUser, updateUser, deleteUser, getAllUsers};
+module.exports = { addUser, updateUser, deleteUser, getAllUsers };

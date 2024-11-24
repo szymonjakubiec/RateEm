@@ -1,9 +1,7 @@
-import {Alert, BackHandler} from "react-native";
-import {Resend} from "resend";
-import emailjs from '@emailjs/react-native';
-import {useEffect} from "react";
-
-
+import { Alert, BackHandler } from "react-native";
+import { Resend } from "resend";
+import emailjs from "@emailjs/react-native";
+import { useEffect } from "react";
 
 /**
  * Sends SMS verification - Twilio.
@@ -16,19 +14,16 @@ const sendVerificationSMS = async (phone) => {
   // .then((res) => console.log("SMS sent successfully", res))
   // .catch((err) => console.error("Error sending SMS", err));
   try {
-    const response = await fetch(
-      `https://verify-5317-mnuord.twil.io/start-verify`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          to: phone,
-          channel: "sms",
-        }),
+    const response = await fetch(`https://verify-5317-mnuord.twil.io/start-verify`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        to: phone,
+        channel: "sms",
+      }),
+    });
 
     const json = await response.json();
     console.log("send");
@@ -49,19 +44,16 @@ const sendVerificationSMS = async (phone) => {
  */
 const checkVerificationSMS = async (phone, code) => {
   try {
-    const response = await fetch(
-      `https://verify-5317-mnuord.twil.io/check-verify`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          to: phone,
-          code,
-        }),
+    const response = await fetch(`https://verify-5317-mnuord.twil.io/check-verify`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        to: phone,
+        code,
+      }),
+    });
 
     const json = await response.json();
     console.log("check");
@@ -72,7 +64,6 @@ const checkVerificationSMS = async (phone, code) => {
     return false;
   }
 };
-
 
 /**
  * Sends e-mail verification.
@@ -130,20 +121,22 @@ const sendMail = async (mail, code, mode) => {
 
   // PK: Email.js
   try {
-    const res = await emailjs.send("service_nn7mz3o", mode === "verify" ? "template_za4zsi5" : "template_0x5vgf6",
+    const res = await emailjs.send(
+      "service_nn7mz3o",
+      mode === "verify" ? "template_za4zsi5" : "template_0x5vgf6",
       {
         mail,
-        code
-      }, {
+        code,
+      },
+      {
         publicKey: "tEwluatDV5HTFU6dq",
-      });
+      }
+    );
     return res.status;
   } catch (error) {
     return error.status;
   }
-
 };
-
 
 /**
  * Creates custom alert box with given text.
@@ -209,4 +202,4 @@ function goBack(navigation) {
   }, [navigation]);
 }
 
-module.exports = {sendVerificationSMS, checkVerificationSMS, sendMail, alert, goBack, getUserAddress};
+module.exports = { sendVerificationSMS, checkVerificationSMS, sendMail, alert, goBack, getUserAddress };

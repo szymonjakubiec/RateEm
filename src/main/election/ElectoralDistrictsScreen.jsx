@@ -1,11 +1,9 @@
-import {useState, useEffect} from "react";
-import {StyleSheet, Text, View, ScrollView, Linking, Alert, AppState} from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, Text, View, ScrollView, Linking, Alert, AppState } from "react-native";
 import * as Location from "expo-location";
-import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
-import {getUserAddress} from "../../backend/CommonMethods";
-import {getSejmDistrict, getEuDistrict} from "../../backend/database/Districts";
-
-
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import { getUserAddress } from "../../backend/CommonMethods";
+import { getSejmDistrict, getEuDistrict } from "../../backend/database/Districts";
 
 export default function ElectoralDistricts() {
   const [refreshing, setRefreshing] = useState(false);
@@ -31,7 +29,7 @@ export default function ElectoralDistricts() {
   };
 
   const requestLocationPermission = async () => {
-    const {status} = await Location.getForegroundPermissionsAsync();
+    const { status } = await Location.getForegroundPermissionsAsync();
 
     if (status == "granted") {
       setLocationPermission(true);
@@ -82,7 +80,7 @@ export default function ElectoralDistricts() {
       setRefreshing(false);
       return {
         latitude: parseFloat(locationTemp.coords.latitude.toFixed(5)),
-        longitude: parseFloat(locationTemp.coords.longitude.toFixed(5))
+        longitude: parseFloat(locationTemp.coords.longitude.toFixed(5)),
       };
     }
   };
@@ -91,10 +89,10 @@ export default function ElectoralDistricts() {
     try {
       setLocationMap({
         latitude: parseFloat(location.latitude.toFixed(5)),
-        longitude: parseFloat(location.longitude.toFixed(5))
+        longitude: parseFloat(location.longitude.toFixed(5)),
       });
     } catch (error) {
-      setLocationMap({latitude: 50.25962, longitude: 19.021725});
+      setLocationMap({ latitude: 50.25962, longitude: 19.021725 });
     }
   }
 
@@ -136,18 +134,18 @@ export default function ElectoralDistricts() {
           return {
             address: powiatName,
             sejmDistrict: sejmDistrictData.district_number,
-            euDistrict: euDistrictData.district_number
+            euDistrict: euDistrictData.district_number,
           };
         } else {
-          return {address: "błąd", sejmDistrict: 0, euDistrict: 0};
+          return { address: "błąd", sejmDistrict: 0, euDistrict: 0 };
         }
       } else if (countyName == "") {
-        return {address: "Morze", sejmDistrict: 19, euDistrict: 4};
+        return { address: "Morze", sejmDistrict: 19, euDistrict: 4 };
       } else {
-        return {address: "Zagranica", sejmDistrict: 19, euDistrict: 4};
+        return { address: "Zagranica", sejmDistrict: 19, euDistrict: 4 };
       }
     } catch (error) {
-      return {address: "błąd", sejmDistrict: 0, euDistrict: 0};
+      return { address: "błąd", sejmDistrict: 0, euDistrict: 0 };
     }
   }
 

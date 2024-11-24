@@ -1,5 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
+const { encrypt } = require("./Encryption");
 const app = express();
 
 const config = {
@@ -134,10 +135,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows] = await connection.execute(
-        "SELECT * FROM ratings WHERE user_id = ? AND politician_id = ?",
-        [user_id, politician_id]
-      );
+      const [rows] = await connection.execute("SELECT * FROM ratings WHERE user_id = ? AND politician_id = ?", [user_id, politician_id]);
 
       // Sprawdzenie, czy wynik nie jest pusty
       if (rows.length === 0) {
@@ -147,9 +145,7 @@ app.use(express.json());
       res.json(rows);
     } catch (err) {
       console.error("Database error:", err);
-      res
-        .status(500)
-        .json({ message: "Internal Server Error", error: err.message });
+      res.status(500).json({ message: "Internal Server Error", error: err.message });
     } finally {
       if (connection) {
         try {
@@ -163,8 +159,7 @@ app.use(express.json());
 
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/ratings", async (req, res) => {
-    const { user_id, politician_id, title, value, description, date } =
-      req.body;
+    const { user_id, politician_id, title, value, description, date } = req.body;
     const weight = req.body.weight || 1;
     let connection;
 
@@ -200,8 +195,7 @@ app.use(express.json());
   // --- update ---------------------------------------------------------------------------
   app.put("/api/ratings/:id", async (req, res) => {
     const { id } = req.params;
-    const { user_id, politician_id, title, value, description, date } =
-      req.body;
+    const { user_id, politician_id, title, value, description, date } = req.body;
 
     let connection;
 
@@ -274,10 +268,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute(
-        "DELETE FROM ratings WHERE id = ?",
-        [parseInt(id)]
-      );
+      const [result] = await connection.execute("DELETE FROM ratings WHERE id = ?", [parseInt(id)]);
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Rating not found" });
@@ -307,9 +298,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM own_ratings"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM own_ratings");
 
       res.json(rows);
     } catch (err) {
@@ -369,10 +358,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows] = await connection.execute(
-        "SELECT * FROM own_ratings WHERE user_id = ? AND politician_id = ?",
-        [user_id, politician_id]
-      );
+      const [rows] = await connection.execute("SELECT * FROM own_ratings WHERE user_id = ? AND politician_id = ?", [user_id, politician_id]);
 
       if (rows.length === 0) {
         return res.status(404).json({ message: "Rating not found" });
@@ -381,9 +367,7 @@ app.use(express.json());
       res.json(rows);
     } catch (err) {
       console.error("Database error:", err);
-      res
-        .status(500)
-        .json({ message: "Internal Server Error", error: err.message });
+      res.status(500).json({ message: "Internal Server Error", error: err.message });
     } finally {
       if (connection) {
         try {
@@ -402,14 +386,13 @@ app.use(express.json());
 
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute(
-        "INSERT INTO own_ratings (user_id, politician_id, value) VALUES (?, ?, ?)",
-        [user_id, politician_id, value]
-      );
+      const [result] = await connection.execute("INSERT INTO own_ratings (user_id, politician_id, value) VALUES (?, ?, ?)", [
+        user_id,
+        politician_id,
+        value,
+      ]);
 
-      res
-        .status(201)
-        .json({ id: result.insertId, user_id, politician_id, value });
+      res.status(201).json({ id: result.insertId, user_id, politician_id, value });
     } catch (err) {
       res.status(500).send(err.message);
     } finally {
@@ -424,7 +407,7 @@ app.use(express.json());
   });
 
   // --- update ---------------------------------------------------------------------------
-  app.put(`/api/own-ratings/:id`, async (req, res) => {
+  app.put(`/api/own-ratings`, async (req, res) => {
     const { user_id, politician_id, value } = req.body;
 
     let connection;
@@ -460,13 +443,8 @@ app.use(express.json());
       connection = await mysql.createConnection(config);
 
       // Aktualizujemy rating na podstawie `politician_id` i `user_id`
-      const query =
-        "UPDATE own_ratings SET value = ? WHERE politician_id = ? AND user_id = ?";
-      const [result] = await connection.execute(query, [
-        value,
-        politician_id,
-        user_id,
-      ]);
+      const query = "UPDATE own_ratings SET value = ? WHERE politician_id = ? AND user_id = ?";
+      const [result] = await connection.execute(query, [rating, politician_id, user_id]);
 
       if (result.affectedRows > 0) {
         res.json({ ...req.body });
@@ -493,10 +471,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute(
-        "DELETE FROM own_ratings WHERE id = ?",
-        [parseInt(id)]
-      );
+      const [result] = await connection.execute("DELETE FROM own_ratings WHERE id = ?", [parseInt(id)]);
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Rating not found" });
@@ -526,9 +501,7 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM politicians"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM politicians");
 
       res.json(rows);
     } catch (err) {
@@ -560,10 +533,7 @@ app.get("/api/politicians", async (req, res) => {
   let connection;
   try {
     connection = await mysql.createConnection(config);
-    const [rows] = await connection.execute(
-      "SELECT * FROM politicians WHERE id = ?",
-      [politician_id]
-    );
+    const [rows] = await connection.execute("SELECT * FROM politicians WHERE id = ?", [politician_id]);
 
     // Sprawdzenie, czy wynik nie jest pusty
     if (rows.length === 0) {
@@ -573,9 +543,7 @@ app.get("/api/politicians", async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error("Database error:", err);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
   } finally {
     if (connection) {
       try {
@@ -598,6 +566,13 @@ app.get("/api/politicians", async (req, res) => {
       connection = await mysql.createConnection(config);
       const [rows, fields] = await connection.execute("SELECT * FROM users");
 
+      // rows.forEach((row) => {
+      //   row.name = decrypt(row.name);
+      //   row.email = decrypt(row.email);
+      //   row.password = decrypt(row.password);
+      //   row.phone_number = decrypt(row.phone_number);
+      // });
+
       res.json(rows);
     } catch (err) {
       res.status(500).send(err.message);
@@ -614,30 +589,14 @@ app.get("/api/politicians", async (req, res) => {
 
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/users", async (req, res) => {
-    const {
-      name,
-      email,
-      password,
-      phone_number,
-      verified,
-      communication_method,
-      login_method,
-    } = req.body;
+    const { name, email, password, phone_number, verified, communication_method, login_method } = req.body;
     let connection;
 
     try {
       connection = await mysql.createConnection(config);
       const [result] = await connection.execute(
         "INSERT INTO users (name, email, password, phone_number, verified, communication_method, login_method) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [
-          name,
-          email,
-          password,
-          phone_number,
-          verified,
-          communication_method,
-          login_method,
-        ]
+        [encrypt(name), encrypt(email), encrypt(password), encrypt(phone_number), verified, communication_method, login_method]
       );
 
       res.status(201).json({
@@ -666,15 +625,7 @@ app.get("/api/politicians", async (req, res) => {
   // --- update ---------------------------------------------------------------------------
   app.put("/api/users/:id", async (req, res) => {
     const { id } = req.params;
-    const {
-      name,
-      email,
-      password,
-      phone_number,
-      verified,
-      communication_method,
-      login_method,
-    } = req.body;
+    const { name, email, password, phone_number, verified, communication_method, login_method } = req.body;
 
     let connection;
     console.log("Request body:", req.body);
@@ -684,19 +635,19 @@ app.get("/api/politicians", async (req, res) => {
 
     if (name) {
       fields.push("name = ?");
-      values.push(name);
+      values.push(encrypt(name));
     }
     if (email) {
       fields.push("email = ?");
-      values.push(email);
+      values.push(encrypt(email));
     }
     if (password) {
       fields.push("password = ?");
-      values.push(password);
+      values.push(encrypt(password));
     }
     if (phone_number) {
       fields.push("phone_number = ?");
-      values.push(phone_number);
+      values.push(encrypt(phone_number));
     }
     if (verified) {
       fields.push("verified = ?");
@@ -748,15 +699,11 @@ app.get("/api/politicians", async (req, res) => {
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/users/:id", async (req, res) => {
     const { id } = req.params;
-    console.log("Xd");
 
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute(
-        "DELETE FROM users WHERE id = ?",
-        [parseInt(id)]
-      );
+      const [result] = await connection.execute("DELETE FROM users WHERE id = ?", [parseInt(id)]);
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "User not found" });
@@ -786,9 +733,7 @@ app.get("/api/politicians", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM president_elections"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM president_elections");
 
       res.json(rows);
     } catch (err) {
@@ -814,9 +759,7 @@ app.get("/api/politicians", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM sejm_elections"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM sejm_elections");
 
       res.json(rows);
     } catch (err) {
@@ -842,9 +785,7 @@ app.get("/api/politicians", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute(
-        "SELECT * FROM eu_elections"
-      );
+      const [rows, fields] = await connection.execute("SELECT * FROM eu_elections");
 
       res.json(rows);
     } catch (err) {
@@ -860,61 +801,68 @@ app.get("/api/politicians", async (req, res) => {
     }
   });
 }
+
+//
 //   SEJM_DISTRICTS TABLE
-//select
-app.get("/api/districts/sejm", async (req, res) => {
-  let connection;
+//
+{
+  //select
+  app.get("/api/districts/sejm", async (req, res) => {
+    let connection;
 
-  try {
-    connection = await mysql.createConnection(config);
-    const [result] = await connection.execute("SELECT * FROM sejm_districts");
+    try {
+      connection = await mysql.createConnection(config);
+      const [result] = await connection.execute("SELECT * FROM sejm_districts");
 
-    if (result.length > 0) {
-      res.json(result);
-    } else {
-      res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
-    }
-  } catch (err) {
-    res.status(500).send(err.message);
-  } finally {
-    if (connection) {
-      try {
-        await connection.end();
-      } catch (err) {
-        console.error("Error closing connection:", err.message);
+      if (result.length > 0) {
+        res.json(result);
+      } else {
+        res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+      }
+    } catch (err) {
+      res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
       }
     }
-  }
-});
+  });
+}
 
+//
 //   EU_DISTRICTS TABLE
-//select
-app.get("/api/districts/eu", async (req, res) => {
-  let connection;
+//
+{
+  //select
+  app.get("/api/districts/eu", async (req, res) => {
+    let connection;
 
-  try {
-    connection = await mysql.createConnection(config);
-    const [result] = await connection.execute("SELECT * FROM eu_districts");
+    try {
+      connection = await mysql.createConnection(config);
+      const [result] = await connection.execute("SELECT * FROM eu_districts");
 
-    if (result.length > 0) {
-      res.json(result);
-    } else {
-      res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
-    }
-  } catch (err) {
-    res.status(500).send(err.message);
-  } finally {
-    if (connection) {
-      try {
-        await connection.end();
-      } catch (err) {
-        console.error("Error closing connection:", err.message);
+      if (result.length > 0) {
+        res.json(result);
+      } else {
+        res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+      }
+    } catch (err) {
+      res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
       }
     }
-  }
-});
+  });
+}
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, "0.0.0.0", () =>
-  console.log(`Server running on port ${PORT}`)
-);
+app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
