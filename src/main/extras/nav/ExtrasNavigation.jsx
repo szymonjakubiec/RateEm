@@ -29,7 +29,7 @@ export default function ExtrasNavigation({route}) {
         name="Settings"
         component={SettingsScreen}
         options={() => ({
-          headerTitle: _title,
+          headerTitle: "Ustawienia",
           headerTitleAlign: "center",
         })}
       />
@@ -37,7 +37,7 @@ export default function ExtrasNavigation({route}) {
         name="Guide"
         component={GuideScreen}
         options={() => ({
-          headerTitle: _title,
+          headerTitle: "Przewodnik",
           headerTitleAlign: "center",
         })}
       />
@@ -45,7 +45,7 @@ export default function ExtrasNavigation({route}) {
         name="Summary"
         component={SummaryScreen}
         options={() => ({
-          headerTitle: _title,
+          headerTitle: "Podsumowanie",
           headerTitleAlign: "center",
         })}
       />
