@@ -444,7 +444,7 @@ app.use(express.json());
 
       // Aktualizujemy rating na podstawie `politician_id` i `user_id`
       const query = "UPDATE own_ratings SET value = ? WHERE politician_id = ? AND user_id = ?";
-      const [result] = await connection.execute(query, [rating, politician_id, user_id]);
+      const [result] = await connection.execute(query, [value, politician_id, user_id]);
 
       if (result.affectedRows > 0) {
         res.json({ ...req.body });

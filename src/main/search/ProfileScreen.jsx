@@ -1,26 +1,19 @@
 import {
-  FlatList,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableHighlight,
   View,
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Image } from "react-native";
 import {
   getOwnRating,
   addOwnRating,
   updateOwnRating,
 } from "../../backend/database/OwnRatings";
-import {
-  getRating,
-  getRatingsUserIdPoliticianId,
-  addRating,
-} from "../../backend/database/Ratings";
+import {  getRatingsUserIdPoliticianId, addRating } from "../../backend/database/Ratings";
 import { getPolitician } from "../../backend/database/Politicians";
-import StarRating from "react-native-star-rating-widget";
+import OpinionsTile from "./opinionsTileComponents/OpinionsTile";
 
 export default function ProfileScreen({ navigation, route }) {
   const { selectedPoliticianId } = route.params;
@@ -38,20 +31,11 @@ export default function ProfileScreen({ navigation, route }) {
   const [firstOwnRating, setFirstOwnRating] = useState(0);
   const [singleRatings, setSingleRatings] = useState([]); // these are ratings from ratings.js
   const [newSingleRating, setNewSingleRating] = useState(0);
-  const [starRating, setStarRating] = useState(0);
-
-  const [wrongRatingInfo, setWrongRatingInfo] = useState("");
-
-  const newTitleRef = useRef("");
-  const newDescriptionRef = useRef("");
+  
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
 
-  const [expandedRatingList, setExpandedRatingList] = useState(false);
-  const [expandedRating, setExpandedRating] = useState(false);
-  const [expandedAddOpinion, setExpandedAddOpinion] = useState(false);
-
-  const [selectedItemId, setSelectedItemId] = useState(0);
+  
 
   const userId = 2;
 
@@ -128,199 +112,7 @@ export default function ProfileScreen({ navigation, route }) {
     return 24;
   }
 
-  function OpinionsTile() {
-    if (ownRating === 0) {
-      return displayNoOpinionComponent();
-    } else {
-      return displayYourOpinionsComponent();
-    }
-  }
-
-  function displayNoOpinionComponent() {
-    return (
-      <View style={styles.opinionsTile}>
-        <Text>Brak opinii</Text>
-        <Text>Masz już wyrobione zdanie o tym polityku?</Text>
-        <Text>Ustaw opinię bazową</Text>
-        <StarRating
-          rating={starRating}
-          onChange={setStarRating}
-          enableHalfStar={false}
-        />
-        <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
-        <TouchableHighlight
-          style={styles.button}
-          onPress={setBaseRate} // function to set firstRating if >= 1
-        >
-          <Text>Ustaw</Text>
-        </TouchableHighlight>
-      </View>
-    );
-  }
-
-  function displayYourOpinionsComponent() {
-    return (
-      <View style={styles.opinionsTile}>
-        <View>
-          <TouchableHighlight
-            onPress={() => {
-              setExpandedRatingList(!expandedRatingList);
-            }}
-          >
-            <Text style={{ fontWeight: "500", fontSize: 20 }}>
-              Twoje opinie
-            </Text>
-          </TouchableHighlight>
-        </View>
-        <RatingsList />
-        <AddOpinion />
-      </View>
-    );
-  }
-
-  /**
-   * Component with a FlatList of single ratings.
-   * @returns
-   */
-  function RatingsList() {
-    if (expandedRatingList === true) {
-      return (
-        <FlatList
-          data={singleRatings}
-          renderItem={RatingItem}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={false}
-        />
-      );
-    }
-  }
-
-  /**
-   * Component
-   * @param {object} item
-   * @returns
-   */
-  function RatingItem({ item }) {
-    return (
-      <TouchableHighlight
-        onPress={() => {
-          if (selectedItemId !== item.id) setSelectedItemId(item.id);
-          else setSelectedItemId(0);
-        }}
-      >
-        <View style={styles.ratingItem}>
-          <View style={styles.ratingItemBase}>
-            <View>
-              <Text>{item.date}</Text>
-              <Text>{item.title}</Text>
-            </View>
-            <View>
-              <Text>{item.value}</Text>
-            </View>
-          </View>
-          <ItemExtension item={item} />
-        </View>
-      </TouchableHighlight>
-    );
-  }
-
-  function ItemExtension({ item }) {
-    if (selectedItemId === item.id) {
-      return (
-        <View style={{ backgroundColor: "gray", padding: 10 }}>
-          <Text>{item.description}</Text>
-          <TouchableHighlight
-            style={styles.button}
-            onPress={() => console.log("Not yet, WIP")}
-          >
-            <Text>Usuń opinię</Text>
-          </TouchableHighlight>
-        </View>
-      );
-    }
-  }
-
-  function AddOpinion() {
-    if (expandedAddOpinion === false) {
-      return (
-        <TouchableHighlight
-          style={styles.ratingItem}
-          onPress={() => setExpandedAddOpinion(true)}
-        >
-          <Text
-            style={{ fontWeight: "500", fontSize: 20, alignSelf: "center" }}
-          >
-            Dodaj opinię
-          </Text>
-        </TouchableHighlight>
-      );
-    } else {
-      return (
-        <View style={styles.ratingItem}>
-          <TouchableHighlight onPress={() => setExpandedAddOpinion(false)}>
-            <Text
-              style={{
-                fontWeight: "500",
-                fontSize: 18,
-                alignSelf: "flex-start",
-              }}
-            >
-              Dodaj opinię
-            </Text>
-          </TouchableHighlight>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Wstaw tytuł"
-            ref={newTitleRef}
-            onChangeText={(input) => {
-              newTitleRef.current.value = input;
-            }}
-            onBlur={() => setNewTitle(newTitleRef.current.value)}
-          />
-          <StarRating
-            rating={starRating}
-            onChange={setStarRating}
-            enableHalfStar={false}
-          />
-          <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Wstaw komentarz do opinii"
-            ref={newDescriptionRef}
-            onChangeText={(input) => (newDescriptionRef.current.value = input)}
-            onBlur={() => setNewDescription(newDescriptionRef.current.value)}
-          />
-          <TouchableHighlight
-            style={styles.button}
-            onPress={setSingleRate} // function to set firstRating if >= 1
-          >
-            <Text>Ustaw</Text>
-          </TouchableHighlight>
-        </View>
-      );
-    }
-  }
-
-  /**
-   * Checks if the starRating is at least 1 and set it into firstOwnRating, which fires
-   */
-  function setBaseRate() {
-    if (starRating >= 1) {
-      setFirstOwnRating(starRating);
-      setWrongRatingInfo("");
-    } else {
-      setWrongRatingInfo("Ocena polityka musi wynosić przynajmniej 1.");
-    }
-  }
-
-  function setSingleRate() {
-    if (starRating >= 1) {
-      setNewSingleRating(starRating);
-      setWrongRatingInfo("");
-    } else {
-      setWrongRatingInfo("Ocena polityka musi wynosić przynajmniej 1.");
-    }
-  }
+  
 
   // only for adding single rating into DB
   function countOwnRating(newSingleRating) {
@@ -356,6 +148,7 @@ export default function ProfileScreen({ navigation, route }) {
   }
 
   async function handleNewSingleRating(){
+    console.log("handleNewSingleRating");
     await addRating(
       userId,
       selectedPoliticianId,
@@ -379,12 +172,28 @@ export default function ProfileScreen({ navigation, route }) {
   }, [firstOwnRating]);
   
   useEffect(() => {
+    // console.log(`${newSingleRating} ${newTitle} ${newDescription}`);
     if (newSingleRating && newTitle && newDescription) {
       handleNewSingleRating()
     }
   }, [newSingleRating, newTitle, newDescription]);
+
+  function handleFirstOwnRatingOpinionsTile(starRating){
+    setFirstOwnRating(starRating)
+  }
   
-  
+  function handleNewSingleRatingOpinionsTile(starRating){
+    // console.log("handleNewSingleRatingOpinionsTile");
+    setNewSingleRating(starRating);
+  }
+  function handleNewTitleOpinionsTile(newTitle){
+    // console.log("handleNewTitleOpinionsTile");
+    setNewTitle(newTitle);
+  }
+  function handleNewDescriptionOpinionsTile(newDescription){
+    // console.log("handleNewDescriptionOpinionsTile");
+    setNewDescription(newDescription);
+  }
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -435,10 +244,18 @@ export default function ProfileScreen({ navigation, route }) {
             <Text>{party}.</Text>
           </View>
         </View>
-        <OpinionsTile />
+        <OpinionsTile 
+          ownRating={ownRating} 
+          singleRatings={singleRatings} 
+          handleFirstOwnRating={handleFirstOwnRatingOpinionsTile} 
+          handleNewSingleRating={handleNewSingleRatingOpinionsTile}
+          handleNewTitle={handleNewTitleOpinionsTile}
+          handleNewDescription={handleNewDescriptionOpinionsTile}
+        />
       </View>
     </ScrollView>
   );
+  
 }
 
 const styles = StyleSheet.create({

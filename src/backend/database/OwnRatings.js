@@ -113,7 +113,7 @@ const addOwnRating = async (user_id, politician_id, value) => {
  * @returns {Promise<object|undefined>} Updated rating data object
  */
 const updateOwnRating = async (politician_id, user_id, value) => {
-  const url = `${global.SERVER_URL}/own-ratings/:id`;
+  const url = `${global.SERVER_URL}/own-ratings`;
   console.log(url);
   console.log("in updateOwnRating: " + value);
   try {
