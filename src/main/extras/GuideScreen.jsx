@@ -101,63 +101,7 @@ export default function GuideScreen({navigation, route}) {
         </View>
       </SafeAreaView>
     </>
-    //   <ScrollView contentContainerStyle={styles.container}>
-    //     <Text style={styles.title}>Przewodnik po aplikacji</Text>
-    //
-    //     <Text style={styles.description}>
-    //       Aplikacja składa się z czterech głównych funkcjonalności:
-    //     </Text>
-    //     <Text style={styles.listItem}>• wyszukiwarka</Text>
-    //     <Text style={styles.listItem}>• wybory</Text>
-    //     <Text style={styles.listItem}>• tablica</Text>
-    //     <Text style={styles.listItem}>• więcej</Text>
-    //
-    //     <TouchableOpacity
-    //       style={styles.section}
-    //       onPress={() => {
-    //         navigation.navigate("SearchNav");
-    //         navigation.pop();
-    //       }}
-    //     >
-    //     </TouchableOpacity>
-    //
-    //     <TouchableOpacity
-    //       style={styles.section}
-    //       onPress={() => {
-    //         navigation.navigate("Election");
-    //         navigation.pop();
-    //       }}
-    //     >
-    //       <Text style={styles.sectionTitle}>📄 Wyborcze ABC</Text>
-    //       <Text style={styles.sectionDescription}>
-    //         Miejsce, w którym znajdują się wszystkie podstawowe informacje o
-    //         wyborach.
-    //       </Text>
-    //     </TouchableOpacity>
-    //
-    //     <TouchableOpacity
-    //       style={styles.section}
-    //       onPress={() => {
-    //         navigation.navigate("Trending");
-    //         navigation.pop();
-    //       }}
-    //     >
-    //       <Text style={styles.sectionTitle}>📰 Tablica</Text>
-    //       <Text style={styles.sectionDescription}>
-    //         Tu wyświetlane są posty z social mediów osób, które obserwujesz.
-    //       </Text>
-    //     </TouchableOpacity>
-    //
-    //     <TouchableOpacity
-    //       style={styles.section}
-    //       onPress={() => navigation.goBack()}
-    //     >
-    //       <Text style={styles.sectionTitle}>≡ Więcej</Text>
-    //       <Text style={styles.sectionDescription}>
-    //         Odnośniki do ustawień, podsumowania ocen i innych funkcji.
-    //       </Text>
-    //     </TouchableOpacity>
-    //   </ScrollView>
+    
   );
 }
 
