@@ -101,7 +101,6 @@ export default function GuideScreen({navigation, route}) {
         </View>
       </SafeAreaView>
     </>
-    
   );
 }
 
