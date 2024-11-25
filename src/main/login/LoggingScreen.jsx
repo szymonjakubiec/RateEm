@@ -278,7 +278,6 @@ const styles = StyleSheet.create({
     width: "90%",
     marginTop: 2,
     marginBottom: 2,
-    tintColor: "red",
   },
   wrongInputText: (wrongEmail, wrongPass) => ({
     display: wrongEmail || wrongPass ? "flex" : "none",
