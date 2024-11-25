@@ -9,12 +9,16 @@ import {
 } from "react-native";
 import {goBack} from "../../backend/CommonMethods";
 import {StatusBar} from "expo-status-bar";
+import {useRoute} from "@react-navigation/native";
 
 
 
-export default function GuideScreen({navigation}) {
+export default function GuideScreen({navigation, route}) {
+  const {isTabBarHidden = false} = route.params || {};
   useEffect(() => {
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    if (isTabBarHidden) {
+      navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    }
     return () => {
       navigation.getParent().setOptions({tabBarStyle: null}); // Przywróć domyślny styl po opuszczeniu
     };
@@ -52,15 +56,17 @@ export default function GuideScreen({navigation}) {
             setSliderPage(event);
           }}
         >
-          <View style={{width, height}}>
-            <Text>Przewodnik po aplikacji</Text>
-            <Text>
+          <View style={styles.guideContainer}>
+            <Text style={styles.guideTitle}>Przewodnik po aplikacji</Text>
+            <Text style={styles.guideDescription}>
               Aplikacja składa się z czterech głównych funkcjonalności:
             </Text>
-            <Text>• wyszukiwarka</Text>
-            <Text>• wybory</Text>
-            <Text>• tablica</Text>
-            <Text>• więcej</Text>
+            <View style={styles.guideList}>
+              <Text style={styles.guideItem}>• wyszukiwarka</Text>
+              <Text style={styles.guideItem}>• wybory</Text>
+              <Text style={styles.guideItem}>• tablica</Text>
+              <Text style={styles.guideItem}>• więcej</Text>
+            </View>
           </View>
           <View style={{width, height}}>
             <Text style={styles.sectionTitle}>🔍 Wyszukiwarka</Text>
@@ -156,60 +162,82 @@ export default function GuideScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#f9f9f9",
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  description: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  listItem: {
-    fontSize: 16,
-    marginLeft: 20,
-  },
-  section: {
-    padding: 15,
-    marginVertical: 10,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 2},
-    shadowRadius: 8,
-    elevation: 3,
-  },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333', // Przyjemny ciemnoszary
+    textAlign: 'center',
+    marginVertical: 10,
   },
   sectionDescription: {
-    fontSize: 14,
-    color: "#555",
-    marginTop: 5,
+    fontSize: 16,
+    color: '#666', // Jaśniejszy szary dla kontrastu
+    textAlign: 'center',
+    marginHorizontal: 20,
+    lineHeight: 22,
   },
   paginationWrapper: {
     position: 'absolute',
-    bottom: 100,
-    left: 0,
-    right: 0,
+    bottom: 20, // Umieszczenie nad krawędzią ekranu
+    width: '100%',
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'row',
   },
   paginationDots: {
-    height: 10,
-    width: 10,
-    borderRadius: 10 / 2,
-    backgroundColor: '#0898A0',
-    marginLeft: 10,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+    backgroundColor: '#26518a', // Niebieski dla aktywnego punktu
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB', // Delikatny jasnoszary jako kolor tła
+  },
+  slide: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#FFFFFF', // Białe tło dla slajdu
+    borderRadius: 10,
+    marginHorizontal: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2, // Efekt podniesienia dla Androida
+  },
+  guideContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    backgroundColor: '#F9FAFB', // Jasne tło dla sekcji
+  },
+  guideTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333', // Dobrze widoczny kolor
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  guideDescription: {
+    fontSize: 16,
+    color: '#666', // Subtelny szary dla opisu
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 20,
+  },
+  guideList: {
+    width: '100%', // Pełna szerokość kontenera
+    paddingHorizontal: 10,
+  },
+  guideItem: {
+    fontSize: 16,
+    color: '#444', // Lekko ciemniejszy odcień szarości dla listy
+    marginVertical: 5, // Odstęp między elementami
   },
 });
