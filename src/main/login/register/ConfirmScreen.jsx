@@ -1,6 +1,6 @@
 import {StyleSheet, Text, TouchableHighlight, View, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
-import {alert, checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
+import {checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
 import {addUser} from "../../../backend/database/Users";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../../styles/TextInput";
@@ -10,6 +10,7 @@ import {textInputProps} from "../../styles/TextInput";
 export default function ConfirmScreen({navigation, route}) {
 
   const {name, email, phone, password} = route.params;
+
   let _code = useRef('');
 
   const createCode = () => {
@@ -18,6 +19,8 @@ export default function ConfirmScreen({navigation, route}) {
   };
 
   const [code, setCode] = useState('');
+  const [wrongCode, setWrongCode] = useState('');
+
 
   // Pk: Preventing navigating back
   useEffect(() => {
@@ -46,9 +49,27 @@ export default function ConfirmScreen({navigation, route}) {
 
   }, []);
 
+
+  /**
+   * Validates code.
+   * @param {string} code - code to validate
+   */
+  const validateCodeOnChange = (code) => {
+    if (code.length < 6) {
+      setWrongCode("Wpisz 6 cyfrowy kod.");
+    } else {
+      setWrongCode('');
+    }
+  };
+
+  const isCodeValid = () => {
+    return !(wrongCode || !code);
+  };
+
+
   return (
     <View style={styles.container}>
-      <Text style={styles.subTitle}>Potwierdź konto</Text>
+      <Text style={styles.title}>Potwierdź konto</Text>
 
       {/* PK: Sms */}
       {/*  <Text style={ styles.subTitle }>Na numer +48{ phone } został wysłany SMS z kodem weryfikacyjnym. Wpisz go w oknie
@@ -61,30 +82,41 @@ export default function ConfirmScreen({navigation, route}) {
       <TextInput
         {...textInputProps}
         label="kod"
-        returnKeyType="done"
-        autoCapitalize="none"
+        outlineColor={wrongCode ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongCode ? "#e41c1c" : "black"}
         keyboardType="numeric"
         autoComplete="one-time-code"
         textContentType="oneTimeCode"
+        autoCapitalize="none"
+        returnKeyType="done"
         maxLength={6}
         value={code}
-        onChangeText={(text) => setCode(text)}
+        onChangeText={(text) => {
+          text = text.replace(/[^0-9]/g, '');
+          setCode(text.trim());
+          validateCodeOnChange(text.trim());
+        }}
       />
+      <Text style={styles.wrongInputText(wrongCode)}>{wrongCode}</Text>
 
       <TouchableHighlight
-        style={[styles.button, {marginTop: 25}]}
+        style={[styles.button, {marginTop: 30}, !isCodeValid() && {opacity: 0.5}]}
+        disabled={!isCodeValid()}
         onPress={() => {
+
           // PK: SMS
 
           // checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
           //   if (!success) {
-          //     alert("Error verifying code.");
+          //     setWrongCode("Błąd! Spróbuj ponownie.");
           //     return false;
           //   }
 
           // PK: Email
+
           if (code !== _code.current) {
-            alert("Błędny kod!\nSpróbuj ponownie.");
+            setWrongCode("Błędny kod! Spróbuj ponownie.");
+            setCode('');
             return false;
           }
 
@@ -116,11 +148,13 @@ const styles = StyleSheet.create({
     padding: 70,
   },
   title: {
-    fontSize: 48,
+    fontSize: 24,
+    marginBottom: 40,
+    alignSelf: "flex-start",
   },
   subTitle: {
-    fontSize: 16,
-    marginBottom: 50,
+    width: "100%",
+    fontSize: 18,
     // textAlign: "justify",
   },
   button: {
@@ -129,6 +163,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     width: "70%",
     borderRadius: 20,
+    marginBottom: 70,
   },
   buttonText: {
     alignSelf: "center",

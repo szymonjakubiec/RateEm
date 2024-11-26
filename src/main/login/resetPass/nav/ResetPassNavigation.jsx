@@ -12,7 +12,7 @@ export default function ResetPassNavigation({route}) {
 
   const _title = route.params?._title;
 
-  
+
   return (
     <Stack.Navigator>
       <Stack.Screen

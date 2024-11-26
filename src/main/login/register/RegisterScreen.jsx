@@ -3,7 +3,6 @@ import {StyleSheet, Text, TouchableHighlight, SafeAreaView} from "react-native";
 import isEmail from "validator/lib/isEmail";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
-import {alert} from "../../../backend/CommonMethods";
 import {textInputProps} from "../../styles/TextInput";
 
 
@@ -22,8 +21,6 @@ export default function RegisterScreen({navigation}) {
   // Password visibility
   const [passVisible, setPassVisible] = useState(true);
   const [repeatPassVisible, setRepeatPassVisible] = useState(true);
-
-  // const route = useRoute();
 
   // Validate values
   const [wrongName, setWrongName] = useState("");
@@ -49,24 +46,19 @@ export default function RegisterScreen({navigation}) {
       !/^[a-zA-Z]/.test(password) ||
       !/^[a-zA-Z0-9!#$._@-]+$/.test(password) ||
       !/[0-9]/.test(password) ||
-      !/[!#$._@]/.test(password)
+      !/[!#$._@-]/.test(password)
     ) {
       setWrongPass(
         "Hasło powinno mieć minimum 8 znaków. Powinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
       );
       return false;
     }
-
-    if (wrongName || !name || wrongEmail || !email || wrongPhone || !phone || wrongPass || !password || wrongPassRep || !repeatPassword) {
-      alert("Wypełnij poprawnie wszystkie pola.");
-      return false;
-    }
     if (await emailExists(email)) {
-      alert("Użytkownik o podanym adresie e-mail już istnieje.\nSpróbuj podać inny adres e-mail.");
+      setWrongEmail("Użytkownik o podanym adresie e-mail już istnieje. Spróbuj podać inny.");
       return false;
     }
     if (await phoneExists(phone)) {
-      alert("Użytkownik o podanym numerze telofonu już istnieje.\nSpróbuj podać inny numer telefonu.");
+      setWrongPhone("Użytkownik o podanym numerze telefonu już istnieje. Spróbuj podać inny.");
       return false;
     }
     return true;
@@ -93,12 +85,6 @@ export default function RegisterScreen({navigation}) {
       setWrongEmail("");
     }
   };
-
-  // const validatePhone = (phone) => {
-  //   if (phone.length === 9) {
-  //     setWrongPhone("");
-  //   }
-  // };
 
   const validatePhone = (phone) => {
     if (!phone || phone.length !== 9 || !["45", "50", "51", "53", "57", "60", "66", "69", "72", "73", "78", "79", "88"].includes(phone.slice(0, 2))) {

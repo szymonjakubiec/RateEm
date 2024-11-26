@@ -2,7 +2,6 @@ import {useEffect, useState} from "react";
 import {StyleSheet, Text, TouchableHighlight, SafeAreaView, BackHandler} from "react-native";
 import {TextInput} from "react-native-paper";
 import {getUserIdByEmail, updateUser} from "../../../backend/database/Users";
-import {alert} from "../../../backend/CommonMethods";
 import {textInputProps} from "../../styles/TextInput";
 
 
@@ -34,16 +33,11 @@ export default function ChangePassScreen({navigation, route}) {
       !/^[a-zA-Z]/.test(password) ||
       !/^[a-zA-Z0-9!#$._@-]+$/.test(password) ||
       !/[0-9]/.test(password) ||
-      !/[!#$._@]/.test(password)
+      !/[!#$._@-]/.test(password)
     ) {
       setWrongPass(
-        "Hasło powinno mieć minimum 8 znaków. Powinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
+        "Hasło powinno zawierać minimum 8 znaków. Powinno zaczynać się od litery i zawierać conajmniej:\n*1 cyfrę\n*1 znak specjalny (-, _, ., #, !, $, @)."
       );
-      return false;
-    }
-
-    if (wrongPass || !password || wrongPassRep || !repeatPassword) {
-      alert("Wypełnij poprawnie wszystkie pola.");
       return false;
     }
     return true;

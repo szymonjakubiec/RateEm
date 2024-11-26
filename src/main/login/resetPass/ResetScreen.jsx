@@ -3,7 +3,6 @@ import {StyleSheet, Text, TouchableHighlight, SafeAreaView} from "react-native";
 import isEmail from "validator/lib/isEmail";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
-import {alert} from "../../../backend/CommonMethods";
 import {textInputProps} from "../../styles/TextInput";
 
 
@@ -13,11 +12,11 @@ export default function ResetScreen({navigation}) {
   // ===== PROPERTIES ============================================================= //
 
   // Values
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
 
-  // const [wrongPhone, setWrongPhone] = useState("");
-  const [wrongEmail, setWrongEmail] = useState("");
+  // const [wrongPhone, setWrongPhone] = useState('');
+  const [wrongEmail, setWrongEmail] = useState('');
 
 
   // ===== METHODS ================================================================ //
@@ -34,16 +33,12 @@ export default function ResetScreen({navigation}) {
 
 
   const validateFieldsOnSubmit = async () => {
-    if (wrongEmail || !email /* || wrongPhone || !phone */) {
-      alert("Wypełnij poprawnie wszystkie pola.");
-      return false;
-    }
-    // if (await phoneExists(phone)) {
-    //   alert("Użytkownik o podanym numerze telefonu nie istnieje.\nSpróbuj podać inny numer telefonu.");
+    // if (!(await phoneExists(phone))) {
+    //   setWrongPhone("Użytkownik o podanym numerze telefonu nie istnieje. Spróbuj podać inny numer telefonu.");
     //   return false;
     // }
     if (!(await emailExists(email))) {
-      alert("Użytkownik o podanym adresie e-mail nie istnieje.\nSpróbuj podać inny adres e-mail.");
+      setWrongEmail("Użytkownik o podanym adresie e-mail nie istnieje. Spróbuj podać inny adres e-mail.");
       return false;
     }
     return true;
@@ -67,7 +62,7 @@ export default function ResetScreen({navigation}) {
     } else if (!isEmail(email)) {
       setWrongEmail("Podaj prawidłowy e-mail.");
     } else {
-      setWrongEmail("");
+      setWrongEmail('');
     }
   };
 
@@ -123,9 +118,10 @@ export default function ResetScreen({navigation}) {
         autoComplete="email"
         textContentType="emailAddress"
         autoCapitalize="none"
+        returnKeyType="done"
         value={email}
         onChangeText={(text) => {
-          text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
+          text = text.replace(/[^a-zA-Z0-9._%+@-]/g, '');
           setEmail(text.trim());
           validateEmail(text.trim());
           validateFieldsOnBlur();
@@ -171,9 +167,9 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 40,
   },
-  wrongInputText: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
-    display: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "flex" : "none",
     fontSize: 12,
+  wrongInputText: (wrongEmail, wrongPhone) => ({
+    display: wrongEmail || wrongPhone ? "flex" : "none",
     color: "#e41c1c",
     alignSelf: "flex-start",
     paddingLeft: 20,
