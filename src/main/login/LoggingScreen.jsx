@@ -19,9 +19,14 @@ import {useIsFocused} from "@react-navigation/native";
 export default function LoggingScreen({navigation}) {
   const _title = "Rate'Em";
 
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     (async () => {
+
+      // PK: So every time screen is focused it updates
+      if (!isFocused) return;
+
       await setCredentials();
 
       // connection test
@@ -31,7 +36,7 @@ export default function LoggingScreen({navigation}) {
       console.log("Pass:   " + user0?.password);
       console.groupEnd();
     })();
-  }, []);
+  }, [isFocused]);
 
   const [userData, setUserData] = useState([]);
   const [email, setEmail] = useState("");
