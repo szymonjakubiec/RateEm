@@ -1,4 +1,4 @@
-import {encrypt, decrypt} from "../Encryption";
+import {decrypt} from "../Encryption";
 
 
 
@@ -8,7 +8,7 @@ import {encrypt, decrypt} from "../Encryption";
  * @async
  * @returns {Promise<object[]|undefined>} Array of user objects
  */
-const getAllUsers = async () => {
+export const getAllUsers = async () => {
   const url = `${global.SERVER_URL}/users`;
   try {
     const response = await fetch(url);
@@ -32,6 +32,20 @@ const getAllUsers = async () => {
 };
 
 /**
+ *
+ * @param email
+ * @returns {Promise<number|undefined>}
+ */
+export const getUserIdByEmail = (email) => {
+  return getAllUsers().then((users) => {
+    return users.find((user) => user.email === email).id;
+  }).catch((error) => {
+    console.error("Error fetching users:", error);
+    return undefined;
+  });
+};
+
+/**
  * Adds a user.
  *
  * @async
@@ -44,7 +58,7 @@ const getAllUsers = async () => {
  * @param {number} login_method - Method of logging in
  * @returns {Promise<object|undefined>} New user data object
  */
-const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
+export const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
   const url = `${global.SERVER_URL}/users`; // Endpoint URL
   try {
     const response = await fetch(url, {
@@ -82,7 +96,7 @@ const addUser = async (name, email, password, phone_number, verified, communicat
  * Updates a user.
  *
  * @async
- * @param {number} id - ID or Email of the user to update
+ * @param {number} id - ID of the user to update
  * @param {{name, email, password, phone_number, verified, communication_method, login_method}} newData - New data for the user. Possible keys:
  * * {string} name - Name of the user
  * * {string} email - Email of the user
@@ -93,7 +107,7 @@ const addUser = async (name, email, password, phone_number, verified, communicat
  * * {number} login_method - Method of logging in
  * @returns {Promise<object|undefined>} Updated user data object
  */
-const updateUser = async (id, newData = {}) => {
+export const updateUser = async (id, newData = {}) => {
   const url = `${global.SERVER_URL}/users/${id}`;
 
   try {
@@ -104,6 +118,7 @@ const updateUser = async (id, newData = {}) => {
       },
       body: JSON.stringify(newData),
     });
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -123,7 +138,7 @@ const updateUser = async (id, newData = {}) => {
  * @param {string} id - ID of the user to delete
  * @returns {Promise<object|undefined>} Deleted user data object
  */
-const deleteUser = async (id) => {
+export const deleteUser = async (id) => {
   const url = `${global.SERVER_URL}/users/${id}`;
   try {
     const response = await fetch(url, {
@@ -143,5 +158,3 @@ const deleteUser = async (id) => {
     return undefined;
   }
 };
-
-module.exports = {addUser, updateUser, deleteUser, getAllUsers};

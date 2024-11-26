@@ -136,16 +136,20 @@ export default function ChangePassScreen({navigation, route}) {
         onPress={() => {
           const result = validateFieldsOnSubmit();
           if (result) {
-            updateUser(email, {password})
-              .then((result) => {
-                if (result) {
-                  console.info(2, result);
-                  navigation.navigate("Success");
-                }
-              })
-              .catch((error) => {
-                console.error(error);
-              });
+            getUserIdByEmail(email).then(id => {
+              updateUser(id, {password})
+                .then((result) => {
+                  if (result) {
+                    navigation.navigate("Success");
+                  }
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            }).catch(err => {
+              console.error(err);
+            });
+
           }
         }}
       >
