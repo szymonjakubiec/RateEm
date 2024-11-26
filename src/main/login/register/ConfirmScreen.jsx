@@ -1,12 +1,14 @@
-import {StyleSheet, Text, TextInput, TouchableHighlight, View, BackHandler} from "react-native";
+import {StyleSheet, Text, TouchableHighlight, View, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
 import {alert, checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
 import {addUser} from "../../../backend/database/Users";
+import {TextInput} from "react-native-paper";
+import {textInputProps} from "../../styles/TextInput";
 
 
 
 export default function ConfirmScreen({navigation, route}) {
-  // const route = useRoute();
+
   const {name, email, phone, password} = route.params;
   let _code = useRef('');
 
@@ -57,34 +59,36 @@ export default function ConfirmScreen({navigation, route}) {
         oknie poniżej.</Text>
 
       <TextInput
-        style={styles.textInput}
+        {...textInputProps}
+        label="kod"
+        returnKeyType="done"
         autoCapitalize="none"
+        keyboardType="numeric"
         autoComplete="one-time-code"
         textContentType="oneTimeCode"
-        placeholder="kod"
+        maxLength={6}
         value={code}
         onChangeText={(text) => setCode(text)}
       />
 
       <TouchableHighlight
-        style={styles.button}
-        onPress={async () => {
+        style={[styles.button, {marginTop: 25}]}
+        onPress={() => {
           // PK: SMS
 
-          // await checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
+          // checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
           //   if (!success) {
-          //     alert("Kod");
+          //     alert("Error verifying code.");
           //     return false;
           //   }
 
           // PK: Email
-
           if (code !== _code.current) {
             alert("Błędny kod!\nSpróbuj ponownie.");
             return false;
           }
 
-          await addUser(name, email, password, phone, 1, 1, 1)
+          addUser(name, email, password, phone, 1, 1, 1)
             .then((result) => {
               if (result) {
                 navigation.navigate("Success");
@@ -118,18 +122,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 50,
     // textAlign: "justify",
-  },
-  textInput: {
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#000",
-    borderStyle: "solid",
-    paddingTop: 6,
-    paddingBottom: 6,
-    paddingLeft: 20,
-    paddingRight: 20,
-    width: "90%",
-    marginBottom: 15,
   },
   button: {
     backgroundColor: "#000",

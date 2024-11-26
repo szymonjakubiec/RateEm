@@ -1,14 +1,16 @@
 import React, {useState, useEffect} from "react";
 import {
-  View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView, BackHandler,
+  KeyboardAvoidingView,
+  BackHandler,
+  SafeAreaView,
 } from "react-native";
 import {getAllUsers, updateUser} from "../../backend/database/Users";
 import {goBack} from "../../backend/CommonMethods";
+import {TextInput} from "react-native-paper";
+import {textInputProps} from "../styles/TextInput";
 
 
 
@@ -26,16 +28,19 @@ export default function SettingsScreen({navigation}) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+
+
   useEffect(() => {
     const fetchUsers = async () => {
       const users = await getAllUsers();
-      setUser(users);
+      setUser(users); //todo faktyczny użytkownik
       setLoginRadio(users[0].login_method);
       setCommunicationRadio(users[0].communication_method);
     };
 
     fetchUsers();
   }, []);
+
   const handleSave = async () => {
     await updateUser("1", {
       communication_method: "" + CommunicationRadio,
@@ -44,42 +49,43 @@ export default function SettingsScreen({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
-      {user && (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.subSection}>Zmień e-mail lub numer telefonu:</Text>
+      {user ? (
         <>
           <TextInput
-            style={styles.input}
-            placeholder={`${user[0].email}`}
+            {...textInputProps}
+            label={`${user[0].email}`}
             value={email}
             onChangeText={setEmail}
           />
           <TextInput
-            style={styles.input}
-            placeholder={`${user[0].phone_number}`}
+            {...textInputProps}
+            label={`${user[0].phone_number}`}
             value={phone}
             onChangeText={setPhone}
           />
         </>
-      )}
+      ) : null}
 
-      <Text>Zmień hasło:</Text>
+      <Text style={styles.subSection}>Zmień hasło:</Text>
       <TextInput
-        style={styles.input}
-        placeholder="Aktualne hasło"
+        {...textInputProps}
+        label="Aktualne hasło"
         secureTextEntry={true}
         value={currentPassword}
         onChangeText={setCurrentPassword}
       />
       <TextInput
-        style={styles.input}
-        placeholder="Nowe hasło"
+        {...textInputProps}
+        label="Nowe hasło"
         secureTextEntry={true}
         value={newPassword}
         onChangeText={setNewPassword}
       />
       <TextInput
-        style={styles.input}
-        placeholder="Powtórz nowe hasło"
+        {...textInputProps}
+        label="Powtórz nowe hasło"
         secureTextEntry={true}
         value={repeatPassword}
         onChangeText={setRepeatPassword}
@@ -90,7 +96,7 @@ export default function SettingsScreen({navigation}) {
           <Text style={styles.buttonText}>Zapisz</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -99,13 +105,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#fff",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
-    marginVertical: 10,
   },
   radioContainer: {
     flexDirection: "row",
@@ -121,6 +120,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     backgroundColor: "blue",
     borderRadius: 5,
+  },
+  subSection: {
+    fontSize: 16,
+    marginTop: 20,
+    marginBottom: 5,
+    paddingLeft: 6,
   },
   buttonContainer: {
     zIndex: 1,

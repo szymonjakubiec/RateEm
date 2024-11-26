@@ -1,25 +1,16 @@
-import {useEffect, useRef, useState} from "react";
-import {useRoute} from "@react-navigation/native";
-import {StatusBar} from "expo-status-bar";
+import {useEffect, useState} from "react";
 import {StyleSheet, Text, TouchableHighlight, SafeAreaView, BackHandler} from "react-native";
 import {TextInput} from "react-native-paper";
-import {getAllUsers, updateUser} from "../../../backend/database/Users";
+import {getUserIdByEmail, updateUser} from "../../../backend/database/Users";
 import {alert} from "../../../backend/CommonMethods";
+import {textInputProps} from "../../styles/TextInput";
 
 
 
 export default function ChangePassScreen({navigation, route}) {
   //
   // ===== PROPERTIES ============================================================= //
-  const _title = "Rate'Em";
   const email = route.params?.email;
-
-  useEffect(() => {
-    const backAction = () => true;
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-    return () => backHandler.remove();
-  }, [navigation]);
-
 
   // Values
   const [password, setPassword] = useState("");
@@ -62,14 +53,6 @@ export default function ChangePassScreen({navigation, route}) {
     return !(wrongPass || !password || wrongPassRep || !repeatPassword);
   };
 
-  // const validatePass = (pass) => {
-  //   if (!pass) {
-  //     setWrongPass("Podaj hasło.");
-  //   } else {
-  //     setWrongPass("");
-  //   }
-  // };
-
   const validatePass = (pass) => {
     if (!pass) {
       setWrongPass("Podaj hasło.");
@@ -90,24 +73,16 @@ export default function ChangePassScreen({navigation, route}) {
     }
   };
 
-  const _textInputProps = {
-    mode: "outlined",
-    activeOutlineColor: "black",
-    selectTextOnFocus: true,
-    returnKeyType: "next",
-    style: styles.textInput,
-    selectionColor: "#bc15d279",
-    cursorColor: "#b01ec386",
-  };
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Podaj nowe hasło:</Text>
 
       <TextInput
-        {..._textInputProps}
+        {...textInputProps}
         label="hasło"
-        outlineColor={wrongPass ? "red" : "black"}
+        outlineColor={wrongPass ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
@@ -130,9 +105,10 @@ export default function ChangePassScreen({navigation, route}) {
       <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
 
       <TextInput
-        {..._textInputProps}
+        {...textInputProps}
         label="powtórz hasło"
-        outlineColor={wrongPassRep ? "red" : "black"}
+        outlineColor={wrongPassRep ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}
         returnKeyType="done"
         autoCapitalize="none"
         autoComplete="current-password"
@@ -143,7 +119,7 @@ export default function ChangePassScreen({navigation, route}) {
         }
         value={repeatPassword}
         onChangeText={(text) => {
-          if (text.includes(" ")) return;
+          text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
           setRepeatPassword(text.trim());
           validatePassRep(text.trim());
           validateFieldsOnBlur();
@@ -193,12 +169,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginLeft: 15,
     marginBottom: 40,
-  },
-  textInput: {
-    width: "90%",
-    marginTop: 2,
-    marginBottom: 2,
-    tintColor: "red",
   },
   wrongInputText: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
     display: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "flex" : "none",

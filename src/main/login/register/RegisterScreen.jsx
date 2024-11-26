@@ -4,6 +4,7 @@ import isEmail from "validator/lib/isEmail";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
 import {alert} from "../../../backend/CommonMethods";
+import {textInputProps} from "../../styles/TextInput";
 
 
 
@@ -128,25 +129,15 @@ export default function RegisterScreen({navigation}) {
     }
   };
 
-  const _textInputProps = {
-    mode: "outlined",
-    activeOutlineColor: "black",
-    selectTextOnFocus: true,
-    returnKeyType: "next",
-    style: styles.textInput,
-    selectionColor: "#bc15d279",
-    cursorColor: "#b01ec386",
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
 
       <TextInput
-        {..._textInputProps}
+        {...textInputProps}
         label="imię"
-        // placeholder="imię"
         outlineColor={wrongName ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongName ? "#e41c1c" : "black"}
         maxLength={22}
         autoComplete="name"
         value={name}
@@ -165,9 +156,10 @@ export default function RegisterScreen({navigation}) {
       <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
 
       <TextInput
-        {..._textInputProps}
+        {...textInputProps}
         label="e-mail"
-        outlineColor={wrongEmail ? "red" : "black"}
+        outlineColor={wrongEmail ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongEmail ? "#e41c1c" : "black"}
         autoComplete="email"
         textContentType="emailAddress"
         autoCapitalize="none"
@@ -187,11 +179,12 @@ export default function RegisterScreen({navigation}) {
 
       <SafeAreaView style={{flexDirection: "row", justifyContent: "center"}}>
         <TextInput
-          {..._textInputProps}
+          {...textInputProps}
           label="numer telefonu"
-          outlineColor={wrongPhone ? "red" : "black"}
+          outlineColor={wrongPhone ? "#e41c1c" : "black"}
+          activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
           maxLength={12}
-          style={[styles.textInput, {paddingLeft: 31}]}
+          style={[textInputProps.style, {paddingLeft: 31}]}
           // left={ <TextInput.Affix textStyle={ {fontSize: 16, marginLeft: 4} } text="+48 |"/> }
           autoComplete="tel"
           keyboardType="phone-pad"
@@ -220,9 +213,10 @@ export default function RegisterScreen({navigation}) {
       <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
 
       <TextInput
-        {..._textInputProps}
+        {...textInputProps}
         label="hasło"
-        outlineColor={wrongPass ? "red" : "black"}
+        outlineColor={wrongPass ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
@@ -245,9 +239,10 @@ export default function RegisterScreen({navigation}) {
       <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
 
       <TextInput
-        {..._textInputProps}
+        {...textInputProps}
         label="powtórz hasło"
-        outlineColor={wrongPassRep ? "red" : "black"}
+        outlineColor={wrongPassRep ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}
         returnKeyType="done"
         autoCapitalize="none"
         autoComplete="current-password"
@@ -272,7 +267,7 @@ export default function RegisterScreen({navigation}) {
       <TouchableHighlight
         style={[styles.button, {marginTop: 40}, !validateFieldsOnBlur() && {opacity: 0.5}]}
         disabled={!validateFieldsOnBlur()}
-        onPress={async () => {
+        onPress={() => {
           validateFieldsOnSubmit().then((result) => {
             if (result) {
               navigation.navigate("Confirm", {
@@ -306,12 +301,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginLeft: 15,
     marginBottom: 40,
-  },
-  textInput: {
-    width: "90%",
-    marginTop: 2,
-    marginBottom: 2,
-    tintColor: "red",
   },
   wrongInputText: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
     display: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "flex" : "none",

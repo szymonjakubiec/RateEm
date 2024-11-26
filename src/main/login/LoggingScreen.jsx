@@ -8,21 +8,23 @@ import {
   View,
 } from "react-native";
 import isEmail from "validator/lib/isEmail";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {getAllUsers} from "../../backend/database/Users";
 import {TextInput} from "react-native-paper";
+import {textInputProps} from "../styles/TextInput";
+import {useIsFocused} from "@react-navigation/native";
 
 
 
 export default function LoggingScreen({navigation}) {
   const _title = "Rate'Em";
-  // const route = useRoute();
 
-  // connection test
+
   useEffect(() => {
     (async () => {
       await setCredentials();
 
+      // connection test
       const user0 = (await getAllUsers())[0];
       console.group(user0?.name + ":");
       console.log("E-mail: " + user0?.email);
@@ -42,11 +44,6 @@ export default function LoggingScreen({navigation}) {
   const [wrongEmailInfo, setWrongEmailInfo] = useState("");
   const [wrongPasswordInfo, setWrongPasswordInfo] = useState("");
 
-  /**
-   * Variable preventing the wrongPasswordInfo from writing feedback right after opening the app. Check out the useEffect for more details.
-   */
-
-  // const firstCheck = useRef(true);
 
   /**
    * Checks if the email format is correct returning the bool value. Also gives feedback to the wrongEmailInfo if the email format is wrong.
@@ -136,26 +133,6 @@ export default function LoggingScreen({navigation}) {
     setUserData(data);
   }
 
-  /**
-   * Checks the credentials with the first onPress event.
-   */
-    // useEffect(() => {
-    //   if (!firstCheck.current) {
-    //     handleLogin();
-    //   } else {
-    //     firstCheck.current = false;
-    //   }
-    // }, [userData]);
-
-  const _textInputProps = {
-      mode: "outlined",
-      activeOutlineColor: "black",
-      selectTextOnFocus: true,
-      returnKeyType: "next",
-      style: styles.textInput,
-      selectionColor: "#bc15d279",
-      cursorColor: "#b01ec386",
-    };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -163,7 +140,7 @@ export default function LoggingScreen({navigation}) {
       <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
 
       <TextInput
-        {..._textInputProps}
+        {...textInputProps}
         label="e-mail"
         outlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
         activeOutlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
@@ -181,7 +158,7 @@ export default function LoggingScreen({navigation}) {
       <Text style={styles.wrongInputText(wrongEmailInfo)}>{wrongEmailInfo}</Text>
 
       <TextInput
-        {..._textInputProps}
+        {...textInputProps}
         label="hasło"
         outlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
         activeOutlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
@@ -273,11 +250,6 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 16,
     marginBottom: 50,
-  },
-  textInput: {
-    width: "90%",
-    marginTop: 2,
-    marginBottom: 2,
   },
   wrongInputText: (wrongEmail, wrongPass) => ({
     display: wrongEmail || wrongPass ? "flex" : "none",

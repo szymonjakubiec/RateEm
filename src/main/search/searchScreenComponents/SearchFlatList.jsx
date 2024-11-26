@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {TouchableHighlight, StyleSheet, Text, FlatList, View, Keyboard} from "react-native";
 import {TextInput} from "react-native-paper";
-import textInput from "react-native-paper/src/components/TextInput/TextInput";
+import {textInputProps} from "../../styles/TextInput";
 
 
 
@@ -26,21 +26,14 @@ export default function SearchFlatList({data, handleOnPress}) {
     }
   }
 
-  const _textInputProps = {
-    mode: "outlined",
-    activeOutlineColor: "black",
-    selectTextOnFocus: true,
-    returnKeyType: "next",
-    style: styles.searchBox,
-    selectionColor: "#bc15d279",
-    cursorColor: "#b01ec386",
-  };
 
   return (
     <View>
       <TextInput
-        {..._textInputProps}
+        {...textInputProps}
         label="Wyszukaj polityka"
+        style={styles.searchBox}
+        returnKeyType="search"
         autoComplete="name"
         textContentType="name"
         autoCapitalize="words"
@@ -49,7 +42,6 @@ export default function SearchFlatList({data, handleOnPress}) {
           setSearchText(text.trim());
           handleInput(text.trim());
         }}
-        style={styles.searchBox}
       />
       {filteredData.length !== 0
         ? (<FlatList
