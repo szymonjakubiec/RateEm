@@ -77,4 +77,28 @@ const getPolitician = async (politician_id) => {
   }
 };
 
-module.exports = { getAllPoliticians, getAllPoliticianNames, getPolitician };
+const updatePolitician = async (id, newData = {}) => {
+  const url = `${global.SERVER_URL}/politicians/${id}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newData),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const updatedData = await response.json();
+    console.log("Politician updated successfully:", updatedData);
+    return updatedData;
+  } catch (error) {
+    console.error("Error updating politician:", error);
+    return undefined;
+  }
+};
+
+
+module.exports = {getAllPoliticians, getAllPoliticianNames, getPolitician, updatePolitician};
