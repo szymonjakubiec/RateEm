@@ -167,9 +167,9 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 40,
   },
-    fontSize: 12,
   wrongInputText: (wrongEmail, wrongPhone) => ({
     display: wrongEmail || wrongPhone ? "flex" : "none",
+    fontSize: 14,
     color: "#e41c1c",
     alignSelf: "flex-start",
     paddingLeft: 20,

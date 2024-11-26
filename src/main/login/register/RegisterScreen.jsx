@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   },
   wrongInputText: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
     display: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "flex" : "none",
-    fontSize: 12,
+    fontSize: 14,
     color: "#e41c1c",
     alignSelf: "flex-start",
     paddingLeft: 20,
