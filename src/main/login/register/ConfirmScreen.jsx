@@ -76,8 +76,10 @@ export default function ConfirmScreen({navigation, route}) {
         poniżej.</Text> */}
 
       {/* PK: Email */}
-      <Text style={styles.subTitle}>Na adres e-mail {email} został wysłany mail z kodem weryfikacyjnym. Wpisz go w
-        oknie poniżej.</Text>
+      <Text style={styles.subTitle}>Na adres e-mail:</Text>
+      <Text style={styles.email}>{email}</Text>
+      <Text style={[styles.subTitle, {marginBottom: 40}]}>został wysłany mail z kodem weryfikacyjnym.
+        {"\n"}Wpisz go w oknie poniżej.</Text>
 
       <TextInput
         {...textInputProps}
@@ -157,6 +159,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     // textAlign: "justify",
   },
+  email: {
+    fontSize: 18,
+    textAlign: "center",
+    marginVertical: 10,
+    paddingVertical: 7,
+    width: "95%",
+    borderStyle: "dashed",
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
+  wrongInputText: (wrongCode) => ({
+    display: wrongCode ? "flex" : "none",
+    fontSize: 14,
+    color: "#e41c1c",
+    alignSelf: "flex-start",
+    paddingLeft: 20,
+    marginTop: 2,
+    marginBottom: 6,
+  }),
   button: {
     backgroundColor: "#000",
     paddingTop: 8,

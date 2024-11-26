@@ -75,7 +75,9 @@ export default function ResetConfirmScreen({navigation, route}) {
       Wpisz go w oknie poniżej.</Text> */}
 
       {/* PK: Email */}
-      <Text style={styles.subTitle}>Na adres e-mail {email} został wysłany mail z kodem weryfikacyjnym do resetu hasła.
+      <Text style={styles.subTitle}>Na adres e-mail:</Text>
+      <Text style={styles.email}>{email}</Text>
+      <Text style={[styles.subTitle, {marginBottom: 40}]}>został wysłany mail z kodem weryfikacyjnym do resetu hasła.
         {"\n"}Wpisz go w oknie poniżej.</Text>
 
       <TextInput
@@ -144,9 +146,19 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   subTitle: {
-    fontSize: 16,
-    marginBottom: 40,
-    textAlign: "justify",
+    width: "100%",
+    fontSize: 18,
+    // textAlign: "justify",
+  },
+  email: {
+    fontSize: 18,
+    textAlign: "center",
+    marginVertical: 10,
+    paddingVertical: 7,
+    width: "95%",
+    borderStyle: "dashed",
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
   },
   wrongInputText: (wrongCode) => ({
     display: wrongCode ? "flex" : "none",

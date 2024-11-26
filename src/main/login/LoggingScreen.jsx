@@ -32,8 +32,8 @@ export default function LoggingScreen({navigation}) {
       // connection test
       const user0 = (await getAllUsers())[0];
       console.group(user0?.name + ":");
-      console.log("E-mail: " + user0?.email);
-      console.log("Pass:   " + user0?.password);
+      console.log("E-mail :" + user0?.email);
+      console.log("Pass   :" + user0?.password);
       console.groupEnd();
     })();
   }, [isFocused]);
@@ -56,8 +56,6 @@ export default function LoggingScreen({navigation}) {
    * @returns {boolean}
    */
   function validateEmail(email) {
-    // const regexMail = /^(?!.*\.\.)[a-zA-Z0-9]+([._%+-][a-zA-Z0-9]+)*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    // if (regexMail.test(email)) {
     if (isEmail(email) || email === "x") {
       setWrongEmailInfo("");
       return true;
@@ -79,6 +77,7 @@ export default function LoggingScreen({navigation}) {
    * Iterates through users in userData checking if email and password are correct.
    */
   function checkCredentials() {
+
     for (const user of userData) {
 
       // Current user's email is not the same as given email
