@@ -64,7 +64,7 @@ export default function ResetScreen({navigation}) {
   const validateEmail = (email) => {
     if (!email) {
       setWrongEmail("Podaj e-mail.");
-    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
+    } else if (!isEmail(email)) {
       setWrongEmail("Podaj prawidłowy e-mail.");
     } else {
       setWrongEmail("");
