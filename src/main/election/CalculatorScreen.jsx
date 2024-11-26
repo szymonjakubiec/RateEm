@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput } from "react-native";
+import {useState, useEffect} from "react";
+import {StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput} from "react-native";
+
+
+
 var dhondt = require("dhondt");
 const plusIcon = require("../../../assets/plus_icon.png");
 const deleteIcon = require("../../../assets/delete_icon.png");
@@ -96,20 +99,20 @@ export default function CalculatorScreen() {
               maxLength={5}
             />
             <Text style={styles.partyTileText}>%</Text>
-            <TextInput style={styles.partyTileInput} readOnly={true} value={outputValues[index]} />
+            <TextInput style={styles.partyTileInput} readOnly={true} value={outputValues[index]}/>
             <TouchableHighlight onPress={() => deleteParty(index)}>
-              <Image source={deleteIcon} style={styles.deleteIcon} />
+              <Image source={deleteIcon} style={styles.deleteIcon}/>
             </TouchableHighlight>
           </View>
         ))}
         <View style={styles.partyTile}>
           <Text style={styles.partyTileText}>Reszta </Text>
-          <TextInput style={styles.partyTileInput} value={theRestValue} readOnly={true} />
+          <TextInput style={styles.partyTileInput} value={theRestValue} readOnly={true}/>
           <Text style={styles.partyTileText}>%</Text>
-          <TextInput style={styles.partyTileInput} value={theRestMandatesValue} readOnly={true} />
+          <TextInput style={styles.partyTileInput} value={theRestMandatesValue} readOnly={true}/>
         </View>
         <TouchableHighlight style={styles.addPartyTile} onPress={addParty}>
-          <Image source={plusIcon} style={styles.plusIcon} />
+          <Image source={plusIcon} style={styles.plusIcon}/>
         </TouchableHighlight>
       </ScrollView>
     </View>
@@ -176,12 +179,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   plusIcon: {
-    color: "white",
     width: 60,
     height: 60,
   },
   deleteIcon: {
-    color: "white",
     width: 50,
     height: 50,
     marginLeft: 10,

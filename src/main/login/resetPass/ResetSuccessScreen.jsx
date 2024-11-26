@@ -16,7 +16,7 @@ export default function ResetSuccessScreen({navigation, route}) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sukces!</Text>
-      <Text style={styles.subTitle}>Konto zostało założone.</Text>
+      <Text style={styles.subTitle}>Hasło zostało zmienione.</Text>
 
       <TouchableHighlight
         style={styles.button}

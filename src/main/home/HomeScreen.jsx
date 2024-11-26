@@ -1,7 +1,10 @@
-import { BackHandler, StyleSheet, Text, View } from "react-native";
-import { useEffect } from "react";
+import {BackHandler, StyleSheet, Text, View} from "react-native";
+import {useEffect} from "react";
 
-export default function HomeScreen({ navigation }) {
+
+
+export default function HomeScreen({navigation}) {
+  
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
     const backAction = () => {

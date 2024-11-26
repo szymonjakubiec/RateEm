@@ -6,16 +6,16 @@ import {
   View,
 } from "react-native";
 import {
-  useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
   useState,
 } from "react";
-import { PoliticianNameContext } from "./PoliticianNameContext.jsx";
+import {PoliticianNameContext} from "./PoliticianNameContext.jsx";
 import SearchFlatList from "./searchScreenComponents/SearchFlatList.jsx";
 
-export default function SearchScreen({ navigation }) {
+
+
+export default function SearchScreen({navigation}) {
   const politicianNameData = useContext(PoliticianNameContext);
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
@@ -30,7 +30,6 @@ export default function SearchScreen({ navigation }) {
    * Navigation to the ProfileScreen.js after selection of politician.
    */
   useEffect(() => {
-    console.log(selectedPoliticianId);
     if (selectedPoliticianId > 0) {
       navigation.navigate("Profile", {
         selectedPoliticianId,
@@ -40,7 +39,7 @@ export default function SearchScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <SearchFlatList data={politicianNameData} handleOnPress={handlePress} />
+      <SearchFlatList data={politicianNameData} handleOnPress={handlePress}/>
     </View>
   );
 }

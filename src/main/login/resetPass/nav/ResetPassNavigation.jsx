@@ -1,4 +1,3 @@
-import {useRoute} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import ResetScreen from "../ResetScreen";
 import ResetConfirmScreen from "../ResetConfirmScreen";
@@ -7,12 +6,13 @@ import ChangePassScreen from "../ChangePassScreen";
 
 
 
-var Stack = createStackNavigator();
+const Stack = createStackNavigator();
 
 export default function ResetPassNavigation({route}) {
-  // const route = useRoute();
+
   const _title = route.params?._title;
 
+  
   return (
     <Stack.Navigator>
       <Stack.Screen
