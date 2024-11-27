@@ -428,7 +428,6 @@ app.use(express.json());
       fields.push("value = ?");
       values.push(value);
     }
-    console.log("after ifs:" + value);
 
     if (fields.length === 0) {
       return res.status(400).json({message: "No data provided to update"});
