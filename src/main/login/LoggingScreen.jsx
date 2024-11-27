@@ -1,32 +1,47 @@
-import { useRoute } from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
+import {StatusBar} from "expo-status-bar";
 import {
+  SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableHighlight,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
-import CheckBox from "react-native-check-box";
-import { getAllUsers } from "../../backend/database/Users";
+import isEmail from "validator/lib/isEmail";
+import {useEffect, useState} from "react";
+import {getAllUsers} from "../../backend/database/Users";
+import {TextInput} from "react-native-paper";
+import {textInputProps} from "../styles/TextInput";
+import {useIsFocused} from "@react-navigation/native";
 
-export default function LoggingScreen({ navigation }) {
+
+
+export default function LoggingScreen({navigation}) {
   const _title = "Rate'Em";
-  // const route = useRoute();
 
-  // connection test
+  const isFocused = useIsFocused();
+
   useEffect(() => {
     (async () => {
-      console.warn((await getAllUsers())[0]?.name + " moment 💁‍");
+
+      // PK: So every time screen is focused it updates
+      if (!isFocused) return;
+
+      await setCredentials();
+
+      // connection test
+      const user0 = (await getAllUsers())[0];
+      console.group(user0?.name + ":");
+      console.log("E-mail :" + user0?.email);
+      console.log("Pass   :" + user0?.password);
+      console.groupEnd();
     })();
-  }, []);
+  }, [isFocused]);
 
   const [userData, setUserData] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [toggleCheckBox, setToggleCheckBox] = useState(true);
+  const [passHidden, setPassHidden] = useState(true);
 
   /**
    * Feedback values that appear when the user writes incorrect input
@@ -34,19 +49,14 @@ export default function LoggingScreen({ navigation }) {
   const [wrongEmailInfo, setWrongEmailInfo] = useState("");
   const [wrongPasswordInfo, setWrongPasswordInfo] = useState("");
 
-  /**
-   * Variable preventing the wrongPasswordInfo from writing feedback right after opening the app. Check out the useEffect for more details.
-   */
-  const firstCheck = useRef(true);
 
   /**
    * Checks if the email format is correct returning the bool value. Also gives feedback to the wrongEmailInfo if the email format is wrong.
    * @param {string} email
    * @returns {boolean}
    */
-  function emailApproved(email) {
-    const regexMail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-    if (regexMail.test(email)) {
+  function validateEmail(email) {
+    if (isEmail(email) || email === "x") {
       setWrongEmailInfo("");
       return true;
     } else {
@@ -55,41 +65,55 @@ export default function LoggingScreen({ navigation }) {
     }
   }
 
+  function validatePass(pass) {
+    if (!pass) {
+      setWrongPasswordInfo("Podaj hasło.");
+    } else {
+      setWrongPasswordInfo("");
+    }
+  }
+
   /**
    * Iterates through users in userData checking if email and password are correct.
    */
-  async function checkCredentials() {
+  function checkCredentials() {
+
     for (const user of userData) {
-      if (user.email === email) {
-        if (user.password === password) {
-          setWrongPasswordInfo("");
-          this.textInput.clear();
-          await navigation.navigate("MainNav", { screen: "Home", _title }); // domyślny ekran, parametry
-          return;
-        } else {
-          setWrongPasswordInfo("Nieprawidłowe hasło");
-          setPassword("");
-          this.textInput.clear();
-          return false;
-        }
+
+      // Current user's email is not the same as given email
+      if (user.email !== email) {
+        continue;
       }
+
+      // Password is correct for given email
+      if (user.password === password) {
+        setWrongPasswordInfo("");
+        setPassword("");
+        setPassHidden(true);
+        return true;
+      }
+
+      // Password is incorrect for given email
+      setWrongPasswordInfo("Nieprawidłowe hasło");
+      setPassword("");
+      return false;
     }
 
+    // Email doesn't exist in database
     setWrongEmailInfo("Podany email nie istnieje");
-    return;
+    return false;
   }
 
   /**
    * Navigates to the main screen.
-   * @async
    */
-  async function navigateToProfileScreen() {
-    await navigation.navigate("MainNav", {
+  function navigateToMain() {
+    navigation.navigate("MainNav", {
       screen: "Home",
       params: {
-        _title: _title,
+        _title,
       },
-    }); // default screen, parameters
+    });
   }
 
   /**
@@ -97,71 +121,81 @@ export default function LoggingScreen({ navigation }) {
    */
   function handleLogin() {
     if (checkCredentials()) {
-      navigateToProfileScreen();
+      navigateToMain();
     }
   }
+
   /**
    * Asynchronously gets userData from getUsers() and sets it which triggers the useEffect hook with handleLogin() function.
    * @async
    */
   async function setCredentials() {
     const data = await getAllUsers();
+    // console.log(data.map(user => {
+    //   return {email: user.email, password: user.password};
+    // }));
     setUserData(data);
   }
 
-  /**
-   * Checks the credentials with the first onPress event.
-   */
-  useEffect(() => {
-    if (!firstCheck.current) {
-      handleLogin();
-    } else {
-      firstCheck.current = false;
-    }
-  }, [userData]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>{_title}</Text>
       <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
 
       <TextInput
-        style={styles.textInput}
+        {...textInputProps}
+        label="e-mail"
+        outlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
         autoComplete="email"
+        textContentType="emailAddress"
         autoCapitalize="none"
-        placeholder="e-mail"
-        onChangeText={(email) => setEmail(email.trim())}
-        onBlur={() => emailApproved(email)}
+        value={email}
+        onChangeText={(text) => {
+          text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
+          setEmail(text.trim());
+          validateEmail(text.trim());
+        }}
+        onBlur={() => validateEmail(email)}
       />
-      <Text style={styles.wrongInputText}>{wrongEmailInfo}</Text>
+      <Text style={styles.wrongInputText(wrongEmailInfo)}>{wrongEmailInfo}</Text>
+
       <TextInput
-        style={styles.textInput}
-        autoComplete="current-password"
+        {...textInputProps}
+        label="hasło"
+        outlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
+        returnKeyType="done"
         autoCapitalize="none"
-        placeholder="hasło"
-        secureTextEntry
-        onChangeText={(email) => setPassword(email.trim())}
-        ref={(input) => {
-          this.textInput = input;
+        autoComplete="current-password"
+        textContentType="currentPassword"
+        secureTextEntry={passHidden}
+        right={<TextInput.Icon icon={passHidden ? "eye" : "eye-off"} onPress={() => setPassHidden(!passHidden)}/>}
+        value={password}
+        onChangeText={(text) => {
+          if (text.includes(" ")) return;
+          setPassword(text.trim());
+          validatePass(text.trim());
         }}
       />
-      <Text style={styles.wrongInputText}>{wrongPasswordInfo}</Text>
+      <Text style={styles.wrongInputText(wrongPasswordInfo)}>{wrongPasswordInfo}</Text>
 
       <TouchableHighlight
-        style={styles.buttonMain}
+        style={[styles.buttonMain, {marginTop: wrongPasswordInfo ? 18 : 40}]}
         onPress={() => handleLogin()}
       >
         <Text style={styles.buttonText}>Zaloguj</Text>
       </TouchableHighlight>
 
-      <View style={{ marginTop: 20 }}>
+      <View style={{marginTop: 20}}>
         <TouchableOpacity
           // disabled
           style={{
             marginLeft: 10,
           }}
           onPress={() => {
-            navigation.navigate("ResetNav", { _title }); // domyślny ekran, parametry
+            navigation.navigate("ResetNav", {_title}); // domyślny ekran, parametry
           }}
         >
           <Text
@@ -177,9 +211,9 @@ export default function LoggingScreen({ navigation }) {
       </View>
 
       <View
-        style={{ flexDirection: "row", alignItems: "center", marginTop: 20 }}
+        style={{flexDirection: "row", alignItems: "center", marginTop: 30}}
       >
-        <Text style={{ /* marginTop: 15, marginBottom: 5, */ fontSize: 13 }}>
+        <Text style={{ /* marginTop: 15, marginBottom: 5, */ fontSize: 13}}>
           Nie masz jeszcze konta?
         </Text>
 
@@ -188,7 +222,7 @@ export default function LoggingScreen({ navigation }) {
             marginLeft: 10,
           }}
           onPress={() => {
-            navigation.navigate("RegisterNav", { _title }); // domyślny ekran, parametry
+            navigation.navigate("RegisterNav", {_title}); // domyślny ekran, parametry
           }}
         >
           <Text
@@ -201,8 +235,8 @@ export default function LoggingScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <StatusBar style="light" />
-    </View>
+      <StatusBar style="light"/>
+    </SafeAreaView>
   );
 }
 
@@ -221,24 +255,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 50,
   },
-  textInput: {
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#000",
-    borderStyle: "solid",
-    paddingTop: 6,
-    paddingBottom: 6,
-    paddingLeft: 20,
-    paddingRight: 20,
-    width: "90%",
-  },
-  wrongInputText: {
-    fontSize: 12,
-    color: "red",
-    marginBottom: 15,
+  wrongInputText: (wrongEmail, wrongPass) => ({
+    display: wrongEmail || wrongPass ? "flex" : "none",
+    fontSize: 14,
+    color: "#e41c1c",
     alignSelf: "flex-start",
     paddingLeft: 20,
-  },
+    marginBottom: 6,
+  }),
   buttonMain: {
     backgroundColor: "#000",
     paddingTop: 8,

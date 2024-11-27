@@ -1,6 +1,6 @@
-import { useRoute } from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {useRoute} from "@react-navigation/native";
+import {useEffect, useState} from "react";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import HomeScreen from "../home/HomeScreen";
 import ElectionNavigation from "../election/nav/ElectionNavigation";
 import SearchNavigation from "../search/nav/SearchNavigation";
@@ -8,14 +8,16 @@ import {
   getAllPoliticianNames,
   getAllPoliticians,
 } from "../../backend/database/Politicians.js";
-import { PoliticianNameContext } from "../search/PoliticianNameContext.jsx";
+import {PoliticianNameContext} from "../search/PoliticianNameContext.jsx";
 import TrendingScreen from "../trending/TrendingScreen";
 import ExtrasNavigation from "../extras/nav/ExtrasNavigation";
-import { Icon } from "react-native-paper";
+import {Icon} from "react-native-paper";
+
+
 
 const Tab = createBottomTabNavigator();
 
-export default function MainNavigation({ route }) {
+export default function MainNavigation({route}) {
   const _title = route.params?._title;
   const [namesData, setNamesData] = useState();
 
@@ -35,20 +37,35 @@ export default function MainNavigation({ route }) {
   return (
     <PoliticianNameContext.Provider value={namesData}>
       <Tab.Navigator backBehavior="initialRoute"
-        initialRouteName="Home"
-        screenOptions={{ unmountOnBlur: true }}
+                     initialRouteName="Home"
+                     screenOptions={{
+                       unmountOnBlur: true,
+                       tabBarHideOnKeyboard: true,
+                       tabBarActiveBackgroundColor: "#00000012",
+                       tabBarInactiveBackgroundColor: "#00000002",
+                       tabBarStyle: {
+                         height: 65,
+                         borderTopLeftRadius: 10,
+                         borderTopRightRadius: 10,
+                       },
+                       tabBarItemStyle: {
+                         borderRadius: 5,
+                         paddingTop: 5,
+                         paddingBottom: 10,
+                       },
+                     }}
       >
         <Tab.Screen
           name="SearchNav"
           component={SearchNavigation}
-          initialParams={{ _title }}
+          initialParams={{_title}}
           options={{
             title: "Wyszukaj", // tytuł na dole ekranu
             headerShown: false,
             // headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: () => <Icon source="account-search" size={36} />,
-            tabBarIconStyle: { top: 1 },
+            tabBarIcon: () => <Icon source="account-search" size={36}/>,
+            tabBarIconStyle: {top: 1},
             // tabBarShowLabel: false,
             // tabBarBadge: "+1"
           }}
@@ -64,9 +81,9 @@ export default function MainNavigation({ route }) {
             gestureEnabled: false, // wyłącza swipe back na IOS
             tabBarIcon: () => (
               // <Icon source="draw" size={36}/>
-              <Icon source="email-newsletter" size={32} />
+              <Icon source="email-newsletter" size={32}/>
             ),
-            tabBarIconStyle: { top: 4 },
+            tabBarIconStyle: {top: 4},
           }}
         />
         <Tab.Screen
@@ -78,8 +95,8 @@ export default function MainNavigation({ route }) {
             headerTitleAlign: "center",
             headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: () => <Icon source="home" size={36} />,
-            tabBarIconStyle: { top: 1 },
+            tabBarIcon: () => <Icon source="home" size={36}/>,
+            tabBarIconStyle: {top: 1},
           }}
         />
         <Tab.Screen
@@ -91,8 +108,8 @@ export default function MainNavigation({ route }) {
             headerTitleAlign: "center",
             headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: () => <Icon source="trending-up" size={36} />,
-            tabBarIconStyle: { top: 1 },
+            tabBarIcon: () => <Icon source="trending-up" size={36}/>,
+            tabBarIconStyle: {top: 1},
           }}
         />
         <Tab.Screen
@@ -104,8 +121,8 @@ export default function MainNavigation({ route }) {
             headerTitleAlign: "center",
             headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: () => <Icon source="menu" size={36} />,
-            tabBarIconStyle: { top: 2 },
+            tabBarIcon: () => <Icon source="menu" size={36}/>,
+            tabBarIconStyle: {top: 2},
           }}
         />
       </Tab.Navigator>
