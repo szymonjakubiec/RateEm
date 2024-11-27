@@ -12,10 +12,12 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
-import { PoliticianNameContext } from "./PoliticianNameContext.jsx";
+import {PoliticianNameContext} from "./PoliticianNameContext.jsx";
 import SearchFlatList from "./searchScreenComponents/SearchFlatList.jsx";
 
-export default function SearchScreen({ navigation }) {
+
+
+export default function SearchScreen({navigation}) {
   const politicianNameData = useContext(PoliticianNameContext);
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
@@ -25,22 +27,22 @@ export default function SearchScreen({ navigation }) {
 
   useEffect(() => {
     setSelectedPoliticianId(0);
-  });
+  }, []);
   /**
    * Navigation to the ProfileScreen.js after selection of politician.
    */
   useEffect(() => {
-    console.log(selectedPoliticianId);
     if (selectedPoliticianId > 0) {
       navigation.navigate("Profile", {
         selectedPoliticianId,
       });
+      setSelectedPoliticianId(0);
     }
   }, [selectedPoliticianId]);
 
   return (
     <View style={styles.container}>
-      <SearchFlatList data={politicianNameData} handleOnPress={handlePress} />
+      <SearchFlatList data={politicianNameData} handleOnPress={handlePress}/>
     </View>
   );
 }

@@ -1,14 +1,16 @@
-import {StyleSheet, Text, TextInput, TouchableHighlight, View, BackHandler} from "react-native";
+import {StyleSheet, Text, TouchableHighlight, View, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
-import {alert, checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
-import {updateUser} from "../../../backend/database/Users";
+import {checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
+import {TextInput} from "react-native-paper";
+import {textInputProps} from "../../styles/TextInput";
 
 
 
 export default function ResetConfirmScreen({navigation, route}) {
-  // const route = useRoute();
+
   const {email, phone} = route.params;
-  let _code = useRef('');
+
+  const _code = useRef('');
 
   const createCode = () => {
     const code = Math.floor(100000 + Math.random() * 900000);
@@ -16,6 +18,8 @@ export default function ResetConfirmScreen({navigation, route}) {
   };
 
   const [code, setCode] = useState('');
+  const [wrongCode, setWrongCode] = useState('');
+
 
   // Pk: Preventing navigating back
   useEffect(() => {
@@ -44,44 +48,76 @@ export default function ResetConfirmScreen({navigation, route}) {
 
   }, []);
 
+
+  /**
+   * Validates code.
+   * @param {string} code - code to validate
+   */
+  const validateCodeOnChange = (code) => {
+    if (code.length < 6) {
+      setWrongCode("Wpisz 6 cyfrowy kod.");
+    } else {
+      setWrongCode('');
+    }
+  };
+
+  const isCodeValid = () => {
+    return !(wrongCode || !code);
+  };
+
+
   return (
     <View style={styles.container}>
-      <Text style={styles.subTitle}>Potwierdź reset hasła</Text>
+      <Text style={styles.title}>Potwierdź reset hasła</Text>
 
       {/* PK: Sms */}
       {/*  <Text style={ styles.subTitle }>Na numer +48{ phone } został wysłany SMS z kodem weryfikacyjnym do zresetowania hasła.
       Wpisz go w oknie poniżej.</Text> */}
 
       {/* PK: Email */}
-      <Text style={styles.subTitle}>Na adres e-mail {email} został wysłany mail z kodem weryfikacyjnym do resetu hasła.
-        Wpisz go w oknie poniżej.</Text>
+      <Text style={styles.subTitle}>Na adres e-mail:</Text>
+      <Text style={styles.email}>{email}</Text>
+      <Text style={[styles.subTitle, {marginBottom: 40}]}>został wysłany mail z kodem weryfikacyjnym do resetu hasła.
+        {"\n"}Wpisz go w oknie poniżej.</Text>
 
       <TextInput
-        style={styles.textInput}
-        autoCapitalize="none"
+        {...textInputProps}
+        label="kod"
+        outlineColor={wrongCode ? "#e41c1c" : "black"}
+        activeOutlineColor={wrongCode ? "#e41c1c" : "black"}
+        keyboardType="numeric"
         autoComplete="one-time-code"
         textContentType="oneTimeCode"
-        placeholder="kod"
+        autoCapitalize="none"
+        returnKeyType="done"
+        maxLength={6}
         value={code}
-        onChangeText={(text) => setCode(text)}
+        onChangeText={(text) => {
+          text = text.replace(/[^0-9]/g, '');
+          setCode(text.trim());
+          validateCodeOnChange(text.trim());
+        }}
       />
+      <Text style={styles.wrongInputText(wrongCode)}>{wrongCode}</Text>
 
       <TouchableHighlight
-        style={styles.button}
-        onPress={async () => {
+        style={[styles.button, {marginTop: 30}, !isCodeValid() && {opacity: 0.5}]}
+        disabled={!isCodeValid()}
+        onPress={() => {
 
           // PK: SMS
 
-          // await checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
+          // checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
+          //   setWrongCode("Błąd! Spróbuj ponownie.");
           //   if (!success) {
-          //     alert("Kod");
           //     return false;
           //   }
 
           // PK: Email
 
           if (code !== _code.current) {
-            alert("Błędny kod!\nSpróbuj ponownie.");
+            setWrongCode("Błędny kod! Spróbuj ponownie.");
+            setCode('');
             return false;
           }
 
@@ -105,31 +141,41 @@ const styles = StyleSheet.create({
     padding: 70,
   },
   title: {
-    fontSize: 48,
+    fontSize: 24,
+    marginBottom: 40,
+    alignSelf: "flex-start",
   },
   subTitle: {
-    fontSize: 16,
-    marginBottom: 50,
+    width: "100%",
+    fontSize: 18,
     // textAlign: "justify",
   },
-  textInput: {
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#000",
-    borderStyle: "solid",
-    paddingTop: 6,
-    paddingBottom: 6,
-    paddingLeft: 20,
-    paddingRight: 20,
-    width: "90%",
-    marginBottom: 15,
+  email: {
+    fontSize: 18,
+    textAlign: "center",
+    marginVertical: 10,
+    paddingVertical: 7,
+    width: "95%",
+    borderStyle: "dashed",
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
   },
+  wrongInputText: (wrongCode) => ({
+    display: wrongCode ? "flex" : "none",
+    fontSize: 14,
+    color: "#e41c1c",
+    alignSelf: "flex-start",
+    paddingLeft: 20,
+    marginTop: 2,
+    marginBottom: 6,
+  }),
   button: {
     backgroundColor: "#000",
     paddingTop: 8,
     paddingBottom: 8,
     width: "70%",
     borderRadius: 20,
+    marginBottom: 70,
   },
   buttonText: {
     alignSelf: "center",
