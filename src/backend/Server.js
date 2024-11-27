@@ -31,6 +31,7 @@ app.use(express.json());
                  r.politician_id,
                  r.title,
                  r.value,
+                 r.weight,
                  r.description,
                  r.date,
                  p.id AS politician_id,
@@ -427,6 +428,7 @@ app.use(express.json());
       fields.push("value = ?");
       values.push(value);
     }
+    console.log("after ifs:" + value);
 
     if (fields.length === 0) {
       return res.status(400).json({message: "No data provided to update"});
@@ -442,7 +444,7 @@ app.use(express.json());
 
       // Aktualizujemy rating na podstawie `politician_id` i `user_id`
       const query = "UPDATE own_ratings SET value = ? WHERE politician_id = ? AND user_id = ?";
-      const [result] = await connection.execute(query, [rating, politician_id, user_id]);
+      const [result] = await connection.execute(query, [value, politician_id, user_id]);
 
       if (result.affectedRows > 0) {
         res.json({...req.body});
@@ -552,6 +554,103 @@ app.get("/api/politicians", async (req, res) => {
     }
   }
 });
+
+// --- update ---------------------------------------------------------------------------
+app.put("/api/politicians/:id", async (req, res) => {
+  const {id} = req.params;
+  const {
+    names_surname,
+    party,
+    global_rating,
+    facebook_link,
+    twitter_link,
+    birth_date,
+    name,
+    surname,
+    party_short,
+    picture
+  } = req.body;
+
+  let connection;
+
+  const fields = [];
+  const values = [];
+
+  if (names_surname) {
+    fields.push("names_surname = ?");
+    values.push(names_surname);
+  }
+  if (party) {
+    fields.push("party = ?");
+    values.push(party);
+  }
+  if (global_rating) {
+    fields.push("global_rating = ?");
+    values.push(global_rating);
+  }
+  if (facebook_link) {
+    fields.push("facebook_link = ?");
+    values.push(facebook_link);
+  }
+  if (twitter_link) {
+    fields.push("twitter_link = ?");
+    values.push(twitter_link);
+  }
+  if (birth_date) {
+    fields.push("birth_date = ?");
+    values.push(birth_date);
+  }
+  if (name) {
+    fields.push("name = ?");
+    values.push(name);
+  }
+  if (surname) {
+    fields.push("surname = ?");
+    values.push(surname);
+  }
+  if (party_short) {
+    fields.push("party_short = ?");
+    values.push(party_short);
+  }
+  if (picture) {
+    fields.push("picture = ?");
+    values.push(picture);
+  }
+
+  if (fields.length === 0) {
+    return res.status(400).json({message: "No data provided to update"});
+  }
+
+  values.push(parseInt(id));
+
+  const query = `UPDATE politicians
+                 SET ${fields.join(", ")}
+                 WHERE id = ?`;
+
+  try {
+    connection = await mysql.createConnection(config);
+
+    const [result] = await connection.execute(query, values);
+
+    if (result.affectedRows > 0) {
+      res.json({id, ...req.body});
+    } else {
+      res.status(404).json({message: "Record not found"});
+    }
+  } catch (err) {
+    console.error("Error updating politician:", err.message);
+    res.status(500).send(err.message);
+  } finally {
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+        console.error("Error closing connection:", err.message);
+      }
+    }
+  }
+});
+
 
 //
 // === USERS TABLE ========================================================================

@@ -6,8 +6,10 @@ import {
   View,
 } from "react-native";
 import {
+  useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useState,
 } from "react";
 import {PoliticianNameContext} from "./PoliticianNameContext.jsx";
@@ -25,7 +27,7 @@ export default function SearchScreen({navigation}) {
 
   useEffect(() => {
     setSelectedPoliticianId(0);
-  });
+  }, []);
   /**
    * Navigation to the ProfileScreen.js after selection of politician.
    */
@@ -34,6 +36,7 @@ export default function SearchScreen({navigation}) {
       navigation.navigate("Profile", {
         selectedPoliticianId,
       });
+      setSelectedPoliticianId(0);
     }
   }, [selectedPoliticianId]);
 

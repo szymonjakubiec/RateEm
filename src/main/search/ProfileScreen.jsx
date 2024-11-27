@@ -1,28 +1,24 @@
 import {
-  FlatList,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableHighlight,
   View,
 } from "react-native";
 import {useEffect, useRef, useState} from "react";
-import {Image} from "react-native";
+import { Image } from "react-native";
 import {
   getOwnRating,
   addOwnRating,
   updateOwnRating,
+  getAllPoliticianOwnRatings,
 } from "../../backend/database/OwnRatings";
-import {
-  getRating,
-  getRatingsUserIdPoliticianId,
-  addRating,
-} from "../../backend/database/Ratings";
-import {getPolitician} from "../../backend/database/Politicians";
-import StarRating from "react-native-star-rating-widget";
+import {getRatingsUserIdPoliticianId, addRating} from "../../backend/database/Ratings";
+import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
+import OpinionsTile from "./opinionsTileComponents/OpinionsTile";
 
-export default function ProfileScreen({ navigation, route }) {
+
+
+export default function ProfileScreen({ route }) {
   const { selectedPoliticianId } = route.params;
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
@@ -38,20 +34,17 @@ export default function ProfileScreen({ navigation, route }) {
   const [firstOwnRating, setFirstOwnRating] = useState(0);
   const [singleRatings, setSingleRatings] = useState([]); // these are ratings from ratings.js
   const [newSingleRating, setNewSingleRating] = useState(0);
-  const [starRating, setStarRating] = useState(0);
-
-  const [wrongRatingInfo, setWrongRatingInfo] = useState("");
-
-  const newTitleRef = useRef("");
-  const newDescriptionRef = useRef("");
+  
+  const [isLoadOwnRatingInitialized, setIsLoadOwnRatingInitialized] = useState(false);
+  
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
 
-  const [expandedRatingList, setExpandedRatingList] = useState(false);
-  const [expandedRating, setExpandedRating] = useState(false);
-  const [expandedAddOpinion, setExpandedAddOpinion] = useState(false);
-
-  const [selectedItemId, setSelectedItemId] = useState(0);
+  /**
+   * Variable preventing the ownRating from writing feedback before loading the globalRating to the screen.
+   */
+  const canUpdateGlobalRating = useRef(false);
+  
 
   const userId = 2;
 
@@ -61,10 +54,20 @@ export default function ProfileScreen({ navigation, route }) {
     init();
   }, []);
 
+  /**
+   * Runs right after the loadOwnRating from useEffect above.
+   */
+  useEffect(() => {
+    if (isLoadOwnRatingInitialized){
+      canUpdateGlobalRating.current = true;
+    }
+    
+  }, [isLoadOwnRatingInitialized]);
+
   async function init() {
-    await loadPoliticianData();
-    await loadOwnRating();
-    await loadSingleRatings();
+    loadPoliticianData();
+    if (loadOwnRating())
+      loadSingleRatings();
   }
 
   /**
@@ -78,7 +81,7 @@ export default function ProfileScreen({ navigation, route }) {
       const data = await getPolitician(selectedPoliticianId);
       setPoliticianData(data);
       if (data.at(0).global_rating != null)
-        setGlobalRating(data.at(0).global_rating);
+        setGlobalRating(data.at(0).global_rating.toFixed(2));
       if (data.at(0).party != null) {
         setParty(data.at(0).party);
       }
@@ -89,14 +92,24 @@ export default function ProfileScreen({ navigation, route }) {
     }
   }
 
+  /**
+   * Loads asynchronously ownRating and if it is not null then allows to run loadSingleRatings. 
+   * Also sets isLoadOwnRatingInitialized to allow updating the globalRating after completing the whole function.
+   * @returns {Promise<boolean>}
+   */
   async function loadOwnRating() {
     try {
       const ownRating = (await getOwnRating(userId, selectedPoliticianId)).at(
         0
       ).value;
+      console.log("ownRating: " + ownRating);
       setOwnRating(ownRating.toFixed(2));
+      return true;
     } catch (error) {
       console.log("Error with loading own rating: " + error);
+      return false;
+    } finally {
+      setIsLoadOwnRatingInitialized(true);
     }
   }
 
@@ -128,254 +141,115 @@ export default function ProfileScreen({ navigation, route }) {
     return 24;
   }
 
-  function OpinionsTile() {
-    if (ownRating === 0) {
-      return displayNoOpinionComponent();
-    } else {
-      return displayYourOpinionsComponent();
-    }
-  }
-
-  function displayNoOpinionComponent() {
-    return (
-      <View style={styles.opinionsTile}>
-        <Text>Brak opinii</Text>
-        <Text>Masz już wyrobione zdanie o tym polityku?</Text>
-        <Text>Ustaw opinię bazową</Text>
-        <StarRating
-          rating={starRating}
-          onChange={setStarRating}
-          enableHalfStar={false}
-        />
-        <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
-        <TouchableHighlight
-          style={styles.button}
-          onPress={setBaseRate} // function to set firstRating if >= 1
-        >
-          <Text>Ustaw</Text>
-        </TouchableHighlight>
-      </View>
-    );
-  }
-
-  function displayYourOpinionsComponent() {
-    return (
-      <View style={styles.opinionsTile}>
-        <View>
-          <TouchableHighlight
-            onPress={() => {
-              setExpandedRatingList(!expandedRatingList);
-            }}
-          >
-            <Text style={{fontWeight: "500", fontSize: 20}}>
-              Twoje opinie
-            </Text>
-          </TouchableHighlight>
-        </View>
-        <RatingsList/>
-        <AddOpinion/>
-      </View>
-    );
-  }
-
-  /**
-   * Component with a FlatList of single ratings.
-   * @returns
-   */
-  function RatingsList() {
-    if (expandedRatingList === true) {
-      return (
-        <FlatList
-          data={singleRatings}
-          renderItem={RatingItem}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={false}
-        />
-      );
-    }
-  }
-
-  /**
-   * Component
-   * @param {object} item
-   * @returns
-   */
-  function RatingItem({item}) {
-    return (
-      <TouchableHighlight
-        onPress={() => {
-          if (selectedItemId !== item.id) setSelectedItemId(item.id);
-          else setSelectedItemId(0);
-        }}
-      >
-        <View style={styles.ratingItem}>
-          <View style={styles.ratingItemBase}>
-            <View>
-              <Text>{item.date}</Text>
-              <Text>{item.title}</Text>
-            </View>
-            <View>
-              <Text>{item.value}</Text>
-            </View>
-          </View>
-          <ItemExtension item={item}/>
-        </View>
-      </TouchableHighlight>
-    );
-  }
-
-  function ItemExtension({item}) {
-    if (selectedItemId === item.id) {
-      return (
-        <View style={{backgroundColor: "gray", padding: 10}}>
-          <Text>{item.description}</Text>
-          <TouchableHighlight
-            style={styles.button}
-            onPress={() => console.log("Not yet, WIP")}
-          >
-            <Text>Usuń opinię</Text>
-          </TouchableHighlight>
-        </View>
-      );
-    }
-  }
-
-  function AddOpinion() {
-    if (expandedAddOpinion === false) {
-      return (
-        <TouchableHighlight
-          style={styles.ratingItem}
-          onPress={() => setExpandedAddOpinion(true)}
-        >
-          <Text
-            style={{fontWeight: "500", fontSize: 20, alignSelf: "center"}}
-          >
-            Dodaj opinię
-          </Text>
-        </TouchableHighlight>
-      );
-    } else {
-      return (
-        <View style={styles.ratingItem}>
-          <TouchableHighlight onPress={() => setExpandedAddOpinion(false)}>
-            <Text
-              style={{
-                fontWeight: "500",
-                fontSize: 18,
-                alignSelf: "flex-start",
-              }}
-            >
-              Dodaj opinię
-            </Text>
-          </TouchableHighlight>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Wstaw tytuł"
-            ref={newTitleRef}
-            onChangeText={(input) => {
-              newTitleRef.current.value = input;
-            }}
-            onBlur={() => setNewTitle(newTitleRef.current.value)}
-          />
-          <StarRating
-            rating={starRating}
-            onChange={setStarRating}
-            enableHalfStar={false}
-          />
-          <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Wstaw komentarz do opinii"
-            ref={newDescriptionRef}
-            onChangeText={(input) => (newDescriptionRef.current.value = input)}
-            onBlur={() => setNewDescription(newDescriptionRef.current.value)}
-          />
-          <TouchableHighlight
-            style={styles.button}
-            onPress={setSingleRate} // function to set firstRating if >= 1
-          >
-            <Text>Ustaw</Text>
-          </TouchableHighlight>
-        </View>
-      );
-    }
-  }
-
-  /**
-   * Checks if the starRating is at least 1 and set it into firstOwnRating, which fires
-   */
-  function setBaseRate() {
-    if (starRating >= 1) {
-      setFirstOwnRating(starRating);
-      setWrongRatingInfo("");
-    } else {
-      setWrongRatingInfo("Ocena polityka musi wynosić przynajmniej 1.");
-    }
-  }
-
-  function setSingleRate() {
-    if (starRating >= 1) {
-      setNewSingleRating(starRating);
-      setWrongRatingInfo("");
-    } else {
-      setWrongRatingInfo("Ocena polityka musi wynosić przynajmniej 1.");
-    }
-  }
+  
 
   // only for adding single rating into DB
   function countOwnRating(newSingleRating) {
     let numerator = 0;
     let denominator = 0;
+    
     for (singleRating of singleRatings) {
       numerator = numerator + singleRating.value * singleRating.weight;
       denominator = denominator + singleRating.weight;
     }
+    
     numerator = numerator + newSingleRating * 1;
     denominator = denominator + 1;
     let weightedAverage = Math.round((numerator * 100) / denominator) / 100; // round number to 2 decimal places
+    
     console.log("Srednia ważona wychodzi: " + weightedAverage);
     setOwnRating(weightedAverage);
-
     updateOwnRating(selectedPoliticianId, userId, weightedAverage);
   }
+  
+  async function countGlobalRating(){
+    const politicianOwnRatings = await getAllPoliticianOwnRatings(selectedPoliticianId);
+    let numerator = 0;
+    let denominator = 0;
+    
+    for (politicianOwnRating of politicianOwnRatings) { 
+      if (politicianOwnRating.user_id !== userId){
+        numerator += politicianOwnRating.value;
+        denominator += 1;
+      }
+    }
 
+    numerator += ownRating;
+    denominator = denominator + 1;
+    let average = Math.round((numerator * 100) / denominator) / 100;
+    
+    console.log("Średnia globalna wynosi: " + average);    
+    setGlobalRating(average);
+    updatePolitician(selectedPoliticianId, {global_rating: average});
+  }
+
+  async function handleFirstOwnRating() {
+    await addRating(
+      userId,
+      selectedPoliticianId,
+      `Bazowa opinia o ${politicianNames} ${politicianSurname}`,
+      firstOwnRating,
+      "Użytkownik ma już wyrobione zdanie.",
+      currentDate,
+      10
+    );
+    addOwnRating(userId, selectedPoliticianId, firstOwnRating);
+    setOwnRating(firstOwnRating);
+    setFirstOwnRating(0);
+    loadSingleRatings();
+  }
+
+  async function handleNewSingleRating(){
+    console.log("handleNewSingleRating");
+    await addRating(
+      userId,
+      selectedPoliticianId,
+      newTitle,
+      newSingleRating,
+      newDescription,
+      currentDate,
+      1
+    );
+    countOwnRating(newSingleRating);
+    setNewSingleRating(0);
+    setNewTitle("");
+    setNewDescription("");
+    loadSingleRatings();
+  }
+
+  function handleFirstOwnRatingOpinionsTile(starRating){
+    setFirstOwnRating(starRating)
+  }
+
+  function handleNewSingleRatingOpinionsTile(starRating){
+    setNewSingleRating(starRating);
+  }
+  function handleNewTitleOpinionsTile(newTitle){
+    setNewTitle(newTitle);
+  }
+  function handleNewDescriptionOpinionsTile(newDescription){
+    setNewDescription(newDescription);
+  }
+  
   useEffect(() => {
     if (firstOwnRating) {
-      addRating(
-        userId,
-        selectedPoliticianId,
-        `Bazowa opinia o ${politicianNames} ${politicianSurname}`,
-        firstOwnRating,
-        "Użytkownik ma już wyrobione zdanie.",
-        currentDate,
-        10
-      );
-      addOwnRating(userId, selectedPoliticianId, firstOwnRating);
-      setOwnRating(firstOwnRating);
-      setFirstOwnRating(0);
-      loadSingleRatings();
+      handleFirstOwnRating()
     }
   }, [firstOwnRating]);
-
+  
   useEffect(() => {
     if (newSingleRating && newTitle && newDescription) {
-      addRating(
-        userId,
-        selectedPoliticianId,
-        newTitle,
-        newSingleRating,
-        newDescription,
-        currentDate,
-        1
-      );
-      countOwnRating(newSingleRating);
-      setNewSingleRating(0);
-      setNewTitle("");
-      setNewDescription("");
-      loadSingleRatings();
+      handleNewSingleRating()
     }
   }, [newSingleRating, newTitle, newDescription]);
 
+  useEffect(() => {
+    if (canUpdateGlobalRating.current === true ){
+      countGlobalRating()
+    }
+  }, [ownRating]);
+
+  
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -395,11 +269,7 @@ export default function ProfileScreen({ navigation, route }) {
               >
                 {politicianSurname}
               </Text>
-              <Text
-                style={styles.names}
-              >
-                {politicianNames}
-              </Text>
+              <Text style={styles.names}>{politicianNames}</Text>
             </View>
             <View style={styles.imageContainer}>
               <Image
@@ -430,10 +300,18 @@ export default function ProfileScreen({ navigation, route }) {
             <Text>{party}.</Text>
           </View>
         </View>
-        <OpinionsTile/>
+        <OpinionsTile 
+          ownRating={ownRating} 
+          singleRatings={singleRatings} 
+          handleFirstOwnRating={handleFirstOwnRatingOpinionsTile} 
+          handleNewSingleRating={handleNewSingleRatingOpinionsTile}
+          handleNewTitle={handleNewTitleOpinionsTile}
+          handleNewDescription={handleNewDescriptionOpinionsTile}
+        />
       </View>
     </ScrollView>
   );
+  
 }
 
 const styles = StyleSheet.create({
