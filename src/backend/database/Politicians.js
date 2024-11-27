@@ -5,7 +5,7 @@
  * @returns {Promise<object[]|undefined>} Array of politician objects
  */
 const getAllPoliticians = async () => {
-  const url = `${global.SERVER_URL}/politicians`;
+  const url = `${global.SERVER_URL}/all-politicians`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
