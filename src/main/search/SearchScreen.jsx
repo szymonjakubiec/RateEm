@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { PoliticianNameContext } from "./PoliticianNameContext.jsx";
+import {PoliticianNameContext} from "./PoliticianNameContext.jsx";
 import SearchFlatList from "./searchScreenComponents/SearchFlatList.jsx";
 
 
@@ -23,7 +23,6 @@ export default function SearchScreen({ navigation }) {
   useEffect(() => {
     setSelectedPoliticianId(0);
   }, []);
-  
   /**
    * Navigation to the ProfileScreen.js after selection of politician.
    */
