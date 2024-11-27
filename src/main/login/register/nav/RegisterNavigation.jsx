@@ -1,4 +1,3 @@
-import {useRoute} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import RegisterScreen from "../RegisterScreen";
 import ConfirmScreen from "../ConfirmScreen";
@@ -6,10 +5,9 @@ import SuccessScreen from "../SuccessScreen";
 
 
 
-var Stack = createStackNavigator();
+const Stack = createStackNavigator();
 
 export default function RegisterNavigation({route}) {
-  // const route = useRoute();
   const _title = route.params?._title;
 
   return (

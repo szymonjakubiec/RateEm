@@ -766,7 +766,8 @@ app.put("/api/politicians/:id", async (req, res) => {
 
     const query = `UPDATE users
                    SET ${fields.join(", ")}
-                   WHERE ${id.includes("@") ? "email" : "id"} = ?`;
+                   WHERE id = ?`;
+
 
     try {
       connection = await mysql.createConnection(config);

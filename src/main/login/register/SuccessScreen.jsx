@@ -1,17 +1,9 @@
-import {StatusBar} from "expo-status-bar";
-import {BackHandler, StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
-import {useEffect} from "react";
+import {StyleSheet, Text, TouchableHighlight, View} from "react-native";
 
 
 
 export default function SuccessScreen({navigation, route}) {
 
-  // PK: Prevents navigating back
-  useEffect(() => {
-    const backAction = () => true;
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-    return () => backHandler.remove();
-  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -52,18 +44,6 @@ export const styles = StyleSheet.create({
     marginBottom: 50,
     alignSelf: "flex-start",
     left: 20,
-  },
-  textInput: {
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#000",
-    borderStyle: "solid",
-    paddingTop: 6,
-    paddingBottom: 6,
-    paddingLeft: 20,
-    paddingRight: 20,
-    width: "90%",
-    marginBottom: 15,
   },
   button: {
     backgroundColor: "#000",
