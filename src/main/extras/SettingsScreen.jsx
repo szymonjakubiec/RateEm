@@ -66,7 +66,19 @@ export default function SettingsScreen({navigation}) {
             onChangeText={setPhone}
           />
         </>
-      ) : null}
+      ) : (
+        <>
+          <TextInput
+            {...textInputProps}
+            value="Ładowanie"
+          />
+          <TextInput
+            {...textInputProps}
+            value="Ładowanie"
+          />
+        </>
+      )
+      }
 
       <Text style={styles.subSection}>Zmień hasło:</Text>
       <TextInput
