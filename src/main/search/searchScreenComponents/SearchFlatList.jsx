@@ -25,26 +25,9 @@ export default function SearchFlatList({data, handleOnPress}) {
       if (result.length !== 0)
         setFilteredData(result);
       else
-        setFilteredData([{key: 0, value: "Nie znaleziono rezultatów"}]);
-
+        setFilteredData([])
     } else {
       setFilteredData([]);
-    }
-  }
-
-
-  /**
-   * Button to clear the input text (and filteredData) if there's any.
-   * @returns {JSX.Element}
-   * @constructor
-   */
-  function ClearTextInputButton() {
-    if (searchText !== '') {
-      return (
-        <TouchableHighlight onPress={ClearTextInput} style={styles.clearButton}>
-          <Text style={styles.clearButtonText}>Wyczyść</Text>
-        </TouchableHighlight>
-      );
     }
   }
 
@@ -68,14 +51,20 @@ export default function SearchFlatList({data, handleOnPress}) {
           autoComplete="name"
           textContentType="name"
           autoCapitalize="words"
-          right={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()}/>}
+          value={searchText}
+          right={<TextInput.Icon 
+            icon="close"
+            onPress={() => {
+              ClearTextInput()
+              // Keyboard.dismiss()
+            }}
+          />}
           onChangeText={(text) => {
-            setSearchText(text.trim());
+            setSearchText(text);
             handleInput(text.trim());
           }}
+          
         />
-
-        <ClearTextInputButton/>
       </View>
       {filteredData.length !== 0
         ? (<FlatList
@@ -91,7 +80,6 @@ export default function SearchFlatList({data, handleOnPress}) {
               nameSurname={item.value}
               handleOnPress={handleOnPress}
               ClearTextInput={ClearTextInput}
-              disabled={filteredData[0].value === "Nie znaleziono rezultatów"}
             />
           )}
         />)
@@ -100,9 +88,9 @@ export default function SearchFlatList({data, handleOnPress}) {
   );
 }
 
-function Item({id, nameSurname, handleOnPress, ClearTextInput, disabled}) {
+function Item({id, nameSurname, handleOnPress, ClearTextInput}) {
   return (
-    <TouchableHighlight underlayColor="#00000033" style={styles.item} disabled={disabled} onPress={() => {
+    <TouchableHighlight underlayColor="#00000033" style={styles.item} onPress={() => {
       handleOnPress(id);
       ClearTextInput();
     }}>
