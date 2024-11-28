@@ -25,7 +25,7 @@ export default function SearchFlatList({data, handleOnPress}) {
       if (result.length !== 0)
         setFilteredData(result);
       else
-        setFilteredData([])
+        setFilteredData([]);
     } else {
       setFilteredData([]);
     }
@@ -52,10 +52,10 @@ export default function SearchFlatList({data, handleOnPress}) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
-          right={<TextInput.Icon 
+          right={<TextInput.Icon
             icon="close"
             onPress={() => {
-              ClearTextInput()
+              ClearTextInput();
               // Keyboard.dismiss()
             }}
           />}
@@ -63,7 +63,7 @@ export default function SearchFlatList({data, handleOnPress}) {
             setSearchText(text);
             handleInput(text.trim());
           }}
-          
+
         />
       </View>
       {filteredData.length !== 0
@@ -109,7 +109,6 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flexGrow: 1,
-    padding: 5,
   },
   list: (result) => ({
     borderWidth: result.length === 0 ? 0 : 1,
