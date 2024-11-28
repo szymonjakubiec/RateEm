@@ -1,13 +1,11 @@
 import React from "react";
-import {createStackNavigator} from "@react-navigation/stack";
-import {NavigationContainer} from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from "@react-navigation/native";
 import LoggingScreen from "./src/main/login/LoggingScreen";
 import MainNavigation from "./src/main/nav/MainNavigation";
 import RegisterNavigation from "./src/main/login/register/nav/RegisterNavigation";
-import {PaperProvider} from "react-native-paper";
+import { PaperProvider } from "react-native-paper";
 import ResetPassNavigation from "./src/main/login/resetPass/nav/ResetPassNavigation";
-
-
 
 const Stack = createStackNavigator();
 
@@ -24,9 +22,7 @@ const Stack = createStackNavigator();
 // MM
 global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
 
-
 console.log(global.SERVER_URL);
-
 
 export default function App() {
   return (
