@@ -11,6 +11,7 @@ import {
 import {useEffect, useState} from "react";
 import {getRatingsUserId} from "../../backend/database/Ratings";
 import {goBack} from "../../backend/CommonMethods";
+import {logError} from "@react-native-community/geolocation/js/utils";
 
 
 
@@ -29,7 +30,7 @@ export default function SummaryScreen({navigation}) {
   useEffect(() => {
     const fetchRatings = async () => {
       const fetchedRatings = await getRatingsUserId(2);
-      setRatings(fetchedRatings);
+      setRatings(fetchedRatings.reverse());
 
       if (fetchedRatings.length > 0) {
         const highest = Math.max(
@@ -50,6 +51,10 @@ export default function SummaryScreen({navigation}) {
       }
     };
     fetchRatings();
+    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    return () => {
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+    };
   }, []);
 
   const renderRatingItem = ({item}) => (
@@ -60,7 +65,7 @@ export default function SummaryScreen({navigation}) {
       >
         <Image
           source={{
-            uri: "https://api.sejm.gov.pl/sejm/term10/MP/3/photo",
+            uri: item.picture,
             cache: "force-cache",
           }}
           style={styles.ratingImage}

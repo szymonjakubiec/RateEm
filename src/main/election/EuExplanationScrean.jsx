@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput } from "react-native";
 
-export default function SejmExplanation() {
-  useEffect(() => {}, []);
+export default function SejmExplanation({navigation}) {
+  useEffect(() => {
+    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    return () => {
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
