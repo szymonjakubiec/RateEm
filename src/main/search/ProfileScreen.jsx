@@ -19,7 +19,7 @@ import {GlobalContext} from "../nav/GlobalContext";
 
 
 
-export default function ProfileScreen({ route }) {
+export default function ProfileScreen({ navigation, route }) {
   const { selectedPoliticianId } = route.params;
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
@@ -52,6 +52,10 @@ export default function ProfileScreen({ route }) {
 
   useEffect(() => {
     init();
+    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    return () => {
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+    };
   }, []);
 
   /**
