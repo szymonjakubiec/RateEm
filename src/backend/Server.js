@@ -172,7 +172,6 @@ app.use(express.json());
               LIMIT ?
       `, [days, count]);
 
-      console.log(rows);
       const politicianIds = rows.map(row => row.politician_id);
 
       if (politicianIds.length > 0) {
