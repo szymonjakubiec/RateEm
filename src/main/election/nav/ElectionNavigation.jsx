@@ -3,10 +3,10 @@ import ElectionScreen from "../ElectionScreen.jsx";
 import CalculatorScreen from "../CalculatorScreen.jsx";
 import CalendarScreen from "../CalendarScreen.jsx";
 import ElectoralDistrictsScreen from "../ElectoralDistrictsScreen.jsx";
-import ElectionExplanationScrean from "../ElectionExplanationScrean.jsx";
-import SejmExplanationScrean from "../SejmExplanationScrean.jsx";
-import PrezydentExplanationScrean from "../PrezydentExplanationScrean.jsx";
-import EuExplanationScrean from "../EuExplanationScrean.jsx";
+import ElectionExplanationScreen from "../ElectionExplanationScreen.jsx";
+import SejmExplanationScreen from "../SejmExplanationScreen.jsx";
+import PrezydentExplanationScreen from "../PrezydentExplanationScreen.jsx";
+import EuExplanationScreen from "../EuExplanationScreen.jsx";
 
 var Stack = createStackNavigator();
 
@@ -53,7 +53,7 @@ export default function ElectionNavigation({ route }) {
       />
       <Stack.Screen
         name="ElectionExplanation"
-        component={ElectionExplanationScrean}
+        component={ElectionExplanationScreen}
         options={() => ({
           headerTitle: "Wytłumaczenie wyborów",
           headerTitleAlign: "center",
@@ -62,7 +62,7 @@ export default function ElectionNavigation({ route }) {
       />
       <Stack.Screen
         name="SejmExplanation"
-        component={SejmExplanationScrean}
+        component={SejmExplanationScreen}
         options={() => ({
           headerTitle: "Wytłumaczenie wyborów - sejm",
           headerTitleAlign: "center",
@@ -71,7 +71,7 @@ export default function ElectionNavigation({ route }) {
       />
       <Stack.Screen
         name="PrezydentExplanation"
-        component={PrezydentExplanationScrean}
+        component={PrezydentExplanationScreen}
         options={() => ({
           headerTitle: "Wytłumaczenie wyborów - prezydent",
           headerTitleAlign: "center",
@@ -80,7 +80,7 @@ export default function ElectionNavigation({ route }) {
       />
       <Stack.Screen
         name="EuExplanation"
-        component={EuExplanationScrean}
+        component={EuExplanationScreen}
         options={() => ({
           headerTitle: "Wytłumaczenie wyborów - eu",
           headerTitleAlign: "center",
