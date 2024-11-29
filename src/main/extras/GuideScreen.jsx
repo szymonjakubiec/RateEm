@@ -103,6 +103,12 @@ export default function GuideScreen({navigation, route}) {
             <Text style={styles.sectionDescription}>
               Odnośniki do ustawień, podsumowania ocen i innych funkcji.
             </Text>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => {navigation.popToTop()}}
+            >
+              <Text style={styles.buttonText}>Zaczynamy!</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
 
@@ -212,5 +218,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     marginBottom: 20,
+  },
+  buttonContainer: {
+    marginTop: 20,
+    backgroundColor: '#005BB5',  // Niebieskie tło przycisku
+    borderRadius: 30,  // Zaokrąglone rogi
+    paddingVertical: 15,  // Wysokość przycisku
+    paddingHorizontal: 40,  // Szerokość przycisku
+    alignItems: 'center',  // Wyrównanie tekstu
+    justifyContent: 'center',  // Centrowanie
+    elevation: 5,  // Cień dla Androida
+    shadowColor: '#000',  // Cień dla iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff', // Kolor tekstu przycisku
+    textAlign: 'center',
   },
 });
