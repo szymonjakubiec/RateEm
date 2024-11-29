@@ -14,21 +14,19 @@ import {useRoute} from "@react-navigation/native";
 
 
 export default function GuideScreen({navigation, route}) {
-  const {isTabBarHidden = false} = route.params || {};
   useEffect(() => {
-    if (isTabBarHidden) {
-      navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
-    }
+    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
     return () => {
-      navigation.getParent().setOptions({tabBarStyle: null}); // Przywróć domyślny styl po opuszczeniu
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
     };
   }, []);
   const [sliderState, setSliderState] = useState({currentPage: 0});
 
   const setSliderPage = (event: any) => {
-    const {currentPage} = sliderState;
-    const {x} = event.nativeEvent.contentOffset;
-    const indexOfNextScreen = Math.floor(x / width);
+    const { currentPage } = sliderState;
+
+    const { x } = event.nativeEvent.contentOffset;
+    const indexOfNextScreen = Math.round(x / width);
     if (indexOfNextScreen !== currentPage) {
       setSliderState({
         ...sliderState,
@@ -36,7 +34,6 @@ export default function GuideScreen({navigation, route}) {
       });
     }
   };
-
 
   // Pk: Going back
   goBack(navigation);
@@ -96,7 +93,13 @@ export default function GuideScreen({navigation, route}) {
         </ScrollView>
         <View style={styles.paginationWrapper}>
           {Array.from(Array(5).keys()).map((key, index) => (
-            <View style={[styles.paginationDots, {opacity: pageIndex === index ? 1 : 0.2}]} key={index}/>
+            <View
+              style={[
+                styles.paginationDots,
+                { opacity: sliderState.currentPage === index ? 1 : 0.2 }, // Upewnij się, że używasz aktualnego currentPage
+              ]}
+              key={index}
+            />
           ))}
         </View>
       </SafeAreaView>

@@ -123,6 +123,7 @@ export default function MainNavigation({route}) {
             gestureEnabled: false, // wyłącza swipe back na IOS
             tabBarIcon: () => <Icon source="menu" size={36}/>,
             tabBarIconStyle: {top: 2},
+
           }}
         />
       </Tab.Navigator>

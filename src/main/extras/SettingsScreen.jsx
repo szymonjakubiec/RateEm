@@ -37,8 +37,12 @@ export default function SettingsScreen({navigation}) {
       setLoginRadio(users[0].login_method);
       setCommunicationRadio(users[0].communication_method);
     };
-
     fetchUsers();
+
+    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    return () => {
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+    };
   }, []);
 
   const handleSave = async () => {

@@ -37,7 +37,6 @@ export default function ElectionNavigation({route}) {
         options={() => ({
           headerTitle: _title,
           headerTitleAlign: "center",
-          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
@@ -47,7 +46,6 @@ export default function ElectionNavigation({route}) {
         options={() => ({
           headerTitle: _title,
           headerTitleAlign: "center",
-          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
@@ -57,7 +55,6 @@ export default function ElectionNavigation({route}) {
         options={() => ({
           headerTitle: _title,
           headerTitleAlign: "center",
-          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
@@ -67,7 +64,6 @@ export default function ElectionNavigation({route}) {
         options={() => ({
           headerTitle: _title,
           headerTitleAlign: "center",
-          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
@@ -77,7 +73,6 @@ export default function ElectionNavigation({route}) {
         options={() => ({
           headerTitle: _title,
           headerTitleAlign: "center",
-          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
@@ -87,7 +82,6 @@ export default function ElectionNavigation({route}) {
         options={() => ({
           headerTitle: _title,
           headerTitleAlign: "center",
-          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
@@ -97,7 +91,6 @@ export default function ElectionNavigation({route}) {
         options={() => ({
           headerTitle: _title,
           headerTitleAlign: "center",
-          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
@@ -107,7 +100,6 @@ export default function ElectionNavigation({route}) {
         options={() => ({
           headerTitle: _title,
           headerTitleAlign: "center",
-          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
