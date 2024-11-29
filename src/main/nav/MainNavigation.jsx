@@ -1,4 +1,3 @@
-import {useRoute} from "@react-navigation/native";
 import {useEffect, useState} from "react";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import HomeScreen from "../home/HomeScreen";
@@ -6,9 +5,8 @@ import ElectionNavigation from "../election/nav/ElectionNavigation";
 import SearchNavigation from "../search/nav/SearchNavigation";
 import {
   getAllPoliticianNames,
-  getAllPoliticians,
 } from "../../backend/database/Politicians.js";
-import {PoliticianNameContext} from "../search/PoliticianNameContext.jsx";
+import {GlobalContext} from "./GlobalContext.jsx";
 import TrendingScreen from "../trending/TrendingScreen";
 import ExtrasNavigation from "../extras/nav/ExtrasNavigation";
 import {Icon} from "react-native-paper";
@@ -18,9 +16,9 @@ import {Icon} from "react-native-paper";
 const Tab = createBottomTabNavigator();
 
 export default function MainNavigation({route}) {
-  const _title = route.params?._title;
+  const {_title, userId} = route.params;
   const [namesData, setNamesData] = useState();
-
+  
   /**
    * Asynchronously gets names of all politicians and passes it to the namesData.
    * @async
@@ -35,7 +33,7 @@ export default function MainNavigation({route}) {
   }, []);
 
   return (
-    <PoliticianNameContext.Provider value={namesData}>
+    <GlobalContext.Provider value={{namesData, userId}}>
       <Tab.Navigator backBehavior="initialRoute"
                      initialRouteName="Home"
                      screenOptions={{
@@ -58,7 +56,7 @@ export default function MainNavigation({route}) {
         <Tab.Screen
           name="SearchNav"
           component={SearchNavigation}
-          initialParams={{_title}}
+          // initialParams={{_title}}
           options={{
             title: "Wyszukaj", // tytuł na dole ekranu
             headerShown: false,
@@ -126,6 +124,6 @@ export default function MainNavigation({route}) {
           }}
         />
       </Tab.Navigator>
-    </PoliticianNameContext.Provider>
+    </GlobalContext.Provider>
   );
 }

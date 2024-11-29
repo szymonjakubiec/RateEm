@@ -22,6 +22,7 @@ export const getAllUsers = async () => {
       user.email = decrypt(user.email);
       user.password = decrypt(user.password);
       user.phone_number = decrypt(user.phone_number);
+      user.id = user.id;
     });
 
     return data;

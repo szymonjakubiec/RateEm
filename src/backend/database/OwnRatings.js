@@ -106,7 +106,7 @@ const addOwnRating = async (user_id, politician_id, value) => {
  * @function
  * @param {string} user_id - ID of the user
  * @param {string} politician_id - ID of the politician
- * @param {float} rating - New data for the rating. Possible keys:
+ * @param {float} value
  * * {number} user_id - ID of the user
  * * {number} politician_id - ID of the politician
  * * {float} value - Value of the rating
