@@ -1,5 +1,6 @@
 const mysql = require("mysql2");
 const fs = require("fs");
+const { log } = require("console");
 
 var config = {
   host: "rateem-server.mysql.database.azure.com",
@@ -7,7 +8,7 @@ var config = {
   password: "ZAQ!2wsx",
   database: "ratem",
   port: 3306,
-  ssl: { ca: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") },
+  ssl: { ca: fs.readFileSync("./src/backend/populateDatabase/DigiCertGlobalRootCA.crt.pem") },
 };
 
 class InfoDownload {
@@ -29,8 +30,6 @@ class InfoDownload {
     await this.sejmPolitycy();
     await this.euPolitycy();
     this.sortPolitycy();
-
-    await this.sejmDistricts();
   }
 
   async sejmKadencja() {
@@ -235,7 +234,7 @@ class InfoDownload {
           }
           var sejmKadencjaPolitycy = await response.json();
 
-          await this.getClubsFullNames();
+          await this.getSejmClubsFullNames();
 
           for (const osoba of sejmKadencjaPolitycy) {
             // przed dodaniem do listy waliduje czy taka osoba już w niej nie jest
@@ -244,14 +243,14 @@ class InfoDownload {
               osobaTemp.fullName = osoba.firstLastName;
               osobaTemp.firstName = osoba.secondName ? osoba.firstName + " " + osoba.secondName : osoba.firstName;
               osobaTemp.lastName = osoba.lastName;
-              osobaTemp.partiaSkrot = osoba.club;
+              osobaTemp.partiaSkrot = osoba.club ? osoba.club : "";
               osobaTemp.partia = this.getClubFullName(osobaTemp.partiaSkrot);
               osobaTemp.dataUrodzenia = osoba.birthDate;
               osobaTemp.zdjecie = `https://api.sejm.gov.pl/sejm/term${kadencja.num}/MP/${osoba.id}/photo`
                 ? `https://api.sejm.gov.pl/sejm/term${kadencja.num}/MP/${osoba.id}/photo`
-                : null;
-              osobaTemp.linkFacebook = null;
-              osobaTemp.linkTweeter = null;
+                : "";
+              osobaTemp.linkFacebook = "";
+              osobaTemp.linkTweeter = "";
 
               this.politycy.push(osobaTemp);
             }
@@ -280,49 +279,68 @@ class InfoDownload {
           if (!response.ok) {
             console.log(response.ok);
             return;
-          }
-          var euKadencjaPolitycy = await response.json();
+          } else {
+            var euKadencjaPolitycy = await response.json();
 
-          for (const osoba of euKadencjaPolitycy.data) {
-            // przed dodaniem do listy waliduje czy taka osoba już w niej nie jest
-            if (!this.politycy.some((e) => e.fullName.toLowerCase() == osoba.givenName.toLowerCase() + " " + osoba.familyName.toLowerCase())) {
-              // pobiera szczegółowe info o eu parlamentarzystach
-              const url = `https://data.europarl.europa.eu/api/v2/meps/${osoba.identifier}?format=application%2Fld%2Bjson`;
-              const response = await fetch(url);
-              if (!response.ok) {
-                console.log(response.ok);
-                return;
-              }
-              var politykSzczegoly = await response.json();
+            for (const osoba of euKadencjaPolitycy.data) {
+              // przed dodaniem do listy waliduje czy taka osoba już w niej nie jest
+              if (!this.politycy.some((e) => e.fullName.toLowerCase() == osoba.givenName.toLowerCase() + " " + osoba.familyName.toLowerCase())) {
+                // pobiera szczegółowe info o eu parlamentarzystach
+                const url = `https://data.europarl.europa.eu/api/v2/meps/${osoba.identifier}?format=application%2Fld%2Bjson`;
+                const response = await fetch(url);
+                if (!response.ok) {
+                  console.log("error fetching eu politician");
+                } else {
+                  var politykSzczegoly = await response.json();
 
-              var osobaTemp = {};
-              osobaTemp.fullName = osoba.givenName + " " + osoba.familyName;
-              osobaTemp.firstName = osoba.givenName;
-              osobaTemp.lastName = osoba.familyName;
-              osobaTemp.partiaSkrot = null;
-              osobaTemp.partia = null;
-              osobaTemp.dataUrodzenia = politykSzczegoly.data[0].bday;
-              osobaTemp.zdjecie = politykSzczegoly.data[0].img;
+                  var osobaTemp = {};
+                  osobaTemp.fullName = osoba.givenName + " " + osoba.familyName;
+                  osobaTemp.firstName = osoba.givenName;
+                  osobaTemp.lastName = osoba.familyName;
+                  osobaTemp.partiaSkrot = "";
+                  osobaTemp.partia = "";
+                  osobaTemp.dataUrodzenia = politykSzczegoly.data[0].bday;
+                  osobaTemp.zdjecie = politykSzczegoly.data[0].img;
 
-              if (politykSzczegoly.data[0].account !== undefined) {
-                for (const link in politykSzczegoly.data[0].account) {
-                  if (politykSzczegoly.data[0].account[link].id.includes("facebook")) {
-                    osobaTemp.linkFacebook = politykSzczegoly.data[0].account[link].id;
+                  if (politykSzczegoly.data[0].hasGender.includes("FEMALE")) {
+                    osobaTemp.gender = "female";
+                  } else if (politykSzczegoly.data[0].hasGender.includes("MALE")) {
+                    osobaTemp.gender = "male";
                   } else {
-                    osobaTemp.linkFacebook = null;
+                    osobaTemp.gender = "pokemon";
                   }
-                  if (politykSzczegoly.data[0].account[link].id.includes("twitter")) {
-                    osobaTemp.linkTweeter = politykSzczegoly.data[0].account[link].id;
+
+                  for (const membership of politykSzczegoly.data[0].hasMembership) {
+                    if (membership.membershipClassification == "def/ep-entities/NATIONAL_CHAMBER") {
+                      let clubInfo = await this.getEuClubName(membership.organization, osobaTemp.gender);
+                      if (clubInfo) {
+                        osobaTemp.partiaSkrot = clubInfo.partyShort;
+                        osobaTemp.partia = clubInfo.party;
+                      }
+                    }
+                  }
+
+                  if (politykSzczegoly.data[0].account !== undefined) {
+                    for (const link in politykSzczegoly.data[0].account) {
+                      if (politykSzczegoly.data[0].account[link].id.includes("facebook")) {
+                        osobaTemp.linkFacebook = politykSzczegoly.data[0].account[link].id;
+                      } else {
+                        osobaTemp.linkFacebook = "";
+                      }
+                      if (politykSzczegoly.data[0].account[link].id.includes("twitter")) {
+                        osobaTemp.linkTweeter = politykSzczegoly.data[0].account[link].id;
+                      } else {
+                        osobaTemp.linkTweeter = "";
+                      }
+                    }
                   } else {
-                    osobaTemp.linkTweeter = null;
+                    osobaTemp.linkFacebook = "";
+                    osobaTemp.linkTweeter = "";
                   }
                 }
-              } else {
-                osobaTemp.linkFacebook = null;
-                osobaTemp.linkTweeter = null;
-              }
 
-              this.politycy.push(osobaTemp);
+                this.politycy.push(osobaTemp);
+              }
             }
           }
         }
@@ -333,7 +351,7 @@ class InfoDownload {
   }
 
   // pobiera pełne nazwy klubów parlamentarnych
-  async getClubsFullNames() {
+  async getSejmClubsFullNames() {
     for (const kadencja of this.sejmWszystkieKadencje) {
       // zaczynaja od 8 kadencji, żeby nie było za dużo nieaktualnych osób
       if (kadencja.num >= 8) {
@@ -351,11 +369,35 @@ class InfoDownload {
             partieTemp.name = partie.id;
             partieTemp.fullName = partie.name;
 
-            // console.log(partieTemp)
             this.partie.push(partieTemp);
           }
         }
       }
+    }
+  }
+
+  async getEuClubName(orgId, gender) {
+    orgId = orgId.split("/")[1];
+
+    const url = `https://data.europarl.europa.eu/api/v2/corporate-bodies/${orgId}?format=application%2Fld%2Bjson`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.log(response.ok);
+      return;
+    }
+    var clubInfo = (await response.json()).data[0];
+
+    // Independent
+    if (clubInfo.label == "Independent" || clubInfo.prefLabel.pl == "Independent" || clubInfo.label == "-" || clubInfo.prefLabel.pl == "-") {
+      if (gender == "female") {
+        return { party: "niezależna", partyShort: "niezależna" };
+      } else if (gender == "male") {
+        return { party: "niezależny", partyShort: "niezależny" };
+      } else {
+        return { party: "niezależne", partyShort: "niezależne" };
+      }
+    } else {
+      return { party: clubInfo.prefLabel.pl, partyShort: clubInfo.label };
     }
   }
 
@@ -366,7 +408,7 @@ class InfoDownload {
         return partia.fullName;
       }
     }
-    return;
+    return "";
   }
 
   sortPolitycy() {
@@ -404,7 +446,7 @@ class InfoDownload {
       var name = "sejm_" + wybor;
       var przyszle = new Date(wybor) > new Date() ? true : false;
 
-      this.conn.query("REPLACE INTO wybory_sejm SET nazwa=?, data=?, przyszle=?;", [name, wybor, przyszle], function (err, results, fields) {
+      this.conn.query("REPLACE INTO sejm_elections SET name=?, date=?, future=?;", [name, wybor, przyszle], function (err, results, fields) {
         if (err) throw err;
       });
     }
@@ -415,7 +457,7 @@ class InfoDownload {
       var name = "prezydent_" + wybor;
       var przyszle = new Date(wybor) > new Date() ? true : false;
 
-      this.conn.query("REPLACE INTO wybory_prezydent SET nazwa=?, data=?, przyszle=?;", [name, wybor, przyszle], function (err, results, fields) {
+      this.conn.query("REPLACE INTO president_elections SET name=?, date=?, future=?;", [name, wybor, przyszle], function (err, results, fields) {
         if (err) throw err;
       });
     }
@@ -426,7 +468,7 @@ class InfoDownload {
       var name = "eu_" + wybor;
       var przyszle = new Date(wybor) > new Date() ? true : false;
 
-      this.conn.query("REPLACE INTO wybory_eu SET nazwa=?, data=?, przyszle=?;", [name, wybor, przyszle], function (err, results, fields) {
+      this.conn.query("REPLACE INTO eu_elections SET name=?, date=?, future=?;", [name, wybor, przyszle], function (err, results, fields) {
         if (err) throw err;
       });
     }
@@ -441,12 +483,14 @@ class InfoDownload {
           await this.insertNewPolitician(polityk);
         } catch (err) {
           console.error(`Failed to insert ${polityk.fullName}:`, err);
+          console.log(polityk);
         }
       } else {
         try {
           await this.updatePolitician(polityk);
         } catch (err) {
-          console.error(`Failed to insert ${polityk.fullName}:`, err);
+          console.error(`Failed to update ${polityk.fullName}:`, err);
+          console.log(polityk);
         }
       }
     }
@@ -459,19 +503,15 @@ class InfoDownload {
     try {
       await conn.connect();
       return new Promise((resolve, reject) => {
-        conn.execute(
-          "SELECT id, imie__drugie_imie__nazwisko FROM politycy WHERE imie__drugie_imie__nazwisko=?;",
-          [polityk.fullName],
-          (err, results) => {
-            if (err) {
-              console.error("Error in getPolitician:", err);
-              reject(err);
-            } else {
-              resultLength = results.length;
-              resolve(resultLength);
-            }
+        conn.execute("SELECT id, names_surname FROM politicians WHERE names_surname=?;", [polityk.fullName], (err, results) => {
+          if (err) {
+            console.error("Error in getPolitician:", err);
+            reject(err);
+          } else {
+            resultLength = results.length;
+            resolve(resultLength);
           }
-        );
+        });
       });
     } catch (err) {
       console.error("Error in getPolitician:", err);
@@ -488,7 +528,7 @@ class InfoDownload {
       await conn.connect();
       return new Promise((resolve, reject) => {
         conn.execute(
-          "INSERT INTO politycy SET imie__drugie_imie__nazwisko=?, imie=?, nazwisko=?, partia_skrot=?, partia=?, data_urodzenia=?, zdjecie=?, link_facebook=?, link_tweeter=?;",
+          "INSERT INTO politicians SET names_surname=?, name=?, surname=?, party_short=?, party=?, birth_date=?, picture=?, facebook_link=?, twitter_link=?;",
           [
             polityk.fullName,
             polityk.firstName,
@@ -526,7 +566,7 @@ class InfoDownload {
       await conn.connect();
       return new Promise((resolve, reject) => {
         conn.execute(
-          "UPDATE politycy SET imie=?, nazwisko=?, partia_skrot=?, partia=?, data_urodzenia=?, zdjecie=?, link_facebook=?, link_tweeter=? WHERE imie__drugie_imie__nazwisko=?;",
+          "UPDATE politicians SET name=?, surname=?, party_short=?, party=?, birth_date=?, picture=?, facebook_link=?, twitter_link=? WHERE names_surname=?;",
           [
             polityk.firstName,
             polityk.lastName,
