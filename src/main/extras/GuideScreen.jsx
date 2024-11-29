@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import {goBack} from "../../backend/CommonMethods";
 import {StatusBar} from "expo-status-bar";
-import {useRoute} from "@react-navigation/native";
 
 
 
@@ -53,7 +52,8 @@ export default function GuideScreen({navigation, route}) {
             setSliderPage(event);
           }}
         >
-          <View style={styles.guideContainer}>
+          {/* General guide*/}
+          <View style={[{width, height}]}>
             <Text style={styles.guideTitle}>Przewodnik po aplikacji</Text>
             <Text style={styles.guideDescription}>
               Aplikacja składa się z czterech głównych funkcjonalności:
@@ -61,29 +61,43 @@ export default function GuideScreen({navigation, route}) {
             <View style={styles.guideList}>
               <Text style={styles.guideItem}>• wyszukiwarka</Text>
               <Text style={styles.guideItem}>• wybory</Text>
-              <Text style={styles.guideItem}>• tablica</Text>
+              <Text style={styles.guideItem}>• ekran główny</Text>
               <Text style={styles.guideItem}>• więcej</Text>
             </View>
           </View>
+
+          {/* Search screen guide*/}
           <View style={{width, height}}>
-            <Text style={styles.sectionTitle}>🔍 Wyszukiwarka</Text>
-            <Text style={styles.sectionDescription}>
-              Zakładka służąca do znajdywania i oceniania osób.
-            </Text>
+            <View style={styles.ratingContainer}>
+              <Text style={styles.sectionTitle}>🔍 Wyszukiwarka Polityków:</Text>
+              <Text style={styles.sectionDescription}>
+                Przypisz ocenę politykowi, wyrażając swoje emocje na temat jego działań.
+                Wybierz od 1 do 5 gwiazdek, aby wyrazić swoje odczucia. Twoja opinia ma znaczenie!
+              </Text>
+            </View>
           </View>
+
+          {/* Election screen guide*/}
           <View style={{width, height}}>
             <Text style={styles.sectionTitle}>📄 Wyborcze ABC</Text>
             <Text style={styles.sectionDescription}>
-              Miejsce, w którym znajdują się wszystkie podstawowe informacje o
-              wyborach.
+              W tym miejscu znajdziesz wszystkie podstawowe informacje na temat nadchodzących wyborów.
+              Zapewniamy Ci dostęp do dat, sprawdzenia swojego okręgu wyborczego oraz kalkulatora mandatów.
             </Text>
           </View>
+
+          {/* Main Screen guide*/}
           <View style={{width, height}}>
-            <Text style={styles.sectionTitle}>📰 Tablica</Text>
+            <Text style={styles.sectionTitle}>Ekran Główny</Text>
             <Text style={styles.sectionDescription}>
-              Tu wyświetlane są posty z social mediów osób, które obserwujesz.
+              Na ekranie głównym wyświetlani są politycy, którzy w danym momencie cieszą się największą popularnością wśród naszych użytkowników.
+            </Text>
+            <Text style={styles.sectionDescription}>
+              (Na dobre i na złe)
             </Text>
           </View>
+
+          {/* Extras screen guide*/}
           <View style={{width, height}}>
             <Text style={styles.sectionTitle}>≡ Więcej</Text>
             <Text style={styles.sectionDescription}>
@@ -91,6 +105,8 @@ export default function GuideScreen({navigation, route}) {
             </Text>
           </View>
         </ScrollView>
+
+        {/* Pagination dots*/}
         <View style={styles.paginationWrapper}>
           {Array.from(Array(5).keys()).map((key, index) => (
             <View
@@ -111,20 +127,20 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333', // Przyjemny ciemnoszary
+    color: '#333',
     textAlign: 'center',
     marginVertical: 10,
   },
   sectionDescription: {
     fontSize: 16,
-    color: '#666', // Jaśniejszy szary dla kontrastu
+    color: '#666',
     textAlign: 'center',
     marginHorizontal: 20,
     lineHeight: 22,
   },
   paginationWrapper: {
     position: 'absolute',
-    bottom: 20, // Umieszczenie nad krawędzią ekranu
+    bottom: 20,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -135,11 +151,11 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     marginHorizontal: 4,
-    backgroundColor: '#26518a', // Niebieski dla aktywnego punktu
+    backgroundColor: '#26518a',
   },
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB', // Delikatny jasnoszary jako kolor tła
+    backgroundColor: '#F9FAFB',
   },
   slide: {
     width: '100%',
@@ -147,43 +163,54 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#FFFFFF', // Białe tło dla slajdu
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
     marginHorizontal: 10,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2, // Efekt podniesienia dla Androida
+    elevation: 2,
   },
   guideContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: '#F9FAFB', // Jasne tło dla sekcji
+    backgroundColor: '#F9FAFB',
   },
   guideTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333', // Dobrze widoczny kolor
+    color: '#333',
     textAlign: 'center',
     marginBottom: 10,
   },
   guideDescription: {
     fontSize: 16,
-    color: '#666', // Subtelny szary dla opisu
+    color: '#666',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 20,
   },
   guideList: {
-    width: '100%', // Pełna szerokość kontenera
+    width: '100%',
     paddingHorizontal: 10,
   },
   guideItem: {
     fontSize: 16,
-    color: '#444', // Lekko ciemniejszy odcień szarości dla listy
-    marginVertical: 5, // Odstęp między elementami
+    color: '#444',
+    marginVertical: 5,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    marginBottom: 20,
   },
 });
