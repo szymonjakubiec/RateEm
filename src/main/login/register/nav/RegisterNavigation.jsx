@@ -40,6 +40,7 @@ export default function RegisterNavigation({route}) {
           headerTitleAlign: "center",
         })}
       />
+
     </Stack.Navigator>
   );
 }

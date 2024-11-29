@@ -66,6 +66,7 @@ export default function ElectionNavigation({ route }) {
         options={() => ({
           headerTitle: "Wytłumaczenie wyborów - sejm",
           headerTitleAlign: "center",
+          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />

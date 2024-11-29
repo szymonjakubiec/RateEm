@@ -1,24 +1,17 @@
+import {StyleSheet, View} from "react-native";
 import {
-  Alert,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from "react-native";
-import {
-  useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
   useState,
 } from "react";
-import {PoliticianNameContext} from "./PoliticianNameContext.jsx";
+import {GlobalContext} from "../nav/GlobalContext.jsx";
 import SearchFlatList from "./searchScreenComponents/SearchFlatList.jsx";
 
 
 
 export default function SearchScreen({navigation}) {
-  const politicianNameData = useContext(PoliticianNameContext);
+  const politicianNameData = useContext(GlobalContext).namesData;
+  const userId = useContext(GlobalContext).userId;
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
   function handlePress(selected) {
