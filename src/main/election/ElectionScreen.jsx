@@ -1,11 +1,9 @@
-import {StyleSheet, Text, View, Button, TouchableHighlight} from "react-native";
-import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {NavigationContainer, useRoute} from "@react-navigation/native";
-import {goBack} from "../../backend/CommonMethods";
+import { StyleSheet, Text, View, Button, TouchableHighlight } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer, useRoute } from "@react-navigation/native";
+import { goBack } from "../../backend/CommonMethods";
 
-
-
-export default function ElectionScreen({navigation}) {
+export default function ElectionScreen({ navigation }) {
   const route = useRoute();
 
   goBack(navigation);
@@ -29,15 +27,6 @@ export default function ElectionScreen({navigation}) {
       >
         <Text style={styles.buttonText}>Okręgi wyborcze</Text>
       </TouchableHighlight>
-
-      {/* <TouchableHighlight
-        style={styles.button}
-        onPress={() => {
-          navigation.navigate("ElectoralCommittee");
-        }}
-      >
-        <Text style={styles.buttonText}>Komitety wyborcze</Text>
-      </TouchableHighlight> */}
 
       <TouchableHighlight
         style={styles.button}

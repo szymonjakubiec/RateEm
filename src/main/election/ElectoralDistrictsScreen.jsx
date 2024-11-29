@@ -39,31 +39,6 @@ export default function ElectoralDistricts() {
     }
   };
 
-  const requestLocationPermissionAgain = async () => {
-    Alert.alert(
-      "Location Permission Required",
-      "Please go to your device settings to allow location access.",
-      [
-        {
-          text: "Open Settings",
-          onPress: async () => {
-            try {
-              await Linking.openSettings();
-            } catch (err) {
-              console.error("Error opening settings:", err);
-            }
-          },
-        },
-        {
-          text: "Cancel",
-        },
-      ],
-      {
-        cancelable: true,
-      }
-    );
-  };
-
   const handleGettingDistrict = async () => {
     var permissionResponse = await requestLocationPermission();
     var locationTemp;
@@ -114,7 +89,6 @@ export default function ElectoralDistricts() {
       setAddressCurrent(result.address);
       setSejmDistrictCurrent(result.sejmDistrict);
       setEuDistrictCurrent(result.euDistrict);
-      console.log("się zmieniła mapa");
     } catch (error) {
       setAddressCurrent("błąd");
       setSejmDistrictCurrent(0);
