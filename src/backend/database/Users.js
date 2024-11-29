@@ -1,6 +1,4 @@
-import {decrypt} from "../Encryption";
-
-
+import { decrypt } from "../Encryption";
 
 /**
  * Gets all users.
@@ -37,12 +35,14 @@ export const getAllUsers = async () => {
  * @returns {Promise<number|undefined>}
  */
 export const getUserIdByEmail = (email) => {
-  return getAllUsers().then((users) => {
-    return users.find((user) => user.email === email).id;
-  }).catch((error) => {
-    console.error("Error fetching users:", error);
-    return undefined;
-  });
+  return getAllUsers()
+    .then((users) => {
+      return users.find((user) => user.email === email).id;
+    })
+    .catch((error) => {
+      console.error("Error fetching users:", error);
+      return undefined;
+    });
 };
 
 /**
@@ -118,7 +118,7 @@ export const updateUser = async (id, newData = {}) => {
       },
       body: JSON.stringify(newData),
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

@@ -14,7 +14,6 @@ export default function ElectoralDistricts() {
   const [locationPermission, setLocationPermission] = useState(false);
 
   const [mapComponent, setMapComponent] = useState(null);
-  const [mapActive, setMapActive] = useState("auto");
 
   useEffect(() => {
     AppState.addEventListener("change", handleAppStateChange);
@@ -38,31 +37,6 @@ export default function ElectoralDistricts() {
       setLocationPermission(false);
       return false;
     }
-  };
-
-  const requestLocationPermissionAgain = async () => {
-    Alert.alert(
-      "Location Permission Required",
-      "Please go to your device settings to allow location access.",
-      [
-        {
-          text: "Open Settings",
-          onPress: async () => {
-            try {
-              await Linking.openSettings();
-            } catch (err) {
-              console.error("Error opening settings:", err);
-            }
-          },
-        },
-        {
-          text: "Cancel",
-        },
-      ],
-      {
-        cancelable: true,
-      }
-    );
   };
 
   const handleGettingDistrict = async () => {
@@ -96,9 +70,16 @@ export default function ElectoralDistricts() {
     }
   }
 
+  function debounce(func, delay) {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+  }
+
   async function onLocationMapChange(location) {
     try {
-      setMapActive("none");
       setAddressCurrent("Ładowanie");
       setSejmDistrictCurrent("Ładowanie");
       setEuDistrictCurrent("Ładowanie");
@@ -108,12 +89,10 @@ export default function ElectoralDistricts() {
       setAddressCurrent(result.address);
       setSejmDistrictCurrent(result.sejmDistrict);
       setEuDistrictCurrent(result.euDistrict);
-      setMapActive("auto");
     } catch (error) {
       setAddressCurrent("błąd");
       setSejmDistrictCurrent(0);
       setEuDistrictCurrent(0);
-      setMapActive("auto");
     }
   }
 
@@ -186,11 +165,11 @@ export default function ElectoralDistricts() {
           region={locationMap}
           showsCompass={true}
           onRegionChange={setMapLocation}
-          onRegionChangeComplete={(region, gesture) => {
+          onRegionChangeComplete={debounce((region, gesture) => {
             if (gesture.isGesture) {
               onLocationMapChange(region);
             }
-          }}
+          }, 500)}
           showsMyLocationButton={true}
           showsUserLocation={true}
           initialRegion={{
@@ -209,11 +188,11 @@ export default function ElectoralDistricts() {
           region={locationMap}
           showsCompass={true}
           onRegionChange={setMapLocation}
-          onRegionChangeComplete={(region, gesture) => {
+          onRegionChangeComplete={debounce((region, gesture) => {
             if (gesture.isGesture) {
               onLocationMapChange(region);
             }
-          }}
+          }, 500)}
           initialRegion={{
             latitude: 50.25962,
             longitude: 19.021725,
@@ -230,7 +209,7 @@ export default function ElectoralDistricts() {
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.districtElementMap}>
-          <View pointerEvents={`${mapActive}`}>{mapComponent}</View>
+          <View>{mapComponent}</View>
           <View>
             <Text style={styles.districtElementText}>Powiat: {addressCurrent}</Text>
             <Text style={styles.districtElementText}>Okręg wyborczy - SEJM: {sejmDistrictCurrent}</Text>
