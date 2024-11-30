@@ -466,19 +466,20 @@ app.use(express.json());
     }
   });
   // --- delete ---------------------------------------------------------------------------
-  app.delete("/api/own-ratings/:id", async (req, res) => {
-    const { id } = req.params;
+  app.delete("/api/own-ratings", async (req, res) => {
+    // const { id } = req.params;
+    const { user_id, politician_id } = req.body;
 
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute("DELETE FROM own_ratings WHERE id = ?", [parseInt(id)]);
+      const [result] = await connection.execute("DELETE FROM own_ratings WHERE politician_id = ? AND user_id = ?", [politician_id, user_id]);
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Rating not found" });
       }
 
-      res.json({ message: "Rating deleted successfully", id });
+      res.json({ message: "Rating deleted successfully", politician_id, user_id });
     } catch (err) {
       res.status(500).send(err.message);
     } finally {

@@ -1,4 +1,5 @@
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,12 +11,14 @@ import {
   getOwnRating,
   addOwnRating,
   updateOwnRating,
+  deleteOwnRating,
   getAllPoliticianOwnRatings,
 } from "../../backend/database/OwnRatings";
-import {getRatingsUserIdPoliticianId, addRating} from "../../backend/database/Ratings";
+import {getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating} from "../../backend/database/Ratings";
 import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
 import OpinionsTile from "./opinionsTileComponents/OpinionsTile";
 import {GlobalContext} from "../nav/GlobalContext";
+import {OpinionsTileContext} from "./nav/OpinionsTileContext";
 
 
 
@@ -33,7 +36,7 @@ export default function ProfileScreen({ navigation, route }) {
   const [globalRating, setGlobalRating] = useState(0.0);
   const [ownRating, setOwnRating] = useState(0.0);
   const [firstOwnRating, setFirstOwnRating] = useState(0);
-  const [singleRatings, setSingleRatings] = useState([]); // these are ratings from ratings.js
+  const [singleRatings, setSingleRatings] = useState([]); // ratings from ratings.js
   const [newSingleRating, setNewSingleRating] = useState(0);
   
   const [isLoadOwnRatingInitialized, setIsLoadOwnRatingInitialized] = useState(false);
@@ -184,9 +187,10 @@ export default function ProfileScreen({ navigation, route }) {
         denominator += 1;
       }
     }
-
-    numerator += ownRating;
-    denominator = denominator + 1;
+    if (ownRating > 0){
+      numerator += ownRating;
+      denominator = denominator + 1;
+    }
     
     let average = Math.round((numerator * 100) / denominator) / 100;
     
@@ -228,21 +232,38 @@ export default function ProfileScreen({ navigation, route }) {
     loadSingleRatings(); 
   }
 
+  
   /**
    * Update states passed to the OpinionsTile.jsx
    */
-  function handleFirstOwnRatingOpinionsTile(starRating){
+  function handleOtFirstOwnRating(starRating){ // Ot - OpinionsTile
     setFirstOwnRating(starRating)
   }
 
-  function handleNewSingleRatingOpinionsTile(starRating){
+  function handleOtNewSingleRating(starRating){
     setNewSingleRating(starRating);
   }
-  function handleNewTitleOpinionsTile(newTitle){
+  function handleOtNewTitle(newTitle){
     setNewTitle(newTitle);
   }
-  function handleNewDescriptionOpinionsTile(newDescription){
+  function handleOtNewDescription(newDescription){
     setNewDescription(newDescription);
+  }
+  
+  async function handleOtSingleRatingDeletion(item){
+    if (item.weight === 1){
+      await deleteRating(item.id);
+      loadSingleRatings();
+    } else if (singleRatings.length === 1){
+      await console.log("ownRating.id: " + ownRating.id);
+      await deleteRating(item.id);
+      await deleteOwnRating(userId, selectedPoliticianId);
+      // loadSingleRatings();
+      setSingleRatings([]);
+      setOwnRating(0);
+    } else {
+      Alert.alert("Nie można usunąć oceny bazowej kiedy są jeszcze inne opinie.");
+    }
   }
   
   
@@ -259,6 +280,7 @@ export default function ProfileScreen({ navigation, route }) {
   }, [newSingleRating, newTitle, newDescription]);
 
   useEffect(() => {
+    console.log("singleRatings.length in useEffect");
     // console.log("singleRatings.length: ", singleRatings.length);
     if(singleRatings.length > 0){
       countOwnRating()
@@ -266,7 +288,7 @@ export default function ProfileScreen({ navigation, route }) {
   }, [singleRatings]);  
 
   useEffect(() => {
-    if (canUpdateGlobalRating.current === true ){
+    if (canUpdateGlobalRating.current === true){
       countGlobalRating()
     }
   }, [ownRating]);
@@ -316,14 +338,21 @@ export default function ProfileScreen({ navigation, route }) {
             <Text>{party}.</Text>
           </View>
         </View>
-        <OpinionsTile 
-          ownRating={ownRating} 
-          singleRatings={singleRatings} 
-          handleFirstOwnRating={handleFirstOwnRatingOpinionsTile} 
-          handleNewSingleRating={handleNewSingleRatingOpinionsTile}
-          handleNewTitle={handleNewTitleOpinionsTile}
-          handleNewDescription={handleNewDescriptionOpinionsTile}
-        />
+        <OpinionsTileContext.Provider 
+          value={{
+            singleRatings: singleRatings,
+            handleNewSingleRating: handleOtNewSingleRating,
+            handleNewTitle: handleOtNewTitle,
+            handleNewDescription: handleOtNewDescription,
+            handleSingleRatingDeletion: handleOtSingleRatingDeletion
+          }}
+        >
+          <OpinionsTile
+            ownRating={ownRating}
+            handleFirstOwnRating={handleOtFirstOwnRating}
+          />
+        </OpinionsTileContext.Provider>
+        
       </View>
     </ScrollView>
   );
@@ -389,10 +418,6 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 22,
     fontWeight: "bold",
-  },
-  opinionsTile: {
-    backgroundColor: "lightgray",
-    padding: 30,
   },
   button: {
     width: "60%",
