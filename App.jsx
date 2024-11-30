@@ -18,10 +18,10 @@ const Stack = createStackNavigator();
 
 // MS
 //global.SERVER_URL = "http://157.158.168.61:3000/api"; // aka
-global.SERVER_URL = "http://192.168.1.136:3000/api"; // home
+// global.SERVER_URL = "http://192.168.1.136:3000/api"; // home
 
 // MM
-// global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
+global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
 
 console.log(global.SERVER_URL);
 

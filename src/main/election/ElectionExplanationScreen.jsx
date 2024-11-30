@@ -3,9 +3,9 @@ import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInpu
 
 export default function ElectionExplanation({ navigation }) {
   useEffect(() => {
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
     return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+      navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
     };
   }, []);
 
@@ -20,7 +20,7 @@ export default function ElectionExplanation({ navigation }) {
         >
           <View style={styles.colorsMeaningDiv}>
             <View style={styles.circleSejm} />
-            <Text style={styles.electionButtonText}>wybory do sejmu i senatu</Text>
+            <Text style={styles.electionButtonText}>wybory do Sejmu</Text>
           </View>
         </TouchableHighlight>
 
@@ -32,7 +32,7 @@ export default function ElectionExplanation({ navigation }) {
         >
           <View style={styles.colorsMeaningDiv}>
             <View style={styles.circlePrezydent} />
-            <Text style={styles.electionButtonText}>wybory prezydenckie</Text>
+            <Text style={styles.electionButtonText}>wybory Prezydenta RP</Text>
           </View>
         </TouchableHighlight>
 
@@ -44,7 +44,18 @@ export default function ElectionExplanation({ navigation }) {
         >
           <View style={styles.colorsMeaningDiv}>
             <View style={styles.circleEu} />
-            <Text style={styles.electionButtonText}>wybory do parlamentu europejskiego</Text>
+            <Text style={styles.electionButtonText}>wybory do Parlamentu Europejskiego</Text>
+          </View>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          style={styles.electionButton}
+          onPress={() => {
+            navigation.navigate("DhondtExplanation");
+          }}
+        >
+          <View style={styles.colorsMeaningDiv}>
+            <Text style={styles.electionButtonTextDhondt}>metoda d'Hondta</Text>
           </View>
         </TouchableHighlight>
       </ScrollView>
@@ -57,7 +68,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    padding: "4%",
   },
 
   scrollView: {
@@ -86,14 +96,20 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     fontWeight: "700",
-    marginLeft: 10,
+    marginLeft: 7,
+  },
+  electionButtonTextDhondt: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "700",
+    marginLeft: 34,
   },
 
   circleSejm: {
     width: 20,
     height: 20,
     borderRadius: 20,
-    marginLeft: 10,
+    marginLeft: 7,
     marginVertical: 7,
     backgroundColor: "#12cdd4",
   },
@@ -101,7 +117,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 20,
-    marginLeft: 10,
+    marginLeft: 7,
     marginVertical: 7,
     backgroundColor: "#f24726",
   },
@@ -109,7 +125,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 20,
-    marginLeft: 10,
+    marginLeft: 7,
     marginVertical: 7,
     backgroundColor: "#8fd14f",
   },
