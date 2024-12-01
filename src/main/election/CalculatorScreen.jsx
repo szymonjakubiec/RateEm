@@ -7,7 +7,7 @@ var dhondt = require("dhondt");
 const plusIcon = require("../../../assets/plus_icon.png");
 const deleteIcon = require("../../../assets/delete_icon.png");
 
-export default function CalculatorScreen() {
+export default function CalculatorScreen({navigation}) {
   const [parties, setParties] = useState([]);
 
   const [inputValues, setInputValues] = useState([]);
@@ -19,6 +19,10 @@ export default function CalculatorScreen() {
 
   useEffect(() => {
     setParties([{}]);
+    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    return () => {
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+    };
   }, []);
 
   function addParty() {
