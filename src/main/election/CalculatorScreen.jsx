@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput } from "react-native";
 import CheckBox from "react-native-check-box";
 
-var dhondt = require("dhondt");
 const plusIcon = require("../../../assets/plus_icon.png");
 const deleteIcon = require("../../../assets/delete_icon.png");
 
@@ -30,15 +29,18 @@ export default function CalculatorScreen({ navigation }) {
       setParties((prevParties) => [...prevParties, 0]);
     }
     onPersentageChange();
+    onPersentageChange();
   }
 
   function deleteParty(indexToDelete) {
     if (parties.length > 1) {
-      setParties((parties) => parties.filter((p, index) => index != indexToDelete));
+      setParties((parties) => parties.filter((i, index) => index != indexToDelete));
       setInputValues((inputValues) => inputValues.filter((i, index) => index != indexToDelete));
+      setOutputValues((outputValues) => outputValues.filter((i, index) => index != indexToDelete));
       inputValues[indexToDelete] = 0;
       outputValues[indexToDelete] = 0;
     }
+    onPersentageChange();
     onPersentageChange();
   }
 
@@ -81,8 +83,50 @@ export default function CalculatorScreen({ navigation }) {
     }
     votes[votes.length] = sumTemp * 10000;
 
-    var mandates = 460;
-    var results = dhondt.compute(votes, mandates);
+    const districts = [
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 8 },
+      { votes: votes, seats: 14 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 13 },
+      { votes: votes, seats: 15 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 8 },
+      { votes: votes, seats: 14 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 20 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 11 },
+      { votes: votes, seats: 15 },
+      { votes: votes, seats: 14 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 14 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 7 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 16 },
+      { votes: votes, seats: 8 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 8 },
+      { votes: votes, seats: 12 },
+    ];
+
+    var results = simulateElections(districts);
 
     for (var index = 0; index < results.length - 1; index++) {
       if (!overThreshold[index]) {
@@ -93,6 +137,42 @@ export default function CalculatorScreen({ navigation }) {
     }
 
     setTheRestMandatesValue(results[results.length - 1].toFixed(0).toString());
+  }
+
+  function simulateElections(districts) {
+    const totalParties = districts[0].votes.length;
+    const totalMandates = Array(totalParties).fill(0);
+
+    districts.forEach((district) => {
+      const districtResult = dHondtInDistrict(district.votes, district.seats);
+      for (let i = 0; i < totalParties; i++) {
+        totalMandates[i] += districtResult[i];
+      }
+    });
+
+    return totalMandates;
+  }
+
+  function dHondtInDistrict(votes, seats) {
+    const mandates = Array(votes.length).fill(0);
+    const voteCounts = votes.map((vote) => vote);
+
+    for (let i = 0; i < seats; i++) {
+      let maxIndex = 0;
+      let maxScore = 0;
+
+      for (let j = 0; j < voteCounts.length; j++) {
+        const score = voteCounts[j] / (mandates[j] + 1);
+        if (score > maxScore) {
+          maxScore = score;
+          maxIndex = j;
+        }
+      }
+
+      mandates[maxIndex]++;
+    }
+
+    return mandates;
   }
 
   return (
@@ -122,7 +202,6 @@ export default function CalculatorScreen({ navigation }) {
                   checkBoxColor="white"
                   onClick={() => {
                     overThreshold[index] = !overThreshold[index];
-                    // console.log(index, overThreshold[index]);
                     onPersentageChange();
                   }}
                   isChecked={overThreshold[index]}
