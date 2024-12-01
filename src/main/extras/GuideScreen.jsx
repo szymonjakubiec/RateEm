@@ -1,12 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Linking, Dimensions, SafeAreaView,
-} from "react-native";
+import {Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
 import {goBack} from "../../backend/CommonMethods";
 import {StatusBar} from "expo-status-bar";
 
@@ -16,15 +9,15 @@ export default function GuideScreen({navigation, route}) {
   useEffect(() => {
     navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
     return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);
   const [sliderState, setSliderState] = useState({currentPage: 0});
 
   const setSliderPage = (event: any) => {
-    const { currentPage } = sliderState;
+    const {currentPage} = sliderState;
 
-    const { x } = event.nativeEvent.contentOffset;
+    const {x} = event.nativeEvent.contentOffset;
     const indexOfNextScreen = Math.round(x / width);
     if (indexOfNextScreen !== currentPage) {
       setSliderState({
@@ -90,7 +83,8 @@ export default function GuideScreen({navigation, route}) {
           <View style={{width, height}}>
             <Text style={styles.sectionTitle}>Ekran Główny</Text>
             <Text style={styles.sectionDescription}>
-              Na ekranie głównym wyświetlani są politycy, którzy w danym momencie cieszą się największą popularnością wśród naszych użytkowników.
+              Na ekranie głównym wyświetlani są politycy, którzy w danym momencie cieszą się największą popularnością
+              wśród naszych użytkowników.
             </Text>
             <Text style={styles.sectionDescription}>
               (Na dobre i na złe)
@@ -105,7 +99,9 @@ export default function GuideScreen({navigation, route}) {
             </Text>
             <TouchableOpacity
               style={styles.buttonContainer}
-              onPress={() => {navigation.popToTop()}}
+              onPress={() => {
+                navigation.popToTop();
+              }}
             >
               <Text style={styles.buttonText}>Zaczynamy!</Text>
             </TouchableOpacity>
@@ -118,7 +114,7 @@ export default function GuideScreen({navigation, route}) {
             <View
               style={[
                 styles.paginationDots,
-                { opacity: sliderState.currentPage === index ? 1 : 0.2 }, // Upewnij się, że używasz aktualnego currentPage
+                {opacity: sliderState.currentPage === index ? 1 : 0.2},
               ]}
               key={index}
             />
@@ -229,7 +225,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',  // Centrowanie
     elevation: 5,  // Cień dla Androida
     shadowColor: '#000',  // Cień dla iOS
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 5,
   },

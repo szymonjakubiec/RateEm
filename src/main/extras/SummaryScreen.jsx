@@ -26,7 +26,7 @@ export default function SummaryScreen({navigation}) {
   const {userId} = useContext(GlobalContext);
   useEffect(() => {
     const fetchRatings = async () => {
-      const fetchedRatings = await getRatingsUserId(userId+4);
+      const fetchedRatings = await getRatingsUserId(userId);
       setRatings(fetchedRatings.reverse());
 
       if (fetchedRatings.length > 0) {
@@ -58,7 +58,7 @@ export default function SummaryScreen({navigation}) {
     <View style={styles.ratingItemContainer}>
       <TouchableOpacity
         style={styles.ratingItem}
-        onPress={() => handleratingClick(item)}
+        onPress={() => handleRatingClick(item)}
       >
         <Image
           source={{
@@ -73,7 +73,7 @@ export default function SummaryScreen({navigation}) {
       </TouchableOpacity>
     </View>
   );
-  const handleratingClick = (item) => {
+  const handleRatingClick = (item) => {
     setSelectedPolitician(item);
     setModalVisible(true);
   };
@@ -92,7 +92,9 @@ export default function SummaryScreen({navigation}) {
             Nie ma niczego do pokazania... Najpierw dodaj opinię!
           </Text>
         </View>
+
         :
+
         <View>
 
           <View style={styles.totalRatingsContainer}>

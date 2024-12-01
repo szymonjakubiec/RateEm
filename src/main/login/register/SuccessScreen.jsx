@@ -20,7 +20,7 @@ export default function SuccessScreen({navigation, route}) {
             params: {
               screen: "Guide",
               options: {
-                animationEnabled: true, // Włącza animację przejścia
+                animationEnabled: true,
               },
             },
           });
