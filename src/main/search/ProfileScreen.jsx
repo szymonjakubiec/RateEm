@@ -250,6 +250,31 @@ export default function ProfileScreen({ navigation, route }) {
     setNewDescription(newDescription);
   }
   
+  
+  async function handleOtSingleRatingUpdate(itemId, itemWeight, titleUpdate, ratingUpdate, descriptionUpdate){
+    if (itemWeight === 1){
+      await updateRating(itemId, {
+        user_id: userId,
+        politicianId: selectedPoliticianId,
+        title: titleUpdate,
+        value: ratingUpdate,
+        description: descriptionUpdate,
+        date: currentDate,
+      });
+      loadSingleRatings();
+    } else if (singleRatings.length === 1){
+      await updateRating(itemId, {
+        user_id: userId, 
+        politicianId: selectedPoliticianId,
+        value: ratingUpdate,
+        date: currentDate,
+      });
+      loadSingleRatings();
+    } else {
+      Alert.alert("Nie można modyfikować oceny bazowej kiedy są jeszcze inne opinie.");
+    }
+  }
+  
   async function handleOtSingleRatingDeletion(item){
     if (item.weight === 1){
       await deleteRating(item.id);
@@ -258,7 +283,6 @@ export default function ProfileScreen({ navigation, route }) {
       await console.log("ownRating.id: " + ownRating.id);
       await deleteRating(item.id);
       await deleteOwnRating(userId, selectedPoliticianId);
-      // loadSingleRatings();
       setSingleRatings([]);
       setOwnRating(0);
     } else {
@@ -344,6 +368,7 @@ export default function ProfileScreen({ navigation, route }) {
             handleNewSingleRating: handleOtNewSingleRating,
             handleNewTitle: handleOtNewTitle,
             handleNewDescription: handleOtNewDescription,
+            handleSingleRatingUpdate: handleOtSingleRatingUpdate,
             handleSingleRatingDeletion: handleOtSingleRatingDeletion
           }}
         >
