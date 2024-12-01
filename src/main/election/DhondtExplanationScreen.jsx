@@ -115,22 +115,28 @@ export default function DhondtExplanationScreen({ navigation }) {
 
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Zastosowanie w Polsce</Text>
-          <Text style={styles.scrollViewText}>Metoda d'Hondta jest stosowana w Polsce m.in.:</Text>
-          <Text
-            style={[styles.scrollViewText, styles.textLink]}
-            onPress={() => {
-              navigation.navigate("SejmExplanation");
-            }}
-          >
-            -w wyborach do Sejmu
+          <Text style={styles.scrollViewText}>Metoda d'Hondta jest stosowana w Polsce m.in. w:</Text>
+          <Text style={styles.scrollViewText}>
+            <Text>-wyborach do </Text>
+            <Text
+              style={[styles.scrollViewText, styles.textLink]}
+              onPress={() => {
+                navigation.navigate("SejmExplanation");
+              }}
+            >
+              Sejmu
+            </Text>
           </Text>
-          <Text
-            style={[styles.scrollViewText, styles.textLink]}
-            onPress={() => {
-              navigation.navigate("EuExplanation");
-            }}
-          >
-            -w wyborach do Parlamentu Europejskiego
+          <Text style={styles.scrollViewText}>
+            <Text>-wyborach do </Text>
+            <Text
+              style={[styles.scrollViewText, styles.textLink]}
+              onPress={() => {
+                navigation.navigate("EuExplanation");
+              }}
+            >
+              Parlamentu Europejskiego
+            </Text>
           </Text>
         </View>
       </ScrollView>

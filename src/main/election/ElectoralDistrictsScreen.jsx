@@ -5,7 +5,7 @@ import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import { getUserAddress } from "../../backend/CommonMethods";
 import { getSejmDistrict, getEuDistrict } from "../../backend/database/Districts";
 
-export default function ElectoralDistricts({navigation}) {
+export default function ElectoralDistricts({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [addressCurrent, setAddressCurrent] = useState(null);
   const [sejmDistrictCurrent, setSejmDistrictCurrent] = useState("");
@@ -19,9 +19,9 @@ export default function ElectoralDistricts({navigation}) {
     AppState.addEventListener("change", handleAppStateChange);
 
     setMapComponent(createMap());
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
     return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+      navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
     };
   }, []);
 
