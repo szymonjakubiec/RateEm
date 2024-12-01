@@ -17,7 +17,7 @@ export default function TrendingScreen({navigation}) {
 
   useEffect(() => {
     async function fetchRatings() {
-      const fetchedRatings = await getTrendingPoliticians(3, 90);
+      const fetchedRatings = await getTrendingPoliticians(10, 90);
       setTrending(fetchedRatings);
     }
 
@@ -40,7 +40,6 @@ export default function TrendingScreen({navigation}) {
 
   const renderRatingItem = ({item}) => (
     <View style={styles.ratingContainer}>
-      {/* Główna sekcja zawierająca obraz i tekst */}
       <View style={[styles.item, {width}]}>
         <TouchableOpacity
           style={styles.ratingItem}
@@ -48,7 +47,8 @@ export default function TrendingScreen({navigation}) {
         >
           <Image
             source={{
-              uri: item.picture,
+              uri: 'https://reactnative.dev/img/tiny_logo.png',
+              // uri: item.picture,
               cache: "force-cache",
             }}
             style={styles.ratingImage}
@@ -61,53 +61,51 @@ export default function TrendingScreen({navigation}) {
           </Text>
         </TouchableOpacity>
       </View>
-
-      {/* Kropki paginacji */}
-      <View style={styles.paginationWrapper}>
-        {Array.from(Array(trending.length).keys()).map((key, index) => (
-          <View
-            style={[
-              styles.paginationDots,
-              {
-                backgroundColor: sliderState.currentPage === index ? '#26518a' : '#d3d3d3',
-                transform: sliderState.currentPage === index ? [{scale: 1.2}] : [{scale: 1}],
-              },
-            ]}
-            key={index}
-          />
-        ))}
-      </View>
     </View>
   );
 
 
   const handlePoliticianClick = (item) => {
     const selectedPoliticianId = item.id;
-    navigation.navigate("SearchNav", {
-      screen: "Profile",
-      params: {selectedPoliticianId},
-    });
-    navigation.navigate("SearchNav", {
-      screen: "Search",
+    console.info(navigation.getState().routes);
+    navigation.navigate("Profile", {
+      selectedPoliticianId,
     });
   };
-
 
   return (
     <View>
       {trending && (
-        <FlatList
-          data={trending}
-          renderItem={renderRatingItem}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.scrollContainer}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={setSliderPage}
-          scrollEventThrottle={16}
-        />
-
+        <View style={{position: 'relative'}}>
+          <Text style={{fontSize: 20}}>Trzej najpopularniejsi politycy ostatniego
+            miesiąca:</Text>
+          <FlatList
+            data={trending}
+            renderItem={renderRatingItem}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={styles.scrollContainer}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={setSliderPage}
+            scrollEventThrottle={16}
+            bounces={true}
+          />
+          <View style={styles.paginationWrapper}>
+            {Array.from(Array(trending.length).keys()).map((key, index) => (
+              <View
+                style={[
+                  styles.paginationDots,
+                  {
+                    backgroundColor: sliderState.currentPage === index ? '#26518a' : '#d3d3d3',
+                    transform: sliderState.currentPage === index ? [{scale: 1.2}] : [{scale: 1}],
+                  },
+                ]}
+                key={index}
+              />
+            ))}
+          </View>
+        </View>
       )}
 
     </View>
@@ -119,13 +117,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingBottom: 25,
     backgroundColor: '#f8f9fa', // Jasne tło dla kontrastu
   },
   item: {
     alignItems: 'center',
-    marginBottom: 20,
-    borderRadius: 15,
     backgroundColor: '#ffffff',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 4},
@@ -159,10 +155,14 @@ const styles = StyleSheet.create({
     color: '#777',
   },
   paginationWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
+    zIndex: 10,
     height: 20,
   },
   paginationDots: {

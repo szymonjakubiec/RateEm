@@ -27,7 +27,7 @@ export default function SuccessScreen({navigation, route}) {
 
         }}
       >
-        <Text style={styles.buttonText}>Powrót do menu</Text>
+        <Text style={styles.buttonText}>Przejdź dalej</Text>
       </TouchableHighlight>
 
     </View>
