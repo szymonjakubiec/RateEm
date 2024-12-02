@@ -6,7 +6,6 @@ import {OpinionsTileContext} from "../nav/OpinionsTileContext";
 
 
 export default function OpinionsTile({ownRating, handleFirstOwnRating}) {
-  const [wrongRatingInfo, setWrongRatingInfo] = useState("");
   const [starRating, setStarRating] = useState(0);
 
   const [expandedRatingList, setExpandedRatingList] = useState(false);
@@ -29,7 +28,6 @@ export default function OpinionsTile({ownRating, handleFirstOwnRating}) {
           onChange={setStarRating}
           enableHalfStar={false}
         />
-        <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
         <TouchableHighlight
           style={styles.button}
           onPress={setBaseRate} // function to set firstRating if >= 1
@@ -76,11 +74,8 @@ export default function OpinionsTile({ownRating, handleFirstOwnRating}) {
   function setBaseRate() {
     if (starRating >= 1) {
       handleFirstOwnRating(starRating);
-      setWrongRatingInfo("");
       setStarRating(0);
-    } else {
-      setWrongRatingInfo("Ocena polityka musi wynosić przynajmniej 1.");
-    }
+    } 
   }
 }
 
@@ -164,30 +159,38 @@ function RatingsList({expandedRatingList}) {
     
     const [confirmPopupVisible, setConfirmPopupVisible] = useState(false);
     const [confirmType, setConfirmType] = useState(ConfirmPopupTypes.Undefined);
-    
-    
+
+    /**
+     * Returns to the Rating FlatList and updates/deletes the selected item and deselects it.
+     * @returns {Promise<void>}
+     */
     async function handleConfirmation(){
       setConfirmPopupVisible(false);
       deselectItem();
       if (confirmType === ConfirmPopupTypes.Update) {
         await handleSingleRatingUpdate(item)
       } else {
-        await handleSingleRatingDeletion(item);
+        await handleSingleRatingDeletion(item.id, item.weight);
       }
     }
-    
+
+    /**
+     * Turns off ConfirmationPopup
+     */
     function handleRejection(){
       setConfirmPopupVisible(false);
     }
 
     /**
-     * Turn off the popup and nullify the data inside. WHY HERE THO?
+     * Turn off the rating update popup and nullify the data inside.
      */
     async function turnOffRatingPopup(){
       await setUpdateRatingPopupVisible(false);
     }
-    
-    
+
+    /**
+     * On assigning the confirmType of ConfirmationPopup turns it on.
+     */
     useEffect(() => {
       if (confirmType !== ConfirmPopupTypes.Undefined){
         setConfirmPopupVisible(true);
@@ -281,8 +284,11 @@ function RatingUpdatePopup({popupVisible, itemId, itemWeight, ConfirmPopupTypes,
   function handleRejection(){
     setConfirmPopupVisible(false);
   }
-  
 
+
+  /**
+   * Enables/disables the button setting the rating update and changes its color. 
+   */
   useEffect(() => {
     if (itemWeight === 10 && ratingUpdate === 0){
       buttonBackground.current = "lightgray";
@@ -391,7 +397,6 @@ function AddOpinion() {
   const [newDescription, setNewDescription] = useState("");
   
   const [starRating, setStarRating] = useState(0);
-  const [wrongRatingInfo, setWrongRatingInfo] = useState("");
   
   if (expandedAddOpinion === false) {
     return (
@@ -431,7 +436,6 @@ function AddOpinion() {
           }}
           enableHalfStar={false}
         />
-        <Text style={styles.wrongInputText}>{wrongRatingInfo}</Text>
         <TextInput
           style={styles.textInput}
           placeholder="Wstaw komentarz do opinii"
@@ -449,16 +453,17 @@ function AddOpinion() {
       </View>
     );
   }
-  
+
+  /**
+   * Sets starRating to the newSingleRating in the ProfileScreen and nullifies local variables
+   */
   function setSingleRate() {
     if (starRating >= 1) {
       handleNewSingleRating(starRating);
       setNewTitle("");
       setNewDescription("");
       setStarRating(0);
-      setWrongRatingInfo("");
-    } else {
-      setWrongRatingInfo("Ocena polityka musi wynosić przynajmniej 1.");
+      setExpandedAddOpinion(false);
     }
   }
 }
@@ -499,11 +504,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 15,
-  },
-  wrongInputText: {
-    fontSize: 10,
-    color: "red",
-    marginBottom: 15,
   },
   ratingItemButton: {
     backgroundColor: "gray",

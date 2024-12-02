@@ -23,15 +23,17 @@ import {OpinionsTileContext} from "./nav/OpinionsTileContext";
 
 
 export default function ProfileScreen({ navigation, route }) {
-  const { selectedPoliticianId } = route.params;
+  const {selectedPoliticianId} = route.params;
+  const {userId} = useContext(GlobalContext);
+  
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
   const [politicianSurname, setPoliticianSurname] = useState();
 
   const [surnameTextHeight, setSurnameTextHeight] = useState(0); // for adjusting names and surname font sizes on long surnames
 
-  const [party, setParty] = useState("Oszuści i Złodzieje"); // by default
-  const [partyShort, setPartyShort] = useState("OiZ"); // by default
+  const [party, setParty] = useState("Brak Partii"); 
+  const [partyShort, setPartyShort] = useState("Brak Partii"); 
 
   const [globalRating, setGlobalRating] = useState(0.0);
   const [ownRating, setOwnRating] = useState(0.0);
@@ -49,9 +51,8 @@ export default function ProfileScreen({ navigation, route }) {
    */
   const canUpdateGlobalRating = useRef(false);
   
-  const {userId} = useContext(GlobalContext);
+  const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
   
-  const currentDate = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
 
   useEffect(() => {
     init();
@@ -173,13 +174,14 @@ export default function ProfileScreen({ navigation, route }) {
 
   /**
    * Runs right after ownRating is added/updated. 
-   * It downloads ownRatings from all users, calculates globalRating as the arithmetical average, and uploads the result to the base.
+   * It downloads ownRatings if there are any, from all users, calculates globalRating as the arithmetical average, and uploads the result to the base.
    * @returns {Promise<void>}
    */
   async function countGlobalRating(){
     const politicianOwnRatings = await getAllPoliticianOwnRatings(selectedPoliticianId);
     let numerator = 0;
     let denominator = 0;
+    let average = 0;
     
     for (politicianOwnRating of politicianOwnRatings) { 
       if (politicianOwnRating.user_id !== userId){
@@ -191,8 +193,9 @@ export default function ProfileScreen({ navigation, route }) {
       numerator += ownRating;
       denominator = denominator + 1;
     }
-    
-    let average = Math.round((numerator * 100) / denominator) / 100;
+    if (denominator > 0){
+      average = Math.round((numerator * 100) / denominator) / 100;
+    }
     
     console.log("Średnia globalna wynosi: " + average);    
     setGlobalRating(average);
@@ -211,7 +214,6 @@ export default function ProfileScreen({ navigation, route }) {
       10
     );
     addOwnRating(userId, selectedPoliticianId, firstOwnRating);
-    // setOwnRating(firstOwnRating); 
     setFirstOwnRating(0);
     loadSingleRatings(); 
   }
@@ -249,42 +251,91 @@ export default function ProfileScreen({ navigation, route }) {
   function handleOtNewDescription(newDescription){
     setNewDescription(newDescription);
   }
-  
-  
+
+
+  /**
+   * Updates specific single rating and runs loadSingleRatings which triggers setOwnRating. 
+   * @param itemId
+   * @param titleUpdate
+   * @param ratingUpdate
+   * @param descriptionUpdate
+   * @returns {Promise<void>}
+   */
+  async function updateSingleRating(itemId, titleUpdate, ratingUpdate, descriptionUpdate){
+    await updateRating(itemId, {
+      user_id: userId,
+      politicianId: selectedPoliticianId,
+      title: titleUpdate,
+      value: ratingUpdate,
+      description: descriptionUpdate,
+      date: currentDate,
+    });
+    loadSingleRatings();
+  }
+
+  /**
+   * Updates specific single rating and runs loadSingleRatings which triggers setOwnRating.
+   * @param itemId
+   * @param ratingUpdate
+   * @returns {Promise<void>}
+   */
+  async function updateFirstOwnRating(itemId, ratingUpdate){
+    await updateRating(itemId, {
+      user_id: userId,
+      politicianId: selectedPoliticianId,
+      value: ratingUpdate,
+      date: currentDate,
+    });
+    loadSingleRatings();
+  }
+
+  /**
+   * Deletes selected rating and recalculates ownRating and globalRating.
+   * @param itemId
+   * @returns {Promise<void>}
+   */
+  async function deleteSingleRating(itemId){
+    await deleteRating(itemId);
+    loadSingleRatings();
+  }
+
+  /**
+   * Deletes the last rating in the singleRatings array and nullifies this array, ownRating and recalculates the globalRating.
+   * @param itemId
+   * @returns {Promise<void>}
+   */
+  async function deleteFirstOwnRating(itemId){
+    await deleteRating(itemId);
+    await deleteOwnRating(userId, selectedPoliticianId);
+    setSingleRatings([]);
+    setOwnRating(0);
+  }
+
+  /**
+   * If the rating to update is of weight = 1 (singleRating) then updates the title, description and value of rating. 
+   * If the rating is of weight = 10, but it is the only value on the list then updates only the value. 
+   * @param itemId
+   * @param itemWeight
+   * @param titleUpdate
+   * @param ratingUpdate
+   * @param descriptionUpdate
+   * @returns {Promise<void>}
+   */
   async function handleOtSingleRatingUpdate(itemId, itemWeight, titleUpdate, ratingUpdate, descriptionUpdate){
     if (itemWeight === 1){
-      await updateRating(itemId, {
-        user_id: userId,
-        politicianId: selectedPoliticianId,
-        title: titleUpdate,
-        value: ratingUpdate,
-        description: descriptionUpdate,
-        date: currentDate,
-      });
-      loadSingleRatings();
+      updateSingleRating(itemId, titleUpdate, ratingUpdate, descriptionUpdate);
     } else if (singleRatings.length === 1){
-      await updateRating(itemId, {
-        user_id: userId, 
-        politicianId: selectedPoliticianId,
-        value: ratingUpdate,
-        date: currentDate,
-      });
-      loadSingleRatings();
+      updateFirstOwnRating(itemId, ratingUpdate);
     } else {
       Alert.alert("Nie można modyfikować oceny bazowej kiedy są jeszcze inne opinie.");
     }
   }
   
-  async function handleOtSingleRatingDeletion(item){
-    if (item.weight === 1){
-      await deleteRating(item.id);
-      loadSingleRatings();
+  async function handleOtSingleRatingDeletion(itemId, itemWeight){
+    if (itemWeight === 1){
+      deleteSingleRating(itemId);
     } else if (singleRatings.length === 1){
-      await console.log("ownRating.id: " + ownRating.id);
-      await deleteRating(item.id);
-      await deleteOwnRating(userId, selectedPoliticianId);
-      setSingleRatings([]);
-      setOwnRating(0);
+      deleteFirstOwnRating(itemId)
     } else {
       Alert.alert("Nie można usunąć oceny bazowej kiedy są jeszcze inne opinie.");
     }
@@ -304,8 +355,6 @@ export default function ProfileScreen({ navigation, route }) {
   }, [newSingleRating, newTitle, newDescription]);
 
   useEffect(() => {
-    console.log("singleRatings.length in useEffect");
-    // console.log("singleRatings.length: ", singleRatings.length);
     if(singleRatings.length > 0){
       countOwnRating()
     }
