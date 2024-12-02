@@ -1,9 +1,10 @@
 import {useState, useEffect} from "react";
 import {StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput} from "react-native";
+import _Container from "../styles/Container";
 
 
 
-var dhondt = require("dhondt");
+const dhondt = require("dhondt");
 const plusIcon = require("../../../assets/plus_icon.png");
 const deleteIcon = require("../../../assets/delete_icon.png");
 
@@ -21,7 +22,7 @@ export default function CalculatorScreen({navigation}) {
     setParties([{}]);
     navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
     return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);
 
@@ -43,8 +44,8 @@ export default function CalculatorScreen({navigation}) {
   }
 
   function onPersentageChange() {
-    var sumTemp = 0;
-    for (var index = 0; index < inputValues.length; index++) {
+    let sumTemp = 0;
+    for (let index = 0; index < inputValues.length; index++) {
       setTheRestValue("0");
       if (sumTemp < 100) {
         sumTemp += parseFloat(inputValues[index]);
@@ -68,26 +69,26 @@ export default function CalculatorScreen({navigation}) {
   }
 
   function calculateDhondtMandates() {
-    var votes = [];
-    var sumTemp = 100;
+    const votes = [];
+    let sumTemp = 100;
 
-    for (var index = 0; index < inputValues.length; index++) {
+    for (let index = 0; index < inputValues.length; index++) {
       votes[index] = parseFloat(inputValues[index]) * 100000;
       sumTemp -= parseFloat(inputValues[index]);
     }
     votes[votes.length] = sumTemp;
 
-    var mandates = 460;
-    var results = dhondt.compute(votes, mandates);
+    const mandates = 460;
+    const results = dhondt.compute(votes, mandates);
 
-    for (var index = 0; index < results.length - 1; index++) {
+    for (let index = 0; index < results.length - 1; index++) {
       outputValues[index] = results[index].toString();
     }
     setTheRestMandatesValue(results[results.length - 1].toString());
   }
 
   return (
-    <View style={styles.container}>
+    <_Container style={{padding: "4%"}}>
       <ScrollView style={styles.scrollView}>
         {parties.map((partyItem, index) => (
           <View key={index} style={styles.partyTile}>
@@ -119,18 +120,11 @@ export default function CalculatorScreen({navigation}) {
           <Image source={plusIcon} style={styles.plusIcon}/>
         </TouchableHighlight>
       </ScrollView>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    padding: "4%",
-  },
-
   scrollView: {
     width: "100%",
     height: "100%",

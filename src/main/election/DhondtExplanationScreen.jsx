@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput } from "react-native";
-import { DataTable } from "react-native-paper";
+import {useState, useEffect} from "react";
+import {StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput} from "react-native";
+import {DataTable} from "react-native-paper";
+import _Container from "../styles/Container";
 
-export default function DhondtExplanationScreen({ navigation }) {
+
+
+export default function DhondtExplanationScreen({navigation}) {
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
+    navigation.getParent().setOptions({tabBarStyle: {display: "none"}});
     return () => {
-      navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);
 
   return (
-    <View style={styles.container}>
+    <_Container style={{padding: "4%"}}>
       <View style={styles.titleDiv}>
         <Text style={styles.title}>metoda d'Hondta</Text>
       </View>
@@ -32,7 +35,8 @@ export default function DhondtExplanationScreen({ navigation }) {
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Uwzględnienie progów wyborczych</Text>
           <Text style={styles.scrollViewText}>
-            Komitety wyborcze, które zdobyły mniej niż 5% głosów w skali kraju (lub 8% w przypadku koalicji), nie uczestniczą w podziale mandatów.
+            Komitety wyborcze, które zdobyły mniej niż 5% głosów w skali kraju (lub 8% w przypadku koalicji), nie
+            uczestniczą w podziale mandatów.
             Wyjątek stanowią komitety mniejszości narodowych, które nie podlegają progowi wyborczemu
           </Text>
         </View>
@@ -40,7 +44,8 @@ export default function DhondtExplanationScreen({ navigation }) {
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Tworzenie tabeli ilorazów</Text>
           <Text style={styles.scrollViewText}>
-            Liczba głosów każdego komitetu wyborczego w danym okręgu dzielona jest przez kolejne liczby naturalne: 1, 2, 3, 4, ... aż do liczby
+            Liczba głosów każdego komitetu wyborczego w danym okręgu dzielona jest przez kolejne liczby naturalne: 1, 2,
+            3, 4, ... aż do liczby
             mandatów do przydzielenia w tym okręgu. Otrzymane wyniki (ilorazy) są wpisywane do tabeli.
           </Text>
           <Text style={styles.scrollViewText}>Przykład dla okręgu, w którym przydzielane są 5 mandaty:</Text>
@@ -86,7 +91,8 @@ export default function DhondtExplanationScreen({ navigation }) {
           <View style={styles.scrollViewDiv}>
             <Text style={styles.scrollViewTitle}>Wybór najwyższych wyników</Text>
             <Text style={styles.scrollViewText}>
-              Spośród wszystkich ilorazów wybiera się najwyższe wartości, odpowiadające liczbie mandatów w danym okręgu. Każdy „wybrany” wynik oznacza
+              Spośród wszystkich ilorazów wybiera się najwyższe wartości, odpowiadające liczbie mandatów w danym okręgu.
+              Każdy „wybrany” wynik oznacza
               przyznanie mandatu komitetowi, który osiągnął ten wynik.
             </Text>
             <Text style={styles.scrollViewSubtitle}>W przykładzie z tabeli najwyższe ilorazy to:</Text>
@@ -106,7 +112,8 @@ export default function DhondtExplanationScreen({ navigation }) {
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Zasady faworyzacji większych komitetów</Text>
           <Text style={styles.scrollViewText}>
-            Metoda d'Hondta nie jest idealnie proporcjonalna – preferuje większe komitety wyborcze, co oznacza, że mogą one zdobyć więcej mandatów w
+            Metoda d'Hondta nie jest idealnie proporcjonalna – preferuje większe komitety wyborcze, co oznacza, że mogą
+            one zdobyć więcej mandatów w
             stosunku do liczby głosów, jakie uzyskały. Ma to na celu:
           </Text>
           <Text style={styles.scrollViewText}>-ułatwienie formowania stabilnej większości w parlamencie</Text>
@@ -134,18 +141,11 @@ export default function DhondtExplanationScreen({ navigation }) {
           </Text>
         </View>
       </ScrollView>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    padding: "4%",
-  },
-
   scrollView: {
     width: "100%",
     height: "100%",
