@@ -1,15 +1,16 @@
-import {useEffect, useState} from "react";
-import {StyleSheet, Text, TouchableHighlight, SafeAreaView, BackHandler} from "react-native";
+import {useState} from "react";
+import {StyleSheet, Text, TouchableHighlight} from "react-native";
 import {TextInput} from "react-native-paper";
 import {getUserIdByEmail, updateUser} from "../../../backend/database/Users";
 import {textInputProps} from "../../styles/TextInput";
+import _Container from "../../styles/Container";
 
 
 
 export default function ChangePassScreen({navigation, route}) {
   //
   // ===== PROPERTIES ============================================================= //
-  const email = route.params?.email;
+  const email = route?.params?.email;
 
   // Values
   const [password, setPassword] = useState("");
@@ -69,7 +70,7 @@ export default function ChangePassScreen({navigation, route}) {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <_Container>
       <Text style={styles.title}>Podaj nowe hasło:</Text>
 
       <TextInput
@@ -149,19 +150,11 @@ export default function ChangePassScreen({navigation, route}) {
       >
         <Text style={styles.buttonText}>Zmień hasło</Text>
       </TouchableHighlight>
-    </SafeAreaView>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 70,
-    paddingBottom: 70,
-  },
   title: {
     fontSize: 22,
     alignSelf: "flex-start",

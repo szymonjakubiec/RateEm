@@ -1,11 +1,6 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import {ScrollView, StyleSheet, Text, View} from "react-native";
 import {useEffect, useRef, useState} from "react";
-import { Image } from "react-native";
+import {Image} from "react-native";
 import {
   getOwnRating,
   addOwnRating,
@@ -15,11 +10,13 @@ import {
 import {getRatingsUserIdPoliticianId, addRating} from "../../backend/database/Ratings";
 import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
 import OpinionsTile from "./opinionsTileComponents/OpinionsTile";
+import {useTheme} from "react-native-paper";
+import _Container from "../styles/Container";
 
 
 
-export default function ProfileScreen({ route }) {
-  const { selectedPoliticianId } = route.params;
+export default function ProfileScreen({route}) {
+  const {selectedPoliticianId} = route.params;
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
   const [politicianSurname, setPoliticianSurname] = useState();
@@ -34,9 +31,9 @@ export default function ProfileScreen({ route }) {
   const [firstOwnRating, setFirstOwnRating] = useState(0);
   const [singleRatings, setSingleRatings] = useState([]); // these are ratings from ratings.js
   const [newSingleRating, setNewSingleRating] = useState(0);
-  
+
   const [isLoadOwnRatingInitialized, setIsLoadOwnRatingInitialized] = useState(false);
-  
+
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
 
@@ -44,7 +41,7 @@ export default function ProfileScreen({ route }) {
    * Variable preventing the ownRating from writing feedback before loading the globalRating to the screen.
    */
   const canUpdateGlobalRating = useRef(false);
-  
+
 
   const userId = 2;
 
@@ -58,10 +55,10 @@ export default function ProfileScreen({ route }) {
    * Runs right after the loadOwnRating from useEffect above.
    */
   useEffect(() => {
-    if (isLoadOwnRatingInitialized){
+    if (isLoadOwnRatingInitialized) {
       canUpdateGlobalRating.current = true;
     }
-    
+
   }, [isLoadOwnRatingInitialized]);
 
   async function init() {
@@ -93,7 +90,7 @@ export default function ProfileScreen({ route }) {
   }
 
   /**
-   * Loads asynchronously ownRating and if it is not null then allows to run loadSingleRatings. 
+   * Loads asynchronously ownRating and if it is not null then allows to run loadSingleRatings.
    * Also sets isLoadOwnRatingInitialized to allow updating the globalRating after completing the whole function.
    * @returns {Promise<boolean>}
    */
@@ -141,34 +138,33 @@ export default function ProfileScreen({ route }) {
     return 24;
   }
 
-  
 
   // only for adding single rating into DB
   function countOwnRating(newSingleRating) {
     let numerator = 0;
     let denominator = 0;
-    
+
     for (singleRating of singleRatings) {
       numerator = numerator + singleRating.value * singleRating.weight;
       denominator = denominator + singleRating.weight;
     }
-    
+
     numerator = numerator + newSingleRating * 1;
     denominator = denominator + 1;
     let weightedAverage = Math.round((numerator * 100) / denominator) / 100; // round number to 2 decimal places
-    
+
     console.log("Srednia ważona wychodzi: " + weightedAverage);
     setOwnRating(weightedAverage);
     updateOwnRating(selectedPoliticianId, userId, weightedAverage);
   }
-  
-  async function countGlobalRating(){
+
+  async function countGlobalRating() {
     const politicianOwnRatings = await getAllPoliticianOwnRatings(selectedPoliticianId);
     let numerator = 0;
     let denominator = 0;
-    
-    for (politicianOwnRating of politicianOwnRatings) { 
-      if (politicianOwnRating.user_id !== userId){
+
+    for (politicianOwnRating of politicianOwnRatings) {
+      if (politicianOwnRating.user_id !== userId) {
         numerator += politicianOwnRating.value;
         denominator += 1;
       }
@@ -177,8 +173,8 @@ export default function ProfileScreen({ route }) {
     numerator += ownRating;
     denominator = denominator + 1;
     let average = Math.round((numerator * 100) / denominator) / 100;
-    
-    console.log("Średnia globalna wynosi: " + average);    
+
+    console.log("Średnia globalna wynosi: " + average);
     setGlobalRating(average);
     updatePolitician(selectedPoliticianId, {global_rating: average});
   }
@@ -199,7 +195,7 @@ export default function ProfileScreen({ route }) {
     loadSingleRatings();
   }
 
-  async function handleNewSingleRating(){
+  async function handleNewSingleRating() {
     console.log("handleNewSingleRating");
     await addRating(
       userId,
@@ -217,42 +213,44 @@ export default function ProfileScreen({ route }) {
     loadSingleRatings();
   }
 
-  function handleFirstOwnRatingOpinionsTile(starRating){
-    setFirstOwnRating(starRating)
+  function handleFirstOwnRatingOpinionsTile(starRating) {
+    setFirstOwnRating(starRating);
   }
 
-  function handleNewSingleRatingOpinionsTile(starRating){
+  function handleNewSingleRatingOpinionsTile(starRating) {
     setNewSingleRating(starRating);
   }
-  function handleNewTitleOpinionsTile(newTitle){
+
+  function handleNewTitleOpinionsTile(newTitle) {
     setNewTitle(newTitle);
   }
-  function handleNewDescriptionOpinionsTile(newDescription){
+
+  function handleNewDescriptionOpinionsTile(newDescription) {
     setNewDescription(newDescription);
   }
-  
+
   useEffect(() => {
     if (firstOwnRating) {
-      handleFirstOwnRating()
+      handleFirstOwnRating();
     }
   }, [firstOwnRating]);
-  
+
   useEffect(() => {
     if (newSingleRating && newTitle && newDescription) {
-      handleNewSingleRating()
+      handleNewSingleRating();
     }
   }, [newSingleRating, newTitle, newDescription]);
 
   useEffect(() => {
-    if (canUpdateGlobalRating.current === true ){
-      countGlobalRating()
+    if (canUpdateGlobalRating.current === true) {
+      countGlobalRating();
     }
   }, [ownRating]);
 
-  
+
   return (
-    <ScrollView>
-      <View style={styles.container}>
+    <ScrollView style={{backgroundColor: useTheme().colors.background}}>
+      <_Container style={styles.container}>
         <View style={styles.infoTile}>
           <View style={styles.nameContainer}>
             <View style={styles.nameSurnameColumn}>
@@ -260,12 +258,6 @@ export default function ProfileScreen({ route }) {
                 adjustsFontSizeToFit={true}
                 numberOfLines={1}
                 style={styles.surname}
-                // onLayout={(event) => {
-                //   const height = event.nativeEvent.layout.height;
-                //   const fontSize = height > 33 ? 21 : 24;
-                //   console.log(height);
-                //   setSurnameTextHeight(fontSize);
-                // }}
               >
                 {politicianSurname}
               </Text>
@@ -300,29 +292,25 @@ export default function ProfileScreen({ route }) {
             <Text>{party}.</Text>
           </View>
         </View>
-        <OpinionsTile 
-          ownRating={ownRating} 
-          singleRatings={singleRatings} 
-          handleFirstOwnRating={handleFirstOwnRatingOpinionsTile} 
+        <OpinionsTile
+          ownRating={ownRating}
+          singleRatings={singleRatings}
+          handleFirstOwnRating={handleFirstOwnRatingOpinionsTile}
           handleNewSingleRating={handleNewSingleRatingOpinionsTile}
           handleNewTitle={handleNewTitleOpinionsTile}
           handleNewDescription={handleNewDescriptionOpinionsTile}
         />
-      </View>
+      </_Container>
     </ScrollView>
   );
-  
+
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: "column",
-    backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
+    alignItems: "stretch",
     padding: 10,
-    gap: 10,
+    gap: 15,
   },
   infoTile: {
     // height: "100vh",

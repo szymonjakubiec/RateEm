@@ -4,13 +4,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   KeyboardAvoidingView,
-  BackHandler,
-  SafeAreaView,
 } from "react-native";
 import {getAllUsers, updateUser} from "../../backend/database/Users";
 import {goBack} from "../../backend/CommonMethods";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../styles/TextInput";
+import _Container from "../styles/Container";
 
 
 
@@ -49,7 +48,7 @@ export default function SettingsScreen({navigation}) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <_Container>
       <Text style={styles.subSection}>Zmień e-mail lub numer telefonu:</Text>
       {user ? (
         <>
@@ -108,16 +107,11 @@ export default function SettingsScreen({navigation}) {
           <Text style={styles.buttonText}>Zapisz</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
   radioContainer: {
     flexDirection: "row",
     justifyContent: "space-around",

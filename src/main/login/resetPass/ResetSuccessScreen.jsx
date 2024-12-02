@@ -1,10 +1,10 @@
-import {StatusBar} from "expo-status-bar";
-import {BackHandler, StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
+import {BackHandler, StyleSheet, Text, TouchableHighlight} from "react-native";
 import {useEffect} from "react";
+import _Container from "../../styles/Container";
 
 
 
-export default function ResetSuccessScreen({navigation, route}) {
+export default function ResetSuccessScreen({navigation}) {
 
   // PK: Prevents navigating back
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function ResetSuccessScreen({navigation, route}) {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
+    <_Container>
       <Text style={styles.title}>Sukces!</Text>
       <Text style={styles.subTitle}>Hasło zostało zmienione.</Text>
 
@@ -30,18 +30,11 @@ export default function ResetSuccessScreen({navigation, route}) {
         <Text style={styles.buttonText}>Powrót do menu</Text>
       </TouchableHighlight>
 
-    </View>
+    </_Container>
   );
 }
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 70,
-  },
   title: {
     fontSize: 24,
     alignSelf: "flex-start",
@@ -49,21 +42,10 @@ export const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: 16,
+    marginTop: 10,
     marginBottom: 50,
     alignSelf: "flex-start",
     left: 20,
-  },
-  textInput: {
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#000",
-    borderStyle: "solid",
-    paddingTop: 6,
-    paddingBottom: 6,
-    paddingLeft: 20,
-    paddingRight: 20,
-    width: "90%",
-    marginBottom: 15,
   },
   button: {
     backgroundColor: "#000",

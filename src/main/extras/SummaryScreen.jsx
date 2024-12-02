@@ -11,6 +11,7 @@ import {
 import {useEffect, useState} from "react";
 import {getRatingsUserId} from "../../backend/database/Ratings";
 import {goBack} from "../../backend/CommonMethods";
+import _Container from "../styles/Container";
 
 
 
@@ -82,7 +83,7 @@ export default function SummaryScreen({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <_Container style={{alignItems: "stretch", padding: 20}}>
       <Text style={styles.title}>Wystawione oceny</Text>
 
       <View style={styles.totalRatingsContainer}>
@@ -164,16 +165,11 @@ export default function SummaryScreen({navigation}) {
           </View>
         </View>
       </Modal>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#f9f9f9",
-  },
   title: {
     fontSize: 26,
     fontWeight: "bold",

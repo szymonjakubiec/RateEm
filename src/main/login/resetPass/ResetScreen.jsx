@@ -4,6 +4,7 @@ import isEmail from "validator/lib/isEmail";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
 import {textInputProps} from "../../styles/TextInput";
+import _Container from "../../styles/Container";
 
 
 
@@ -73,7 +74,7 @@ export default function ResetScreen({navigation}) {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <_Container>
 
       {verifyType === "sms" ? (
         <>
@@ -162,19 +163,11 @@ export default function ResetScreen({navigation}) {
       >
         <Text style={styles.buttonText}>Zresetuj hasło</Text>
       </TouchableHighlight>
-    </SafeAreaView>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 70,
-    paddingBottom: 70,
-  },
   title: {
     fontSize: 22,
     alignSelf: "flex-start",

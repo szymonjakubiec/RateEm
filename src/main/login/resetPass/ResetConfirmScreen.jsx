@@ -1,8 +1,9 @@
-import {StyleSheet, Text, TouchableHighlight, View, BackHandler} from "react-native";
+import {StyleSheet, Text, TouchableHighlight, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
 import {checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../../styles/TextInput";
+import _Container from "../../styles/Container";
 
 
 
@@ -67,8 +68,9 @@ export default function ResetConfirmScreen({navigation, route}) {
 
 
   return (
-    <View style={styles.container}>
+    <_Container>
       <Text style={styles.title}>Potwierdź reset hasła</Text>
+
       {verifyType === "sms" ? (
         <>
           {/* PK: Sms */}
@@ -137,18 +139,11 @@ export default function ResetConfirmScreen({navigation, route}) {
         <Text style={styles.buttonText}>Potwierdź</Text>
       </TouchableHighlight>
 
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 70,
-  },
   title: {
     fontSize: 24,
     marginBottom: 40,
