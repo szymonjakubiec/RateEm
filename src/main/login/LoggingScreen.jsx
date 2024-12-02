@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import isEmail from "validator/lib/isEmail";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {getAllUsers} from "../../backend/database/Users";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../styles/TextInput";
@@ -44,6 +44,8 @@ export default function LoggingScreen({navigation}) {
   const [password, setPassword] = useState("");
   const [passHidden, setPassHidden] = useState(true);
 
+  // const [userId, setUserId] = useState(-1);
+  const userIdRef = useRef();
   /**
    * Feedback values that appear when the user writes incorrect input
    */
@@ -91,6 +93,7 @@ export default function LoggingScreen({navigation}) {
         setWrongPasswordInfo("");
         setPassword("");
         setPassHidden(true);
+        userIdRef.current = user.id;
         return true;
       }
 
@@ -109,11 +112,11 @@ export default function LoggingScreen({navigation}) {
    * Navigates to the main screen.
    */
   function navigateToMain() {
+    let userId = userIdRef.current;
     navigation.navigate("MainNav", {
-      screen: "Home",
-      params: {
-        _title,
-      },
+      // screen: "Home", // not required because of initialRouteName in MainNav
+      _title: _title,
+      userId: userId
     });
   }
 

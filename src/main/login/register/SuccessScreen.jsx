@@ -16,8 +16,16 @@ export default function SuccessScreen({navigation, route}) {
 
         // PK: Goes to logging screen with clearing the navigation stack
         onPress={() => {
-          navigation.popToTop();
-          navigation.goBack();
+          navigation.navigate("MainNav", {
+            screen: "ExtrasNav",
+            params: {
+              screen: "Guide",
+              options: {
+                animationEnabled: true, // Włącza animację przejścia
+              },
+            },
+          });
+
         }}
       >
         <Text style={styles.buttonText}>Powrót do menu</Text>

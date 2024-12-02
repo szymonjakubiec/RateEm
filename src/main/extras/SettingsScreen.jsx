@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import {
   Text,
   TouchableOpacity,
@@ -9,6 +9,7 @@ import {getAllUsers, updateUser} from "../../backend/database/Users";
 import {goBack} from "../../backend/CommonMethods";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../styles/TextInput";
+import {GlobalContext} from "../nav/GlobalContext";
 import _Container from "../styles/Container";
 
 
@@ -19,33 +20,30 @@ export default function SettingsScreen({navigation}) {
   goBack(navigation);
 
   const [user, setUser] = useState(null);
-  const [CommunicationRadio, setCommunicationRadio] = useState(null);
-  const [LoginRadio, setLoginRadio] = useState(null);
 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-
+  const {userId} = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchUsers = async () => {
       const users = await getAllUsers();
-      setUser(users); //todo faktyczny użytkownik
-      setLoginRadio(users[0].login_method);
-      setCommunicationRadio(users[0].communication_method);
+      setUser(users.filter(function(item){
+        return item.id === userId;
+      }))
     };
 
     fetchUsers();
+
+    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    return () => {
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+    };
   }, []);
 
-  const handleSave = async () => {
-    await updateUser("1", {
-      communication_method: "" + CommunicationRadio,
-      login_method: "" + LoginRadio,
-    });
-  };
 
   return (
     <_Container>
@@ -102,8 +100,9 @@ export default function SettingsScreen({navigation}) {
         onChangeText={setRepeatPassword}
       />
 
+
       <KeyboardAvoidingView style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleSave}>
+        <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Zapisz</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>

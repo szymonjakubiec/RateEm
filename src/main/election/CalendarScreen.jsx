@@ -4,12 +4,16 @@ import { getAllSejmElections } from "../../backend/database/SejmElections";
 import { getAllPresidentElections } from "../../backend/database/PresidentElections";
 import { getAllEuElections } from "../../backend/database/EuElections";
 
-export default function CalendarScreen() {
+export default function CalendarScreen({navigation}) {
   const [years, setYears] = useState([]);
 
   useEffect(() => {
     currentYear = new Date().getFullYear();
     showYears();
+    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    return () => {
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+    };
   }, []);
 
   async function showYears() {

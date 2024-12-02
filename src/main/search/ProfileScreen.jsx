@@ -1,5 +1,5 @@
 import {ScrollView, StyleSheet, Text, View} from "react-native";
-import {useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {Image} from "react-native";
 import {
   getOwnRating,
@@ -11,11 +11,12 @@ import {getRatingsUserIdPoliticianId, addRating} from "../../backend/database/Ra
 import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
 import OpinionsTile from "./opinionsTileComponents/OpinionsTile";
 import {useTheme} from "react-native-paper";
+import {GlobalContext} from "../nav/GlobalContext";
 import _Container from "../styles/Container";
 
 
 
-export default function ProfileScreen({route}) {
+export default function ProfileScreen({ navigation, route }) {
   const {selectedPoliticianId} = route.params;
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
@@ -42,13 +43,18 @@ export default function ProfileScreen({route}) {
    */
   const canUpdateGlobalRating = useRef(false);
 
-
-  const userId = 2;
-
+  const {userId} = useContext(GlobalContext);
+  
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
 
   useEffect(() => {
     init();
+    
+    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    
+    return () => {
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+    };
   }, []);
 
   /**
@@ -63,8 +69,9 @@ export default function ProfileScreen({route}) {
 
   async function init() {
     loadPoliticianData();
-    if (loadOwnRating())
+    if (await loadOwnRating()){
       loadSingleRatings();
+    }
   }
 
   /**
@@ -139,8 +146,11 @@ export default function ProfileScreen({route}) {
   }
 
 
-  // only for adding single rating into DB
-  function countOwnRating(newSingleRating) {
+  /**
+   * Runs every time the singleRatings table is updated and has at least 1 record.
+   * It calculates ownRating as the weighted average, and uploads the result to the base.
+   */
+  function countOwnRating() {
     let numerator = 0;
     let denominator = 0;
 
@@ -149,8 +159,6 @@ export default function ProfileScreen({route}) {
       denominator = denominator + singleRating.weight;
     }
 
-    numerator = numerator + newSingleRating * 1;
-    denominator = denominator + 1;
     let weightedAverage = Math.round((numerator * 100) / denominator) / 100; // round number to 2 decimal places
 
     console.log("Srednia ważona wychodzi: " + weightedAverage);
@@ -158,6 +166,12 @@ export default function ProfileScreen({route}) {
     updateOwnRating(selectedPoliticianId, userId, weightedAverage);
   }
 
+
+  /**
+   * Runs right after ownRating is added/updated. 
+   * It downloads ownRatings from all users, calculates globalRating as the arithmetical average, and uploads the result to the base.
+   * @returns {Promise<void>}
+   */
   async function countGlobalRating() {
     const politicianOwnRatings = await getAllPoliticianOwnRatings(selectedPoliticianId);
     let numerator = 0;
@@ -172,13 +186,16 @@ export default function ProfileScreen({route}) {
 
     numerator += ownRating;
     denominator = denominator + 1;
+    
     let average = Math.round((numerator * 100) / denominator) / 100;
 
     console.log("Średnia globalna wynosi: " + average);
+    
     setGlobalRating(average);
     updatePolitician(selectedPoliticianId, {global_rating: average});
   }
-
+  
+  
   async function handleFirstOwnRating() {
     await addRating(
       userId,
@@ -190,13 +207,12 @@ export default function ProfileScreen({route}) {
       10
     );
     addOwnRating(userId, selectedPoliticianId, firstOwnRating);
-    setOwnRating(firstOwnRating);
+    // setOwnRating(firstOwnRating); 
     setFirstOwnRating(0);
-    loadSingleRatings();
+    loadSingleRatings(); 
   }
 
   async function handleNewSingleRating() {
-    console.log("handleNewSingleRating");
     await addRating(
       userId,
       selectedPoliticianId,
@@ -206,13 +222,15 @@ export default function ProfileScreen({route}) {
       currentDate,
       1
     );
-    countOwnRating(newSingleRating);
     setNewSingleRating(0);
     setNewTitle("");
     setNewDescription("");
-    loadSingleRatings();
+    loadSingleRatings(); 
   }
 
+  /**
+   * Update states passed to the OpinionsTile.jsx
+   */
   function handleFirstOwnRatingOpinionsTile(starRating) {
     setFirstOwnRating(starRating);
   }
@@ -229,6 +247,7 @@ export default function ProfileScreen({route}) {
     setNewDescription(newDescription);
   }
 
+  
   useEffect(() => {
     if (firstOwnRating) {
       handleFirstOwnRating();
@@ -240,6 +259,13 @@ export default function ProfileScreen({route}) {
       handleNewSingleRating();
     }
   }, [newSingleRating, newTitle, newDescription]);
+
+  useEffect(() => {
+    // console.log("singleRatings.length: ", singleRatings.length);
+    if(singleRatings.length > 0){
+      countOwnRating()
+    }
+  }, [singleRatings]);  
 
   useEffect(() => {
     if (canUpdateGlobalRating.current === true) {

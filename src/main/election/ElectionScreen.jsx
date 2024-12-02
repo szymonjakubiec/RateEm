@@ -28,15 +28,6 @@ export default function ElectionScreen({navigation}) {
         <Text style={styles.buttonText}>Okręgi wyborcze</Text>
       </TouchableHighlight>
 
-      {/* <TouchableHighlight
-        style={styles.button}
-        onPress={() => {
-          navigation.navigate("ElectoralCommittee");
-        }}
-      >
-        <Text style={styles.buttonText}>Komitety wyborcze</Text>
-      </TouchableHighlight> */}
-
       <TouchableHighlight
         style={styles.button}
         onPress={() => {

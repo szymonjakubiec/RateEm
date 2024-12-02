@@ -1,6 +1,6 @@
 import {FlatList, StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
 import StarRating from "react-native-star-rating-widget";
-import {useRef, useState} from "react";
+import {useState} from "react";
 
 
 
@@ -9,7 +9,6 @@ export default function OpinionsTile({ownRating, singleRatings, handleFirstOwnRa
   const [starRating, setStarRating] = useState(0);
 
   const [expandedRatingList, setExpandedRatingList] = useState(false);
-  // const [expandedRating, setExpandedRating] = useState(false);
 
   
   if (ownRating === 0) {
@@ -18,7 +17,7 @@ export default function OpinionsTile({ownRating, singleRatings, handleFirstOwnRa
     return displayYourOpinionsComponent();
   }
 
-  function displayNoOpinionComponent() { // starRating, setStarRating
+  function displayNoOpinionComponent() { 
     return (
       <View style={styles.opinionsTile}>
         <Text>Brak opinii</Text>
@@ -62,18 +61,18 @@ export default function OpinionsTile({ownRating, singleRatings, handleFirstOwnRa
   }
 
   /**
-   * Checks if the starRating is at least 1 and set it into firstOwnRating, which fires
+   * Checks if the starRating is at least 1 and set it into firstOwnRating.
    */
   function setBaseRate() {
     if (starRating >= 1) {
-      // setFirstOwnRating(starRating);
-      /*() => */handleFirstOwnRating(starRating);
+      handleFirstOwnRating(starRating);
       setWrongRatingInfo("");
     } else {
       setWrongRatingInfo("Ocena polityka musi wynosić przynajmniej 1.");
     }
   }
 }
+
 
 /**
  * Component with a FlatList of single ratings.
@@ -121,11 +120,23 @@ function RatingsList({expandedRatingList, singleRatings}) {
     );
   }
 
+  /**
+   * Extension of single rating visible on pressing it. Displays the description of this rating (and an ability to modify or delete it). 
+   * @param item
+   * @returns {JSX.Element}
+   * @constructor
+   */
   function ItemExtension({ item }) {
     if (selectedItemId === item.id) {
       return (
         <View style={{ backgroundColor: "gray", padding: 10 }}>
           <Text>{item.description}</Text>
+          <TouchableHighlight
+            style={styles.button}
+            onPress={() => console.log("Not yet, WIP")}
+          >
+            <Text>Modyfikuj</Text>
+          </TouchableHighlight>
           <TouchableHighlight
             style={styles.button}
             onPress={() => console.log("Not yet, WIP")}
@@ -139,6 +150,13 @@ function RatingsList({expandedRatingList, singleRatings}) {
 }
 
 
+/**
+ * Component for adding new opinions after the first opinion (base opinion) was set up.
+ * @param handleNewSingleRating
+ * @param handleNewTitle
+ * @param handleNewDescription
+ * @returns {JSX.Element}
+ */
 function AddOpinion({handleNewSingleRating, handleNewTitle, handleNewDescription}) {
   const [expandedAddOpinion, setExpandedAddOpinion] = useState(false);
   

@@ -1,12 +1,13 @@
 import {useContext, useEffect, useState} from "react";
-import {PoliticianNameContext} from "./PoliticianNameContext.jsx";
 import SearchFlatList from "./searchScreenComponents/SearchFlatList.jsx";
+import {GlobalContext} from "../nav/GlobalContext.jsx";
 import _Container from "../styles/Container";
 
 
 
 export default function SearchScreen({navigation}) {
-  const politicianNameData = useContext(PoliticianNameContext);
+  const politicianNameData = useContext(GlobalContext).namesData;
+  const userId = useContext(GlobalContext).userId;
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
   function handlePress(selected) {
