@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput} from "react-native";
+import {StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput, LayoutAnimation} from "react-native";
 import _Container from "../styles/Container";
 
 
@@ -20,8 +20,10 @@ export default function CalculatorScreen({navigation}) {
 
   useEffect(() => {
     setParties([{}]);
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    navigation.getParent().setOptions({tabBarStyle: {height: 0}});
     return () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);

@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {StyleSheet, Text, View, ScrollView, Linking, Alert, AppState} from "react-native";
+import {StyleSheet, Text, View, ScrollView, Linking, Alert, AppState, LayoutAnimation} from "react-native";
 import * as Location from "expo-location";
 import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
 import {getUserAddress} from "../../backend/CommonMethods";
@@ -22,8 +22,11 @@ export default function ElectoralDistricts({navigation}) {
     AppState.addEventListener("change", handleAppStateChange);
 
     setMapComponent(createMap());
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    navigation.getParent().setOptions({tabBarStyle: {height: 0}});
     return () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);
