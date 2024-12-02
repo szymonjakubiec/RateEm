@@ -12,6 +12,8 @@ import {getRatingsUserId} from "../../backend/database/Ratings";
 import {goBack} from "../../backend/CommonMethods";
 import {GlobalContext} from "../nav/GlobalContext";
 
+
+
 export default function SummaryScreen({navigation}) {
 
   // Pk: Going back
@@ -27,30 +29,32 @@ export default function SummaryScreen({navigation}) {
   useEffect(() => {
     const fetchRatings = async () => {
       const fetchedRatings = await getRatingsUserId(userId);
-      setRatings(fetchedRatings.reverse());
-
-      if (fetchedRatings.length > 0) {
+      const result = fetchedRatings.filter((rating) =>
+        rating.weight !== 10
+      );
+      setRatings(result.reverse());
+      if (result.length > 0) {
         const highest = Math.max(
-          ...fetchedRatings.map((rating) => rating.value)
+          ...result.map((rating) => rating.value)
         );
         const lowest = Math.min(
-          ...fetchedRatings.map((rating) => rating.value)
+          ...result.map((rating) => rating.value)
         );
 
         setHighestRating(
-          fetchedRatings.find((rating) => rating.value === highest)
+          result.find((rating) => rating.value === highest)
         );
         setLowestRating(
-          fetchedRatings.find((rating) => rating.value === lowest)
+          result.find((rating) => rating.value === lowest)
         );
 
-        setTotalRatings(fetchedRatings.length); // Ustawienie łącznej liczby ocen
+        setTotalRatings(result.length);
       }
     };
     fetchRatings();
     navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
     return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);
 
@@ -107,7 +111,7 @@ export default function SummaryScreen({navigation}) {
             {highestRating && (
               <TouchableOpacity
                 style={styles.ratingItem}
-                onPress={() => handleratingClick(highestRating)}
+                onPress={() => handleRatingClick(highestRating)}
               >
                 <Text style={styles.ratingText}>
                   Najwyższa ocena: {highestRating.names_surname}{" "}
@@ -121,7 +125,7 @@ export default function SummaryScreen({navigation}) {
             {lowestRating && (
               <TouchableOpacity
                 style={styles.ratingItem}
-                onPress={() => handleratingClick(lowestRating)}
+                onPress={() => handleRatingClick(lowestRating)}
               >
                 <Text style={styles.ratingText}>
                   Najniższa ocena: {lowestRating.names_surname} {lowestRating.value}
@@ -131,7 +135,6 @@ export default function SummaryScreen({navigation}) {
           </View>
 
         </View>
-
 
 
       }
