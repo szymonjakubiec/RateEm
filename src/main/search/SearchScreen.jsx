@@ -1,11 +1,7 @@
-import {StyleSheet, View} from "react-native";
-import {
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import {GlobalContext} from "../nav/GlobalContext.jsx";
+import {useContext, useEffect, useState} from "react";
 import SearchFlatList from "./searchScreenComponents/SearchFlatList.jsx";
+import {GlobalContext} from "../nav/GlobalContext.jsx";
+import _Container from "../styles/Container";
 
 
 
@@ -21,6 +17,7 @@ export default function SearchScreen({navigation}) {
   useEffect(() => {
     setSelectedPoliticianId(0);
   }, []);
+
   /**
    * Navigation to the ProfileScreen.js after selection of politician.
    */
@@ -34,51 +31,8 @@ export default function SearchScreen({navigation}) {
   }, [selectedPoliticianId]);
 
   return (
-    <View style={styles.container}>
+    <_Container style={{justifyContent: "flex-start", padding: 0}}>
       <SearchFlatList data={politicianNameData} handleOnPress={handlePress}/>
-    </View>
+    </_Container>
   );
 }
-
-const styles = StyleSheet.create({
-  boxStyle: {
-    width: "80%",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    padding: 0,
-  },
-  dropdownStyle: {
-    width: "80%",
-    minWidth: "80%",
-
-    // backgroundColor: "whitesmoke",
-    // borderColor: "#000",
-    // borderWidth: 2,
-  },
-  dropdownItemStyles: {},
-  dropdownTextStyle: {
-    fontSize: 20,
-  },
-  button: {
-    backgroundColor: "#000",
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: "70%",
-    borderRadius: 20,
-  },
-  searchText: {
-    color: "#fff",
-    textAlign: "center",
-  },
-  searchBar: {
-    width: "100%",
-    backgroundColor: "#eee",
-  },
-  containerSearchBar: {
-    backgroundColor: "#8496f7",
-  },
-});

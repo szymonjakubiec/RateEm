@@ -1,4 +1,5 @@
-import {StyleSheet, Text, TouchableHighlight, View} from "react-native";
+import {StyleSheet, Text, TouchableHighlight} from "react-native";
+import _Container from "../../styles/Container";
 
 
 
@@ -6,7 +7,7 @@ export default function SuccessScreen({navigation, route}) {
 
 
   return (
-    <View style={styles.container}>
+    <_Container>
       <Text style={styles.title}>Sukces!</Text>
       <Text style={styles.subTitle}>Konto zostało założone.</Text>
 
@@ -30,18 +31,11 @@ export default function SuccessScreen({navigation, route}) {
         <Text style={styles.buttonText}>Przejdź dalej</Text>
       </TouchableHighlight>
 
-    </View>
+    </_Container>
   );
 }
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 70,
-  },
   title: {
     fontSize: 24,
     alignSelf: "flex-start",

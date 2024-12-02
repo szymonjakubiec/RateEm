@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {TouchableHighlight, StyleSheet, Text, FlatList, View, Keyboard} from "react-native";
+import {TouchableHighlight, StyleSheet, Text, FlatList, View} from "react-native";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../../styles/TextInput";
 
@@ -111,22 +111,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   list: (result) => ({
+    maxWidth: "80%",
     borderWidth: result.length === 0 ? 0 : 1,
     borderRadius: 3,
     borderStyle: "dashed",
+    marginTop: 5,
     margin: 1,
-    paddingTop: 10,
     marginBottom: 20,
     flexGrow: 0,
   }),
   item: {
-    alignSelf: "flex-start",
-    borderRadius: 10,
-    marginHorizontal: 10,
-    marginBottom: 15,
-    paddingHorizontal: 5,
-    paddingVertical: 5,
-    maxWidth: "80%"
+    borderRadius: 7,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
   },
   itemText: {
     fontSize: 18,

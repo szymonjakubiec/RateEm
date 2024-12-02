@@ -1,11 +1,12 @@
 import React from "react";
-import {View, Text, TouchableHighlight, StyleSheet} from "react-native";
+import {Text, TouchableHighlight, StyleSheet} from "react-native";
+import _Container from "../styles/Container";
 
 
 
 export default function ExtrasScreen({navigation}) {
   return (
-    <View style={styles.container}>
+    <_Container>
       <TouchableHighlight
         style={styles.button}
         onPress={() => navigation.navigate("Settings")}
@@ -39,19 +40,11 @@ export default function ExtrasScreen({navigation}) {
       >
         <Text style={styles.buttonText}>Wyloguj się</Text>
       </TouchableHighlight>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f9f9f9",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 40,
-  },
   button: {
     backgroundColor: "#007AFF",
     paddingVertical: 16,

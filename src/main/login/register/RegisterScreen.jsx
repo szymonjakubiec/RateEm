@@ -1,9 +1,10 @@
 import {useState} from "react";
-import {StyleSheet, Text, TouchableHighlight, SafeAreaView} from "react-native";
+import {StyleSheet, Text, TouchableHighlight, View} from "react-native";
 import isEmail from "validator/lib/isEmail";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
 import {textInputProps} from "../../styles/TextInput";
+import _Container from "../../styles/Container";
 
 
 
@@ -116,7 +117,7 @@ export default function RegisterScreen({navigation}) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <_Container>
       <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
 
       <TextInput
@@ -163,7 +164,7 @@ export default function RegisterScreen({navigation}) {
       />
       <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
 
-      <SafeAreaView style={{flexDirection: "row", justifyContent: "center"}}>
+      <View style={{flexDirection: "row", justifyContent: "center"}}>
         <TextInput
           {...textInputProps}
           label="numer telefonu"
@@ -195,7 +196,7 @@ export default function RegisterScreen({navigation}) {
           position: "absolute",
           paddingTop: 8
         }}>+48 | </Text>
-      </SafeAreaView>
+      </View>
       <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
 
       <TextInput
@@ -269,19 +270,11 @@ export default function RegisterScreen({navigation}) {
       >
         <Text style={styles.buttonText}>Zarejestruj</Text>
       </TouchableHighlight>
-    </SafeAreaView>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 70,
-    paddingBottom: 70,
-  },
   title: {
     fontSize: 22,
     alignSelf: "flex-start",

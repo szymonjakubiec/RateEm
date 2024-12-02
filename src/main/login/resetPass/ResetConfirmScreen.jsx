@@ -1,14 +1,15 @@
-import {StyleSheet, Text, TouchableHighlight, View, BackHandler} from "react-native";
+import {StyleSheet, Text, TouchableHighlight, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
 import {checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../../styles/TextInput";
+import _Container from "../../styles/Container";
 
 
 
 export default function ResetConfirmScreen({navigation, route}) {
 
-  const {email, phone} = route.params;
+  const {email, phone, verifyType} = route?.params || {};
 
   const _code = useRef('');
 
@@ -35,10 +36,10 @@ export default function ResetConfirmScreen({navigation, route}) {
       console.info("Kod:", _code.current);
 
       // Pk: SMS - Twilio
-      // sendVerificationSMS(`+48${ phone }`);
+      verifyType === "sms" && sendVerificationSMS(`+48${phone}`);
 
       // Pk: EMAIL - Email.js
-      sendMail(email, _code.current, "reset").then((status) => {
+      verifyType === "email" && sendMail(email, _code.current, "reset").then((status) => {
         status === 200 ? console.warn("Mail wysłany.") : console.warn("Błąd wysyłania maila!");
       }).catch((err) => {
         console.error(err);
@@ -67,18 +68,27 @@ export default function ResetConfirmScreen({navigation, route}) {
 
 
   return (
-    <View style={styles.container}>
+    <_Container>
       <Text style={styles.title}>Potwierdź reset hasła</Text>
 
-      {/* PK: Sms */}
-      {/*  <Text style={ styles.subTitle }>Na numer +48{ phone } został wysłany SMS z kodem weryfikacyjnym do zresetowania hasła.
-      Wpisz go w oknie poniżej.</Text> */}
-
-      {/* PK: Email */}
-      <Text style={styles.subTitle}>Na adres e-mail:</Text>
-      <Text style={styles.email}>{email}</Text>
-      <Text style={[styles.subTitle, {marginBottom: 40}]}>został wysłany mail z kodem weryfikacyjnym do resetu hasła.
-        {"\n"}Wpisz go w oknie poniżej.</Text>
+      {verifyType === "sms" ? (
+        <>
+          {/* PK: Sms */}
+          <Text style={styles.subTitle}>Na numer:</Text>
+          <Text style={styles.email}>{phone}</Text>
+          <Text style={[styles.subTitle, {marginBottom: 40}]}>został wysłany SMS z kodem weryfikacyjnym do resetu hasła.
+            {"\n"}Wpisz go w oknie poniżej.</Text>
+        </>
+      ) : (
+        <>
+          {/* PK: Email */}
+          <Text style={styles.subTitle}>Na adres e-mail:</Text>
+          <Text style={styles.email}>{email}</Text>
+          <Text style={[styles.subTitle, {marginBottom: 40}]}>został wysłany mail z kodem weryfikacyjnym do resetu
+            hasła.
+            {"\n"}Wpisz go w oknie poniżej.</Text>
+        </>
+      )}
 
       <TextInput
         {...textInputProps}
@@ -105,13 +115,15 @@ export default function ResetConfirmScreen({navigation, route}) {
         disabled={!isCodeValid()}
         onPress={() => {
 
-          // PK: SMS
-
-          // checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
-          //   setWrongCode("Błąd! Spróbuj ponownie.");
-          //   if (!success) {
-          //     return false;
-          //   }
+          if (verifyType === "sms") {
+            // PK: SMS
+            checkVerificationSMS(`+48${phone}`, code).then(async (success) => {
+              if (!success) {
+                setWrongCode("Błąd! Spróbuj ponownie.");
+                return false;
+              }
+            });
+          }
 
           // PK: Email
 
@@ -122,24 +134,16 @@ export default function ResetConfirmScreen({navigation, route}) {
           }
 
           navigation.navigate("ChangePass", {email});
-          // });
         }}
       >
         <Text style={styles.buttonText}>Potwierdź</Text>
       </TouchableHighlight>
 
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 70,
-  },
   title: {
     fontSize: 24,
     marginBottom: 40,
