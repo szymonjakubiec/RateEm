@@ -1,10 +1,11 @@
-import {BackHandler, StyleSheet, Text, View} from "react-native";
+import {BackHandler, Text} from "react-native";
 import {useEffect} from "react";
+import _Container from "../styles/Container";
 
 
 
 export default function HomeScreen({navigation}) {
-  
+
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
     const backAction = () => {
@@ -24,18 +25,8 @@ export default function HomeScreen({navigation}) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <_Container>
       <Text>To jest strona główna.</Text>
-    </View>
+    </_Container>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 70,
-  },
-});

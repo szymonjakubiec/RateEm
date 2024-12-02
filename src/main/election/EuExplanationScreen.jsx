@@ -1,26 +1,33 @@
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput } from "react-native";
+import {useState, useEffect} from "react";
+import {StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput, LayoutAnimation} from "react-native";
+import _Container from "../styles/Container";
 
-export default function SejmExplanation({ navigation }) {
+
+
+export default function SejmExplanation({navigation}) {
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    navigation.getParent().setOptions({tabBarStyle: {height: 0}});
     return () => {
-      navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);
 
   return (
-    <View style={styles.container}>
+    <_Container style={{padding: "4%"}}>
       <View style={styles.titleDiv}>
-        <View style={styles.circleEu} />
+        <View style={styles.circleEu}/>
         <Text style={styles.title}>wybory do Parlamentu Europejskiego</Text>
       </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Opis</Text>
           <Text style={styles.scrollViewText}>
-            Wybory do Parlamentu Europejskiego to proces demokratyczny, w którym obywatele krajów członkowskich Unii Europejskiej wybierają swoich
-            przedstawicieli do jednej z głównych instytucji UE. Parlament Europejski jest jedynym organem Unii wybieranym bezpośrednio przez
+            Wybory do Parlamentu Europejskiego to proces demokratyczny, w którym obywatele krajów członkowskich Unii
+            Europejskiej wybierają swoich
+            przedstawicieli do jednej z głównych instytucji UE. Parlament Europejski jest jedynym organem Unii
+            wybieranym bezpośrednio przez
             obywateli, co czyni te wybory kluczowym elementem unijnej demokracji.
           </Text>
         </View>
@@ -30,20 +37,24 @@ export default function SejmExplanation({ navigation }) {
 
           <Text style={styles.scrollViewSubtitle}>Termin wyborów</Text>
           <Text style={styles.scrollViewText}>
-            Wybory do Parlamentu Europejskiego odbywają się co pięć lat we wszystkich 27 państwach członkowskich UE. Terminy wyborów mogą się różnić w
+            Wybory do Parlamentu Europejskiego odbywają się co pięć lat we wszystkich 27 państwach członkowskich UE.
+            Terminy wyborów mogą się różnić w
             poszczególnych krajach, ale muszą mieścić się w ustalonym przedziale czasowym, zazwyczaj czterodniowym.
           </Text>
 
           <Text style={styles.scrollViewSubtitle}>Liczba europosłów</Text>
           <Text style={styles.scrollViewText}>
-            Parlament Europejski liczy obecnie 705 posłów, a liczba miejsc przypadających na poszczególne państwa zależy od liczby ludności kraju.
+            Parlament Europejski liczy obecnie 705 posłów, a liczba miejsc przypadających na poszczególne państwa zależy
+            od liczby ludności kraju.
             Polska ma w Parlamencie Europejskim 52 mandaty.
           </Text>
 
           <Text style={styles.scrollViewSubtitle}>System wyborczy</Text>
           <Text style={styles.scrollViewText}>
-            Wszystkie kraje członkowskie stosują system proporcjonalny, co oznacza, że mandaty są przydzielane proporcjonalnie do liczby głosów
-            oddanych na poszczególne listy wyborcze. W Polsce obowiązuje dodatkowo próg wyborczy wynoszący 5%, co oznacza, że komitet wyborczy musi
+            Wszystkie kraje członkowskie stosują system proporcjonalny, co oznacza, że mandaty są przydzielane
+            proporcjonalnie do liczby głosów
+            oddanych na poszczególne listy wyborcze. W Polsce obowiązuje dodatkowo próg wyborczy wynoszący 5%, co
+            oznacza, że komitet wyborczy musi
             zdobyć co najmniej tyle głosów w skali kraju, aby wziąć udział w podziale mandatów.
           </Text>
         </View>
@@ -53,44 +64,54 @@ export default function SejmExplanation({ navigation }) {
 
           <Text style={styles.scrollViewSubtitle}>Jak wygląda proces głosowania</Text>
           <Text style={styles.scrollViewText}>
-            -rejestracja w lokalu wyborczym: Wyborca przychodzi do lokalu wyborczego i musi okazać dokument tożsamości, np. dowód osobisty lub
+            -rejestracja w lokalu wyborczym: Wyborca przychodzi do lokalu wyborczego i musi okazać dokument tożsamości,
+            np. dowód osobisty lub
             paszport. Po weryfikacji danych otrzymuje kartę do głosowania.
           </Text>
           <Text style={styles.scrollViewText}>
             -wyborca stawia znak „X” (dwie przecinające się linie) w kratce obok nazwiska jednego wybranego kandydata
           </Text>
           <Text style={styles.scrollViewText}>
-            -oddanie głosu: Po wypełnieniu karty wyborca wrzuca ją do zamkniętej i zaplombowanej urny wyborczej. Ten proces odbywa się w sposób
+            -oddanie głosu: Po wypełnieniu karty wyborca wrzuca ją do zamkniętej i zaplombowanej urny wyborczej. Ten
+            proces odbywa się w sposób
             anonimowy, co gwarantuje tajność głosowania.
           </Text>
 
           <Text style={styles.scrollViewSubtitle}>Alternatywne sposoby głosowania</Text>
           <Text style={styles.scrollViewText}>
-            Głosowanie korespondencyjne: wyborcy mogą wcześniej zgłosić chęć głosowania listownego, szczególnie osoby przebywające za granicą,
-            seniorzy, osoby z niepełnosprawnościami czy w izolacji (np. z powodu choroby zakaźnej). W tym przypadku wyborca otrzymuje pakiet wyborczy,
+            Głosowanie korespondencyjne: wyborcy mogą wcześniej zgłosić chęć głosowania listownego, szczególnie osoby
+            przebywające za granicą,
+            seniorzy, osoby z niepełnosprawnościami czy w izolacji (np. z powodu choroby zakaźnej). W tym przypadku
+            wyborca otrzymuje pakiet wyborczy,
             który wypełnia i odsyła na wskazany adres.
           </Text>
           <Text style={styles.scrollViewText}>
-            Głosowanie przez pełnomocnika: osoby starsze lub z niepełnosprawnościami mogą ustanowić pełnomocnika, który odda głos w ich imieniu.
+            Głosowanie przez pełnomocnika: osoby starsze lub z niepełnosprawnościami mogą ustanowić pełnomocnika, który
+            odda głos w ich imieniu.
             Pełnomocnictwo musi być zgłoszone odpowiednio wcześniej i zatwierdzone przez urząd gminy.
           </Text>
 
           <Text style={styles.scrollViewSubtitle}>Okręgi wyborcze</Text>
           <Text style={styles.scrollViewText}>
-            W Polsce wybory do Parlamentu Europejskiego odbywają się w 13 okręgach wyborczych, z których każdy ma przydzieloną określoną liczbę
+            W Polsce wybory do Parlamentu Europejskiego odbywają się w 13 okręgach wyborczych, z których każdy ma
+            przydzieloną określoną liczbę
             mandatów. Liczba mandatów zależy od liczby ludności w danym okręgu.
           </Text>
 
           <Text style={styles.scrollViewSubtitle}>Kto może głosować</Text>
           <Text style={styles.scrollViewText}>
-            Prawo do głosowania w wyborach do Parlamentu Europejskiego mają wszyscy obywatele Polski i innych państw UE, którzy:
+            Prawo do głosowania w wyborach do Parlamentu Europejskiego mają wszyscy obywatele Polski i innych państw UE,
+            którzy:
           </Text>
           <Text style={styles.scrollViewText}>-ukończyli 18 lat najpóźniej w dniu wyborów.</Text>
-          <Text style={styles.scrollViewText}>-nie zostali pozbawieni praw wyborczych na mocy wyroku sądowego lub orzeczenia Trybunału Stanu.</Text>
-          <Text style={styles.scrollViewText}>-są wpisani do rejestru wyborców w swojej gminie lub zgłosili chęć głosowania za granicą.</Text>
+          <Text style={styles.scrollViewText}>-nie zostali pozbawieni praw wyborczych na mocy wyroku sądowego lub
+            orzeczenia Trybunału Stanu.</Text>
+          <Text style={styles.scrollViewText}>-są wpisani do rejestru wyborców w swojej gminie lub zgłosili chęć
+            głosowania za granicą.</Text>
 
           <Text style={styles.scrollViewSubtitle}>Kto może kandytować</Text>
-          <Text style={styles.scrollViewText}>Kandydatem na posła do Parlamentu Europejskiego może być osoba, która:</Text>
+          <Text style={styles.scrollViewText}>Kandydatem na posła do Parlamentu Europejskiego może być osoba,
+            która:</Text>
           <Text style={styles.scrollViewText}>-posiada obywatelstwo państwa członkowskiego UE</Text>
           <Text style={styles.scrollViewText}>-ukończyła 21 lat</Text>
           <Text style={styles.scrollViewText}>-posiada pełnię praw wyborczych</Text>
@@ -112,22 +133,27 @@ export default function SejmExplanation({ navigation }) {
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Kampania wyborcza</Text>
           <Text style={styles.scrollViewText}>
-            Oficjalnie kampania wyborcza rozpoczyna się z chwilą ogłoszenia daty wyborów przez Prezydenta RP (nieoficjalnie wcześniej) i trwa aż do
-            ciszy wyborczej, która rozpoczyna się 24 godziny przed głosowaniem. W trakcie kampanii partie polityczne oraz komitety wyborcze prezentują
+            Oficjalnie kampania wyborcza rozpoczyna się z chwilą ogłoszenia daty wyborów przez Prezydenta RP
+            (nieoficjalnie wcześniej) i trwa aż do
+            ciszy wyborczej, która rozpoczyna się 24 godziny przed głosowaniem. W trakcie kampanii partie polityczne
+            oraz komitety wyborcze prezentują
             swoje programy, organizują spotkania z wyborcami, debaty i działania promocyjne w mediach.
           </Text>
 
           <Text style={styles.scrollViewSubtitle}>Cisza wyborcza</Text>
           <Text style={styles.scrollViewText}>
-            W Polsce obowiązuje cisza wyborcza, która rozpoczyna się 24 godziny przed dniem wyborów i trwa do zakończenia głosowania. W tym czasie
-            zabronione jest prowadzenie kampanii wyborczej, publikowanie sondaży oraz wszelkie działania mogące wpłynąć na decyzje wyborców.
+            W Polsce obowiązuje cisza wyborcza, która rozpoczyna się 24 godziny przed dniem wyborów i trwa do
+            zakończenia głosowania. W tym czasie
+            zabronione jest prowadzenie kampanii wyborczej, publikowanie sondaży oraz wszelkie działania mogące wpłynąć
+            na decyzje wyborców.
           </Text>
         </View>
 
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Rola Parlamentu Europejskiego</Text>
           <Text style={styles.scrollViewText}>
-            Parlament Europejski odgrywa kluczową rolę w funkcjonowaniu Unii Europejskiej. Posłowie, czyli eurodeputowani, zajmują się m.in.:
+            Parlament Europejski odgrywa kluczową rolę w funkcjonowaniu Unii Europejskiej. Posłowie, czyli
+            eurodeputowani, zajmują się m.in.:
           </Text>
           <Text style={styles.scrollViewText}>tworzeniem prawa unijnego wspólnie z Radą Unii Europejskiej</Text>
           <Text style={styles.scrollViewText}>przyjmowaniem budżetu UE</Text>
@@ -135,18 +161,11 @@ export default function SejmExplanation({ navigation }) {
           <Text style={styles.scrollViewText}>reprezentowaniem interesów obywateli UE na arenie międzynarodowej</Text>
         </View>
       </ScrollView>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    paddingHorizontal: "4%",
-  },
-
   scrollView: {
     width: "100%",
     height: "100%",

@@ -1,6 +1,5 @@
 import {StatusBar} from "expo-status-bar";
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -13,6 +12,7 @@ import {getAllUsers} from "../../backend/database/Users";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../styles/TextInput";
 import {useIsFocused} from "@react-navigation/native";
+import _Container from "../styles/Container";
 
 
 
@@ -30,10 +30,11 @@ export default function LoggingScreen({navigation}) {
       await setCredentials();
 
       // connection test
-      const user0 = (await getAllUsers())[0];
-      console.group(user0?.name + ":");
-      console.log("E-mail :" + user0?.email);
-      console.log("Pass   :" + user0?.password);
+      const rootUser = (await getAllUsers())[0];
+      console.group(rootUser?.name + " :");
+      console.log("E-mail :" + rootUser?.email);
+      console.log("Phone  :" + rootUser?.phone_number);
+      console.log("Pass   :" + rootUser?.password);
       console.groupEnd();
     })();
   }, [isFocused]);
@@ -142,7 +143,7 @@ export default function LoggingScreen({navigation}) {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <_Container>
       <Text style={styles.title}>{_title}</Text>
       <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
 
@@ -239,18 +240,11 @@ export default function LoggingScreen({navigation}) {
       </View>
 
       <StatusBar style="light"/>
-    </SafeAreaView>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 70,
-  },
   title: {
     fontSize: 48,
   },
@@ -272,6 +266,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     width: "70%",
     borderRadius: 20,
+    elevation: 5,
   },
   button: {
     backgroundColor: "#4a4a4a",

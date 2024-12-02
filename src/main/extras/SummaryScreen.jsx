@@ -11,6 +11,7 @@ import {useContext, useEffect, useState} from "react";
 import {getRatingsUserId} from "../../backend/database/Ratings";
 import {goBack} from "../../backend/CommonMethods";
 import {GlobalContext} from "../nav/GlobalContext";
+import _Container from "../styles/Container";
 
 export default function SummaryScreen({navigation}) {
 
@@ -24,9 +25,10 @@ export default function SummaryScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [totalRatings, setTotalRatings] = useState(0); // Dodano stan dla łącznej liczby ocen
   const {userId} = useContext(GlobalContext);
+  
   useEffect(() => {
     const fetchRatings = async () => {
-      const fetchedRatings = await getRatingsUserId(userId+4);
+      const fetchedRatings = await getRatingsUserId(userId);
       setRatings(fetchedRatings.reverse());
 
       if (fetchedRatings.length > 0) {
@@ -48,10 +50,12 @@ export default function SummaryScreen({navigation}) {
       }
     };
     fetchRatings();
+    
     navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
     return () => {
       navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
     };
+    
   }, []);
 
   const renderRatingItem = ({item}) => (
@@ -84,7 +88,7 @@ export default function SummaryScreen({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <_Container style={{alignItems: "stretch", padding: 20}}>
       <Text style={styles.title}>Wystawione oceny</Text>
       {(ratings.length === 0) ?
         <View style={styles.ratingContainer}>
@@ -179,16 +183,11 @@ export default function SummaryScreen({navigation}) {
           </View>
         </View>
       </Modal>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#f9f9f9",
-  },
   title: {
     fontSize: 26,
     fontWeight: "bold",

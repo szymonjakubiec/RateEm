@@ -81,7 +81,7 @@ const addOwnRating = async (user_id, politician_id, value) => {
       headers: {
         "Content-Type": "application/json", // Indicate JSON format
       },
-      body: JSON.stringify({ user_id, politician_id, value }), // Send data in JSON format
+      body: JSON.stringify({user_id, politician_id, value}), // Send data in JSON format
     });
 
     if (!response.ok) {
@@ -106,7 +106,7 @@ const addOwnRating = async (user_id, politician_id, value) => {
  * @function
  * @param {string} user_id - ID of the user
  * @param {string} politician_id - ID of the politician
- * @param {float} value
+ * @param {float} value - Value of the rating
  * * {number} user_id - ID of the user
  * * {number} politician_id - ID of the politician
  * * {float} value - Value of the rating
@@ -122,7 +122,7 @@ const updateOwnRating = async (politician_id, user_id, value) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ politician_id, user_id, value }),
+      body: JSON.stringify({politician_id, user_id, value}),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

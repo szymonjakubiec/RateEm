@@ -1,15 +1,15 @@
-import { StyleSheet, Text, View, Button, TouchableHighlight } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer, useRoute } from "@react-navigation/native";
-import { goBack } from "../../backend/CommonMethods";
+import {StyleSheet, Text, TouchableHighlight} from "react-native";
+import {goBack} from "../../backend/CommonMethods";
+import _Container from "../styles/Container";
 
-export default function ElectionScreen({ navigation }) {
-  const route = useRoute();
+
+
+export default function ElectionScreen({navigation}) {
 
   goBack(navigation);
 
   return (
-    <View style={styles.container}>
+    <_Container>
       <TouchableHighlight
         style={styles.button}
         onPress={() => {
@@ -45,18 +45,11 @@ export default function ElectionScreen({ navigation }) {
       >
         <Text style={styles.buttonText}>Kalkulator mandatów</Text>
       </TouchableHighlight>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    padding: 20,
-  },
-
   button: {
     backgroundColor: "#000",
     height: 100,

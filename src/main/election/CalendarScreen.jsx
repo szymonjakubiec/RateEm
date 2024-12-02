@@ -1,8 +1,11 @@
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, TouchableHighlight } from "react-native";
-import { getAllSejmElections } from "../../backend/database/SejmElections";
-import { getAllPresidentElections } from "../../backend/database/PresidentElections";
-import { getAllEuElections } from "../../backend/database/EuElections";
+import {useState, useEffect} from "react";
+import {StyleSheet, Text, View, ScrollView, TouchableHighlight, LayoutAnimation} from "react-native";
+import {getAllSejmElections} from "../../backend/database/SejmElections";
+import {getAllPresidentElections} from "../../backend/database/PresidentElections";
+import {getAllEuElections} from "../../backend/database/EuElections";
+import _Container from "../styles/Container";
+
+
 
 export default function CalendarScreen({navigation}) {
   const [years, setYears] = useState([]);
@@ -10,9 +13,11 @@ export default function CalendarScreen({navigation}) {
   useEffect(() => {
     currentYear = new Date().getFullYear();
     showYears();
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    navigation.getParent().setOptions({tabBarStyle: {height: 0}});
     return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);
 
@@ -27,17 +32,17 @@ export default function CalendarScreen({navigation}) {
             <Text style={styles.yearTileText}>{year}</Text>
             {data.sejm.map((oneYear) => {
               if (year == new Date(oneYear.date).getFullYear()) {
-                return <View key={oneYear.name} style={styles.circleSejm} />;
+                return <View key={oneYear.name} style={styles.circleSejm}/>;
               }
             })}
             {data.prezydent.map((oneYear) => {
               if (year == new Date(oneYear.date).getFullYear()) {
-                return <View key={oneYear.name} style={styles.circlePrezydent} />;
+                return <View key={oneYear.name} style={styles.circlePrezydent}/>;
               }
             })}
             {data.eu.map((oneYear) => {
               if (year == new Date(oneYear.date).getFullYear()) {
-                return <View key={oneYear.name} style={styles.circleEu} />;
+                return <View key={oneYear.name} style={styles.circleEu}/>;
               }
             })}
           </View>
@@ -53,25 +58,25 @@ export default function CalendarScreen({navigation}) {
       const sejm = await getAllSejmElections();
       const prezydent = await getAllPresidentElections();
       const eu = await getAllEuElections();
-      return { sejm, prezydent, eu };
+      return {sejm, prezydent, eu};
     } catch (error) {
       console.log(error);
     }
   }
 
   return (
-    <View style={styles.container}>
-      <View style={{ width: "100%", paddingBottom: 10, borderBottomWidth: 3 }}>
+    <_Container style={{padding: "4%"}}>
+      <View style={{width: "100%", paddingBottom: 10, borderBottomWidth: 3}}>
         <View style={styles.colorsMeaningDiv}>
-          <View style={styles.circleSejm} />
+          <View style={styles.circleSejm}/>
           <Text style={styles.colorsMeaningText}>wybory do sejmu i senatu</Text>
         </View>
         <View style={styles.colorsMeaningDiv}>
-          <View style={styles.circlePrezydent} />
+          <View style={styles.circlePrezydent}/>
           <Text style={styles.colorsMeaningText}>wybory prezydenckie</Text>
         </View>
         <View style={styles.colorsMeaningDiv}>
-          <View style={styles.circleEu} />
+          <View style={styles.circleEu}/>
           <Text style={styles.colorsMeaningText}>wybory do parlamentu europejskiego</Text>
         </View>
       </View>
@@ -89,7 +94,7 @@ export default function CalendarScreen({navigation}) {
           </View>
         ))}
       </ScrollView>
-    </View>
+    </_Container>
   );
 }
 
