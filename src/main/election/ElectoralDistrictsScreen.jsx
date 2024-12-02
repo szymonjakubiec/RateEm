@@ -1,23 +1,19 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ScrollView, Linking, Alert, AppState } from "react-native";
 import * as Location from "expo-location";
-import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { getUserAddress } from "../../backend/CommonMethods";
 import { getSejmDistrict, getEuDistrict } from "../../backend/database/Districts";
 
 export default function ElectoralDistricts({ navigation }) {
-  const [refreshing, setRefreshing] = useState(false);
   const [addressCurrent, setAddressCurrent] = useState(null);
   const [sejmDistrictCurrent, setSejmDistrictCurrent] = useState("");
   const [euDistrictCurrent, setEuDistrictCurrent] = useState("");
   const [locationMap, setLocationMap] = useState(null);
-  const [locationPermission, setLocationPermission] = useState(false);
 
   const [mapComponent, setMapComponent] = useState(null);
 
   useEffect(() => {
-    AppState.addEventListener("change", handleAppStateChange);
-
     setMapComponent(createMap());
     navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
     return () => {
@@ -25,20 +21,12 @@ export default function ElectoralDistricts({ navigation }) {
     };
   }, []);
 
-  const handleAppStateChange = (nextAppState) => {
-    if (nextAppState == "active") {
-      handleGettingDistrict();
-    }
-  };
-
   const requestLocationPermission = async () => {
-    const { status } = await Location.getForegroundPermissionsAsync();
+    const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status == "granted") {
-      setLocationPermission(true);
       return true;
     } else {
-      setLocationPermission(false);
       return false;
     }
   };
@@ -49,18 +37,19 @@ export default function ElectoralDistricts({ navigation }) {
 
     if (permissionResponse) {
       locationTemp = await Location.getCurrentPositionAsync({});
-
-      const result = await getAddress(parseFloat(locationTemp.coords.latitude.toFixed(5)), parseFloat(locationTemp.coords.longitude.toFixed(5)));
-      setAddressCurrent(result.address);
-      setSejmDistrictCurrent(result.sejmDistrict);
-      setEuDistrictCurrent(result.euDistrict);
-
-      setRefreshing(false);
-      return {
-        latitude: parseFloat(locationTemp.coords.latitude.toFixed(5)),
-        longitude: parseFloat(locationTemp.coords.longitude.toFixed(5)),
-      };
+    } else {
+      locationTemp = { coords: { latitude: 50.25962, longitude: 19.021725 } };
     }
+
+    const result = await getAddress(parseFloat(locationTemp.coords.latitude.toFixed(5)), parseFloat(locationTemp.coords.longitude.toFixed(5)));
+    setAddressCurrent(result.address);
+    setSejmDistrictCurrent(result.sejmDistrict);
+    setEuDistrictCurrent(result.euDistrict);
+
+    return {
+      latitude: parseFloat(locationTemp.coords.latitude.toFixed(5)),
+      longitude: parseFloat(locationTemp.coords.longitude.toFixed(5)),
+    };
   };
 
   function setMapLocation(location) {
