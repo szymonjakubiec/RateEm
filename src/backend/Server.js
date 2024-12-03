@@ -466,19 +466,20 @@ app.use(express.json());
     }
   });
   // --- delete ---------------------------------------------------------------------------
-  app.delete("/api/own-ratings/:id", async (req, res) => {
-    const { id } = req.params;
+  app.delete("/api/own-ratings", async (req, res) => {
+    // const { id } = req.params;
+    const { user_id, politician_id } = req.body;
 
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute("DELETE FROM own_ratings WHERE id = ?", [parseInt(id)]);
+      const [result] = await connection.execute("DELETE FROM own_ratings WHERE politician_id = ? AND user_id = ?", [politician_id, user_id]);
 
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Rating not found" });
       }
 
-      res.json({ message: "Rating deleted successfully", id });
+      res.json({ message: "Rating deleted successfully", politician_id, user_id });
     } catch (err) {
       res.status(500).send(err.message);
     } finally {
@@ -566,43 +567,43 @@ app.put("/api/politicians/:id", async (req, res) => {
   const fields = [];
   const values = [];
 
-  if (names_surname) {
+  if (names_surname !== undefined) {
     fields.push("names_surname = ?");
     values.push(names_surname);
   }
-  if (party) {
+  if (party !== undefined) {
     fields.push("party = ?");
     values.push(party);
   }
-  if (global_rating) {
+  if (global_rating !== undefined) {
     fields.push("global_rating = ?");
     values.push(global_rating);
   }
-  if (facebook_link) {
+  if (facebook_link !== undefined) {
     fields.push("facebook_link = ?");
     values.push(facebook_link);
   }
-  if (twitter_link) {
+  if (twitter_link !== undefined) {
     fields.push("twitter_link = ?");
     values.push(twitter_link);
   }
-  if (birth_date) {
+  if (birth_date !== undefined) {
     fields.push("birth_date = ?");
     values.push(birth_date);
   }
-  if (name) {
+  if (name !== undefined) {
     fields.push("name = ?");
     values.push(name);
   }
-  if (surname) {
+  if (surname !== undefined) {
     fields.push("surname = ?");
     values.push(surname);
   }
-  if (party_short) {
+  if (party_short !== undefined) {
     fields.push("party_short = ?");
     values.push(party_short);
   }
-  if (picture) {
+  if (picture !== undefined) {
     fields.push("picture = ?");
     values.push(picture);
   }
