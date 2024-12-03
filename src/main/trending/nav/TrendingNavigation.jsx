@@ -12,7 +12,7 @@ export default function TrendingNavigation({route}) {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Trending"
+        name="TrendingScreen"
         component={TrendingScreen}
         options={() => ({
           headerTitle: _title,
