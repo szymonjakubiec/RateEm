@@ -1,4 +1,4 @@
-import {Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useContext, useEffect, useState} from "react";
 import {GlobalContext} from "../nav/GlobalContext";
@@ -12,18 +12,21 @@ export default function TrendingScreen({navigation}) {
   const [selectedPolitician, setSelectedPolitician] = useState(null);
   const [trending, setTrending] = useState([]);
   const {userId} = useContext(GlobalContext);
-  const {width} = Dimensions.get('window'); // szerokość ekranu
+  const {width} = Dimensions.get('window'); // screen width
   const [sliderState, setSliderState] = useState({currentPage: 0});
+
+  // User selections
+  const [numberOfPoliticians, setNumberOfPoliticians] = useState(3); // default to 3
+  const [days, setDays] = useState(30); // default to 30 days
 
   useEffect(() => {
     async function fetchRatings() {
-      const fetchedRatings = await getTrendingPoliticians(10, 90);
+      const fetchedRatings = await getTrendingPoliticians(numberOfPoliticians, days);
       setTrending(fetchedRatings);
     }
 
     fetchRatings();
-  }, []);
-
+  }, [numberOfPoliticians, days]); // Rerun effect when selections change
 
   const setSliderPage = (event: any) => {
     const {currentPage} = sliderState;
@@ -36,7 +39,6 @@ export default function TrendingScreen({navigation}) {
       });
     }
   };
-
 
   const renderRatingItem = ({item}) => (
     <View style={styles.ratingContainer}>
@@ -64,10 +66,8 @@ export default function TrendingScreen({navigation}) {
     </View>
   );
 
-
   const handlePoliticianClick = (item) => {
     const selectedPoliticianId = item.id;
-    console.info(navigation.getState().routes);
     navigation.navigate("Profile", {
       selectedPoliticianId,
     });
@@ -75,10 +75,28 @@ export default function TrendingScreen({navigation}) {
 
   return (
     <View>
-      {trending && (
-        <View style={{position: 'relative'}}>
-          <Text style={{fontSize: 20}}>Trzej najpopularniejsi politycy ostatniego
-            miesiąca:</Text>
+      {/* User Input Fields */}
+      <View style={styles.container}>
+        <Text style={styles.inputLabel}>Ilość polityków:</Text>
+        <TextInput
+          style={styles.inputField}
+          keyboardType="numeric"
+          value={String(numberOfPoliticians)}
+          onChangeText={text => setNumberOfPoliticians(Number(text))}
+        />
+
+        <Text style={styles.inputLabel}>Okres (dni):</Text>
+        <TextInput
+          style={styles.inputField}
+          keyboardType="numeric"
+          value={String(days)}
+          onChangeText={text => setDays(Number(text))}
+        />
+      </View>
+
+      {/* Politicians List */}
+      {trending.length > 0 ? (
+        <View>
           <FlatList
             data={trending}
             renderItem={renderRatingItem}
@@ -106,33 +124,62 @@ export default function TrendingScreen({navigation}) {
             ))}
           </View>
         </View>
+      ) : (
+        <View style={[styles.container, styles.container]}>
+          <Text style={{fontSize: 20}}>Wygląda na to, że nie udało się pobrać tych danych. Sprawdź swoje połączenie z
+            internetem!</Text>
+        </View>
       )}
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  ratingContainer: {
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 30,
+    marginTop: 170,
+  },
+  inputContainer: {
+    marginBottom: 20,
+    width: '100%',
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  inputField: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    fontSize: 16,
+  },
+  ratingContainer: {
+    flex: 1,
+    alignItems: 'center',
     paddingBottom: 25,
-    backgroundColor: '#f8f9fa', // Jasne tło dla kontrastu
+    backgroundColor: '#f8f9fa',
   },
   item: {
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
+    borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 5,
+    elevation: 5,
     overflow: 'hidden',
   },
   ratingItem: {
     alignItems: 'center',
-    padding: 10,
+    padding: 15,
   },
   ratingImage: {
     width: 100,

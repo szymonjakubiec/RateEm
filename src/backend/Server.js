@@ -399,7 +399,6 @@ app.use(express.json());
       if (rows.length === 0) {
         return res.status(404).json({message: "Rating not found"});
       }
-
       res.json(rows);
     } catch (err) {
       console.error("Database error:", err);

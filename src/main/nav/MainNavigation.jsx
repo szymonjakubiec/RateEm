@@ -103,6 +103,7 @@ export default function MainNavigation({route}) {
           options={{
             title: "Na czasie",
             headerTitle: _title,
+            headerShown: false,
             headerTitleAlign: "center",
             headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
