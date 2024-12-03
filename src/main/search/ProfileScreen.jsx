@@ -86,19 +86,15 @@ export default function ProfileScreen({ navigation, route }) {
    * @async
    */
   async function loadPoliticianData() {
-    try {
-      const data = await getPolitician(selectedPoliticianId);
-      setPoliticianData(data);
-      if (data.at(0).global_rating != null)
-        setGlobalRating(data.at(0).global_rating.toFixed(2));
-      if (data.at(0).party != null) {
-        setParty(data.at(0).party);
-      }
-      setPoliticianNames(data.at(0).name);
-      setPoliticianSurname(data.at(0).surname);
-    } catch (error) {
-      console.log("Error with loading politician data: " + error);
+    const data = await getPolitician(selectedPoliticianId);
+    setPoliticianData(data);
+    if (data.at(0).global_rating !== null)
+      setGlobalRating(data.at(0).global_rating);
+    if (data.at(0).party !== null) {
+      setParty(data.at(0).party);
     }
+    setPoliticianNames(data.at(0).name);
+    setPoliticianSurname(data.at(0).surname);
   }
 
   /**
@@ -107,18 +103,15 @@ export default function ProfileScreen({ navigation, route }) {
    * @returns {Promise<boolean>}
    */
   async function loadOwnRating() {
-    try {
-      const ownRating = (await getOwnRating(userId, selectedPoliticianId)).at(
-        0
-      ).value;
-      console.log("ownRating: " + ownRating);
-      setOwnRating(ownRating.toFixed(2));
-      return true;
-    } catch (error) {
-      console.log("Error with loading own rating: " + error);
-      return false;
-    } finally {
+    const data  = await getOwnRating(userId, selectedPoliticianId);
+    if (data !== null){
+      setOwnRating(data.at(0).value);
       setIsLoadOwnRatingInitialized(true);
+      return true;
+    }
+    else{
+      setIsLoadOwnRatingInitialized(true);
+      return false;
     }
   }
 
@@ -126,16 +119,12 @@ export default function ProfileScreen({ navigation, route }) {
    * Loads asynchronously all single ratings from Ratings.js from a user about politician into singleRatings array.
    */
   async function loadSingleRatings() {
-    try {
-      const data = await getRatingsUserIdPoliticianId(
-        userId,
-        selectedPoliticianId
-      );
-      if (data !== null) {
-        setSingleRatings(data);
-      }
-    } catch (error) {
-      console.log("Error with loading single ratings: " + error);
+    const data = await getRatingsUserIdPoliticianId(
+      userId,
+      selectedPoliticianId
+    );
+    if (data !== null) {
+      setSingleRatings(data);
     }
   }
 
@@ -394,14 +383,14 @@ export default function ProfileScreen({ navigation, route }) {
             <View style={styles.ratingRow}>
               <Text style={styles.rating}>Globalna ocena:</Text>
               <View>
-                <Text style={styles.rating}>{globalRating}</Text>
+                <Text style={styles.rating}>{globalRating.toFixed(2)}</Text>
                 {/* <Image>star</Image> */}
               </View>
             </View>
             <View style={styles.ratingRow}>
               <Text style={styles.rating}>Twoja ocena:</Text>
               <View>
-                <Text style={styles.rating}>{ownRating}</Text>
+                <Text style={styles.rating}>{ownRating.toFixed(2)}</Text>
                 {/* <Image>star</Image> */}
               </View>
             </View>

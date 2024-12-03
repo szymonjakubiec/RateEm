@@ -34,7 +34,7 @@ const getOwnRating = async (user_id, politician_id) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching own ratings:", error);
+    // console.error("Error fetching own ratings:", error);
     return null;
   }
 };
