@@ -1,19 +1,17 @@
 import {
   View,
   Text,
-  ScrollView,
   StyleSheet,
   Modal,
   TouchableOpacity,
   Image,
   FlatList,
 } from "react-native";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {getRatingsUserId} from "../../backend/database/Ratings";
 import {goBack} from "../../backend/CommonMethods";
-import {logError} from "@react-native-community/geolocation/js/utils";
-
-
+import {GlobalContext} from "../nav/GlobalContext";
+import _Container from "../styles/Container";
 
 export default function SummaryScreen({navigation}) {
 
@@ -26,10 +24,11 @@ export default function SummaryScreen({navigation}) {
   const [selectedPolitician, setSelectedPolitician] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [totalRatings, setTotalRatings] = useState(0); // Dodano stan dla łącznej liczby ocen
-
+  const {userId} = useContext(GlobalContext);
+  
   useEffect(() => {
     const fetchRatings = async () => {
-      const fetchedRatings = await getRatingsUserId(2);
+      const fetchedRatings = await getRatingsUserId(userId);
       setRatings(fetchedRatings.reverse());
 
       if (fetchedRatings.length > 0) {
@@ -51,10 +50,12 @@ export default function SummaryScreen({navigation}) {
       }
     };
     fetchRatings();
+    
     navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
     return () => {
       navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
     };
+    
   }, []);
 
   const renderRatingItem = ({item}) => (
@@ -78,51 +79,64 @@ export default function SummaryScreen({navigation}) {
   );
   const handleratingClick = (item) => {
     setSelectedPolitician(item);
-    setModalVisible(true); // Otwórz modal po kliknięciu oceny
+    setModalVisible(true);
   };
 
   const closeModal = () => {
-    setModalVisible(false); // Zamknij modal
-    setSelectedPolitician(null); // Wyczyść wybranego polityka
+    setModalVisible(false);
+    setSelectedPolitician(null);
   };
 
   return (
-    <View style={styles.container}>
+    <_Container style={{alignItems: "stretch", padding: 20}}>
       <Text style={styles.title}>Wystawione oceny</Text>
+      {(ratings.length === 0) ?
+        <View style={styles.ratingContainer}>
+          <Text>
+            Nie ma niczego do pokazania... Najpierw dodaj opinię!
+          </Text>
+        </View>
+        :
+        <View>
 
-      <View style={styles.totalRatingsContainer}>
-        <Text style={styles.totalRatingsText}>
-          Łączna liczba ocen: {totalRatings}
-        </Text>
-      </View>
-
-      <View style={styles.ratingContainer}>
-        {highestRating && (
-          <TouchableOpacity
-            style={styles.ratingItem}
-            onPress={() => handleratingClick(highestRating)}
-          >
-            <Text style={styles.ratingText}>
-              Najwyższa ocena: {highestRating.names_surname}{" "}
-              {highestRating.value}
+          <View style={styles.totalRatingsContainer}>
+            <Text style={styles.totalRatingsText}>
+              Łączna liczba ocen: {totalRatings}
             </Text>
-          </TouchableOpacity>
-        )}
-      </View>
+          </View>
 
-      <View style={styles.ratingContainer}>
-        {lowestRating && (
-          <TouchableOpacity
-            style={styles.ratingItem}
-            onPress={() => handleratingClick(lowestRating)}
-          >
-            <Text style={styles.ratingText}>
-              Najniższa ocena: {lowestRating.names_surname} {lowestRating.value}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
+          <View style={styles.ratingContainer}>
+            {highestRating && (
+              <TouchableOpacity
+                style={styles.ratingItem}
+                onPress={() => handleratingClick(highestRating)}
+              >
+                <Text style={styles.ratingText}>
+                  Najwyższa ocena: {highestRating.names_surname}{" "}
+                  {highestRating.value}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
 
+          <View style={styles.ratingContainer}>
+            {lowestRating && (
+              <TouchableOpacity
+                style={styles.ratingItem}
+                onPress={() => handleratingClick(lowestRating)}
+              >
+                <Text style={styles.ratingText}>
+                  Najniższa ocena: {lowestRating.names_surname} {lowestRating.value}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+        </View>
+
+
+
+      }
       {ratings && (
         <FlatList
           data={ratings}
@@ -169,16 +183,11 @@ export default function SummaryScreen({navigation}) {
           </View>
         </View>
       </Modal>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#f9f9f9",
-  },
   title: {
     fontSize: 26,
     fontWeight: "bold",

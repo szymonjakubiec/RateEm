@@ -7,6 +7,7 @@ import ElectionExplanationScreen from "../ElectionExplanationScreen.jsx";
 import SejmExplanationScreen from "../SejmExplanationScreen.jsx";
 import PrezydentExplanationScreen from "../PrezydentExplanationScreen.jsx";
 import EuExplanationScreen from "../EuExplanationScreen.jsx";
+import DhondtExplanationScreen from "../DhondtExplanationScreen.jsx";
 
 var Stack = createStackNavigator();
 
@@ -37,7 +38,7 @@ export default function ElectionNavigation({ route }) {
         name="Calculator"
         component={CalculatorScreen}
         options={() => ({
-          headerTitle: "Kalkulator mandatów",
+          headerTitle: "Kalkulator mandatów do Sejmu",
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
@@ -64,9 +65,8 @@ export default function ElectionNavigation({ route }) {
         name="SejmExplanation"
         component={SejmExplanationScreen}
         options={() => ({
-          headerTitle: "Wytłumaczenie wyborów - sejm",
+          headerTitle: "Wytłumaczenie wyborów",
           headerTitleAlign: "center",
-          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
@@ -74,7 +74,7 @@ export default function ElectionNavigation({ route }) {
         name="PrezydentExplanation"
         component={PrezydentExplanationScreen}
         options={() => ({
-          headerTitle: "Wytłumaczenie wyborów - prezydent",
+          headerTitle: "Wytłumaczenie wyborów",
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
@@ -83,7 +83,16 @@ export default function ElectionNavigation({ route }) {
         name="EuExplanation"
         component={EuExplanationScreen}
         options={() => ({
-          headerTitle: "Wytłumaczenie wyborów - eu",
+          headerTitle: "Wytłumaczenie wyborów",
+          headerTitleAlign: "center",
+          gestureEnabled: false, // wyłącza swipe back na IOS
+        })}
+      />
+      <Stack.Screen
+        name="DhondtExplanation"
+        component={DhondtExplanationScreen}
+        options={() => ({
+          headerTitle: "Wytłumaczenie wyborów",
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}

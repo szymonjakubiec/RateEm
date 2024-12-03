@@ -1,17 +1,23 @@
-import {StyleSheet, Text, TouchableHighlight, View, BackHandler} from "react-native";
+import {StyleSheet, Text, TouchableHighlight, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
 import {checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
 import {addUser} from "../../../backend/database/Users";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../../styles/TextInput";
+import _Container from "../../styles/Container";
 
 
 
 export default function ConfirmScreen({navigation, route}) {
 
-  const {name, email, phone, password} = route.params;
+  const {name, email, phone, password} = route?.params || {};
 
-  let _code = useRef('');
+  // PK: Verification type
+  // const verifyType = "sms";
+  const verifyType = "email";
+  // const verifyType = "none";
+
+  const _code = useRef('');
 
   const createCode = () => {
     const code = Math.floor(100000 + Math.random() * 900000);
@@ -36,10 +42,10 @@ export default function ConfirmScreen({navigation, route}) {
       console.info("Kod:", _code.current);
 
       // Pk: SMS - Twilio
-      // sendVerificationSMS(`+48${ phone }`);
+      verifyType === "sms" && sendVerificationSMS(`+48${phone}`);
 
       // Pk: EMAIL - Email.js
-      sendMail(email, _code.current, "verify").then((status) => {
+      verifyType === "email" && sendMail(email, _code.current, "verify").then((status) => {
         status === 200 ? console.warn("Mail wysłany.") : console.warn("Błąd wysyłania maila!");
       }).catch((err) => {
         console.error(err);
@@ -68,18 +74,27 @@ export default function ConfirmScreen({navigation, route}) {
 
 
   return (
-    <View style={styles.container}>
+    <_Container>
       <Text style={styles.title}>Potwierdź konto</Text>
 
-      {/* PK: Sms */}
-      {/*  <Text style={ styles.subTitle }>Na numer +48{ phone } został wysłany SMS z kodem weryfikacyjnym. Wpisz go w oknie
-        poniżej.</Text> */}
+      {verifyType === "sms" ? (
+        <>
+          {/* PK: Sms */}
+          <Text style={styles.subTitle}>Na numer:</Text>
+          <Text style={styles.email}>{phone}</Text>
+          <Text style={[styles.subTitle, {marginBottom: 40}]}>został wysłany SMS z kodem weryfikacyjnym.
+            {"\n"}Wpisz go w oknie poniżej.</Text>
+        </>
+      ) : (
+        <>
+          {/* PK: Email */}
+          <Text style={styles.subTitle}>Na adres e-mail:</Text>
+          <Text style={styles.email}>{email}</Text>
+          <Text style={[styles.subTitle, {marginBottom: 40}]}>został wysłany mail z kodem weryfikacyjnym.
+            {"\n"}Wpisz go w oknie poniżej.</Text>
+        </>
+      )}
 
-      {/* PK: Email */}
-      <Text style={styles.subTitle}>Na adres e-mail:</Text>
-      <Text style={styles.email}>{email}</Text>
-      <Text style={[styles.subTitle, {marginBottom: 40}]}>został wysłany mail z kodem weryfikacyjnym.
-        {"\n"}Wpisz go w oknie poniżej.</Text>
 
       <TextInput
         {...textInputProps}
@@ -101,21 +116,23 @@ export default function ConfirmScreen({navigation, route}) {
       />
       <Text style={styles.wrongInputText(wrongCode)}>{wrongCode}</Text>
 
+
       <TouchableHighlight
         style={[styles.button, {marginTop: 30}, !isCodeValid() && {opacity: 0.5}]}
         disabled={!isCodeValid()}
         onPress={() => {
 
-          // PK: SMS
-
-          // checkVerificationSMS(`+48${ phone }`, code).then(async (success) => {
-          //   if (!success) {
-          //     setWrongCode("Błąd! Spróbuj ponownie.");
-          //     return false;
-          //   }
+          if (verifyType === "sms") {
+            // PK: SMS
+            checkVerificationSMS(`+48${phone}`, code).then(async (success) => {
+              if (!success) {
+                setWrongCode("Błąd! Spróbuj ponownie.");
+                return false;
+              }
+            });
+          }
 
           // PK: Email
-
           if (code !== _code.current) {
             setWrongCode("Błędny kod! Spróbuj ponownie.");
             setCode('');
@@ -131,24 +148,16 @@ export default function ConfirmScreen({navigation, route}) {
             .catch((error) => {
               console.error(error);
             });
-          // });
         }}
       >
         <Text style={styles.buttonText}>Potwierdź</Text>
       </TouchableHighlight>
 
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 70,
-  },
   title: {
     fontSize: 24,
     marginBottom: 40,

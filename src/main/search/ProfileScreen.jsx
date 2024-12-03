@@ -1,12 +1,6 @@
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import {Alert,ScrollView, StyleSheet, Text, View} from "react-native";
 import {useContext, useEffect, useRef, useState} from "react";
-import { Image } from "react-native";
+import {Image} from "react-native";
 import {
   getOwnRating,
   addOwnRating,
@@ -17,8 +11,10 @@ import {
 import {getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating} from "../../backend/database/Ratings";
 import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
 import OpinionsTile from "./opinionsTileComponents/OpinionsTile";
+import {useTheme} from "react-native-paper";
 import {GlobalContext} from "../nav/GlobalContext";
 import {OpinionsTileContext} from "./nav/OpinionsTileContext";
+import _Container from "../styles/Container";
 
 
 
@@ -40,9 +36,9 @@ export default function ProfileScreen({ navigation, route }) {
   const [firstOwnRating, setFirstOwnRating] = useState(0);
   const [singleRatings, setSingleRatings] = useState([]); // ratings from ratings.js
   const [newSingleRating, setNewSingleRating] = useState(0);
-  
+
   const [isLoadOwnRatingInitialized, setIsLoadOwnRatingInitialized] = useState(false);
-  
+
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
 
@@ -52,7 +48,6 @@ export default function ProfileScreen({ navigation, route }) {
   const canUpdateGlobalRating = useRef(false);
   
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
-  
 
   useEffect(() => {
     init();
@@ -187,6 +182,7 @@ export default function ProfileScreen({ navigation, route }) {
     }
     
     console.log("Średnia globalna wynosi: " + average);    
+    
     setGlobalRating(average);
     updatePolitician(selectedPoliticianId, {global_rating: average});
   }
@@ -333,13 +329,13 @@ export default function ProfileScreen({ navigation, route }) {
   
   useEffect(() => {
     if (firstOwnRating) {
-      handleFirstOwnRating()
+      handleFirstOwnRating();
     }
   }, [firstOwnRating]);
-  
+
   useEffect(() => {
     if (newSingleRating && newTitle && newDescription) {
-      handleNewSingleRating()
+      handleNewSingleRating();
     }
   }, [newSingleRating, newTitle, newDescription]);
 
@@ -351,14 +347,14 @@ export default function ProfileScreen({ navigation, route }) {
 
   useEffect(() => {
     if (canUpdateGlobalRating.current === true){
-      countGlobalRating()
+      countGlobalRating();
     }
   }, [ownRating]);
 
-  
+
   return (
-    <ScrollView>
-      <View style={styles.container}>
+    <ScrollView style={{backgroundColor: useTheme().colors.background}}>
+      <_Container style={styles.container}>
         <View style={styles.infoTile}>
           <View style={styles.nameContainer}>
             <View style={styles.nameSurnameColumn}>
@@ -416,21 +412,17 @@ export default function ProfileScreen({ navigation, route }) {
           />
         </OpinionsTileContext.Provider>
         
-      </View>
+      </_Container>
     </ScrollView>
   );
-  
+
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: "column",
-    backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
+    alignItems: "stretch",
     padding: 10,
-    gap: 10,
+    gap: 15,
   },
   infoTile: {
     // height: "100vh",

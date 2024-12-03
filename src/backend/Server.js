@@ -820,7 +820,7 @@ app.put("/api/politicians/:id", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute("SELECT * FROM president_elections");
+      const [rows, fields] = await connection.execute("SELECT name, CAST(date as CHAR) as date, future FROM president_elections");
 
       res.json(rows);
     } catch (err) {
@@ -846,7 +846,7 @@ app.put("/api/politicians/:id", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute("SELECT * FROM sejm_elections");
+      const [rows, fields] = await connection.execute("SELECT name, CAST(date as CHAR) as date, future FROM sejm_elections");
 
       res.json(rows);
     } catch (err) {
@@ -872,7 +872,7 @@ app.put("/api/politicians/:id", async (req, res) => {
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute("SELECT * FROM eu_elections");
+      const [rows, fields] = await connection.execute("SELECT name, CAST(date as CHAR) as date, future FROM eu_elections");
 
       res.json(rows);
     } catch (err) {
