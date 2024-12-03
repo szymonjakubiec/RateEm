@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInpu
 import CheckBox from "react-native-check-box";
 import _Container from "../styles/Container";
 
-const dhondt = require("dhondt");
 const plusIcon = require("../../../assets/plus_icon.png");
 const deleteIcon = require("../../../assets/delete_icon.png");
 
@@ -85,7 +84,7 @@ export default function CalculatorScreen({ navigation }) {
         votes[index] = 0;
       }
     }
-    votes[votes.length] = sumTemp * 10000;
+    votes[votes.length] = sumTemp.toFixed(2) * 10000;
 
     const districts = [
       { votes: votes, seats: 12 },
@@ -104,6 +103,7 @@ export default function CalculatorScreen({ navigation }) {
       { votes: votes, seats: 10 },
       { votes: votes, seats: 9 },
       { votes: votes, seats: 10 },
+      { votes: votes, seats: 9 },
       { votes: votes, seats: 12 },
       { votes: votes, seats: 20 },
       { votes: votes, seats: 12 },
@@ -172,7 +172,6 @@ export default function CalculatorScreen({ navigation }) {
           maxIndex = j;
         }
       }
-
       mandates[maxIndex]++;
     }
 
