@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput, LayoutAnimation } from "react-native";
 import CheckBox from "react-native-check-box";
+import _Container from "../styles/Container";
 
+const dhondt = require("dhondt");
 const plusIcon = require("../../../assets/plus_icon.png");
 const deleteIcon = require("../../../assets/delete_icon.png");
 
@@ -18,8 +20,10 @@ export default function CalculatorScreen({ navigation }) {
 
   useEffect(() => {
     setParties([{}]);
-    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    navigation.getParent().setOptions({ tabBarStyle: { height: 0 } });
     return () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
     };
   }, []);
@@ -45,8 +49,8 @@ export default function CalculatorScreen({ navigation }) {
   }
 
   function onPersentageChange() {
-    var sumTemp = 0;
-    for (var index = 0; index < inputValues.length; index++) {
+    let sumTemp = 0;
+    for (let index = 0; index < inputValues.length; index++) {
       setTheRestValue("0");
       if (sumTemp < 100) {
         sumTemp += parseFloat(inputValues[index]);
@@ -70,10 +74,10 @@ export default function CalculatorScreen({ navigation }) {
   }
 
   function calculateDhondtMandates() {
-    var votes = [];
-    var sumTemp = 100;
+    const votes = [];
+    let sumTemp = 100;
 
-    for (var index = 0; index < inputValues.length; index++) {
+    for (let index = 0; index < inputValues.length; index++) {
       if (!overThreshold[index]) {
         votes[index] = parseFloat(inputValues[index]) * 100000;
         sumTemp -= parseFloat(inputValues[index]);
@@ -128,7 +132,7 @@ export default function CalculatorScreen({ navigation }) {
 
     var results = simulateElections(districts);
 
-    for (var index = 0; index < results.length - 1; index++) {
+    for (let index = 0; index < results.length - 1; index++) {
       if (!overThreshold[index]) {
         outputValues[index] = results[index].toFixed(0).toString();
       } else {
@@ -176,7 +180,7 @@ export default function CalculatorScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <_Container style={{ padding: "4%" }}>
       <ScrollView style={styles.scrollView}>
         {parties.map((partyItem, index) => (
           <View key={index} style={styles.partyTile}>
@@ -245,18 +249,11 @@ export default function CalculatorScreen({ navigation }) {
           </Text>
         </View>
       </ScrollView>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    padding: "4%",
-  },
-
   scrollView: {
     width: "100%",
     height: "100%",

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Linking, Alert, AppState } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Linking, Alert, AppState, LayoutAnimation } from "react-native";
 import * as Location from "expo-location";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import { getUserAddress } from "../../backend/CommonMethods";
 import { getSejmDistrict, getEuDistrict } from "../../backend/database/Districts";
+import _Container from "../styles/Container";
 
 export default function ElectoralDistricts({ navigation }) {
   const [addressCurrent, setAddressCurrent] = useState(null);
@@ -15,8 +16,11 @@ export default function ElectoralDistricts({ navigation }) {
 
   useEffect(() => {
     setMapComponent(createMap());
-    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
+
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    navigation.getParent().setOptions({ tabBarStyle: { height: 0 } });
     return () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
     };
   }, []);
@@ -199,7 +203,7 @@ export default function ElectoralDistricts({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <_Container style={{ padding: "4%" }}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.districtElementMap}>
           <View>{mapComponent}</View>
@@ -210,19 +214,11 @@ export default function ElectoralDistricts({ navigation }) {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minHeight: 400,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    padding: "4%",
-  },
-
   scrollView: {
     width: "100%",
     minHeight: 400,

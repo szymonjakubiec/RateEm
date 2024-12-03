@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, TouchableHighlight, Alert } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableHighlight, LayoutAnimation, Alert } from "react-native";
 import { getAllSejmElections } from "../../backend/database/SejmElections";
 import { getAllPresidentElections } from "../../backend/database/PresidentElections";
 import { getAllEuElections } from "../../backend/database/EuElections";
+import _Container from "../styles/Container";
 
 export default function CalendarScreen({ navigation }) {
   const [years, setYears] = useState([]);
@@ -11,8 +12,10 @@ export default function CalendarScreen({ navigation }) {
   useEffect(() => {
     currentYear = new Date().getFullYear();
     showYears();
-    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    navigation.getParent().setOptions({ tabBarStyle: { height: 0 } });
     return () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
     };
   }, []);
@@ -168,7 +171,7 @@ export default function CalendarScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <_Container style={{ padding: "4%" }}>
       <View style={{ width: "100%", paddingBottom: 10, borderBottomWidth: 3 }}>
         <View style={styles.colorsMeaningDiv}>
           <View style={styles.circleSejm} />
@@ -197,7 +200,7 @@ export default function CalendarScreen({ navigation }) {
           </View>
         ))}
       </ScrollView>
-    </View>
+    </_Container>
   );
 }
 

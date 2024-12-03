@@ -1,81 +1,72 @@
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput } from "react-native";
+import {useEffect} from "react";
+import {StyleSheet, Text, View, TouchableHighlight, LayoutAnimation} from "react-native";
+import _Container from "../styles/Container";
 
-export default function ElectionExplanation({ navigation }) {
+
+
+export default function ElectionExplanation({navigation}) {
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    navigation.getParent().setOptions({tabBarStyle: {height: 0}});
     return () => {
-      navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <TouchableHighlight
-          style={styles.electionButton}
-          onPress={() => {
-            navigation.navigate("SejmExplanation");
-          }}
-        >
-          <View style={styles.colorsMeaningDiv}>
-            <View style={styles.circleSejm} />
-            <Text style={styles.electionButtonText}>wybory do Sejmu</Text>
-          </View>
-        </TouchableHighlight>
+    <_Container>
+      <TouchableHighlight
+        style={styles.electionButton}
+        onPress={() => {
+          navigation.navigate("SejmExplanation");
+        }}
+      >
+        <View style={styles.colorsMeaningDiv}>
+          <View style={styles.circleSejm}/>
+          <Text style={styles.electionButtonText}>wybory do Sejmu</Text>
+        </View>
+      </TouchableHighlight>
 
-        <TouchableHighlight
-          style={styles.electionButton}
-          onPress={() => {
-            navigation.navigate("PrezydentExplanation");
-          }}
-        >
-          <View style={styles.colorsMeaningDiv}>
-            <View style={styles.circlePrezydent} />
-            <Text style={styles.electionButtonText}>wybory Prezydenta RP</Text>
-          </View>
-        </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.electionButton}
+        onPress={() => {
+          navigation.navigate("PrezydentExplanation");
+        }}
+      >
+        <View style={styles.colorsMeaningDiv}>
+          <View style={styles.circlePrezydent}/>
+          <Text style={styles.electionButtonText}>wybory Prezydenta RP</Text>
+        </View>
+      </TouchableHighlight>
 
-        <TouchableHighlight
-          style={styles.electionButton}
-          onPress={() => {
-            navigation.navigate("EuExplanation");
-          }}
-        >
-          <View style={styles.colorsMeaningDiv}>
-            <View style={styles.circleEu} />
-            <Text style={styles.electionButtonText}>wybory do Parlamentu Europejskiego</Text>
-          </View>
-        </TouchableHighlight>
+      <TouchableHighlight
+        style={styles.electionButton}
+        onPress={() => {
+          navigation.navigate("EuExplanation");
+        }}
+      >
+        <View style={styles.colorsMeaningDiv}>
+          <View style={styles.circleEu}/>
+          <Text style={styles.electionButtonText}>wybory do Parlamentu Europejskiego</Text>
+        </View>
+      </TouchableHighlight>
 
-        <TouchableHighlight
-          style={styles.electionButton}
-          onPress={() => {
-            navigation.navigate("DhondtExplanation");
-          }}
-        >
-          <View style={styles.colorsMeaningDiv}>
-            <Text style={styles.electionButtonTextDhondt}>metoda d'Hondta</Text>
-          </View>
-        </TouchableHighlight>
-      </ScrollView>
-    </View>
+      <TouchableHighlight
+        style={styles.electionButton}
+        onPress={() => {
+          navigation.navigate("DhondtExplanation");
+        }}
+      >
+        <View style={styles.colorsMeaningDiv}>
+          <Text style={styles.electionButtonTextDhondt}>metoda d'Hondta</Text>
+        </View>
+      </TouchableHighlight>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-  },
-
-  scrollView: {
-    width: "100%",
-    height: "100%",
-    marginHorizontal: 20,
-  },
-
   colorsMeaningDiv: {
     alignSelf: "left",
     flexDirection: "row",

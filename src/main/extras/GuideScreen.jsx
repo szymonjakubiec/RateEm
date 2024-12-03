@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import {goBack} from "../../backend/CommonMethods";
 import {StatusBar} from "expo-status-bar";
+import _Container from "../styles/Container";
 
 
 
@@ -16,15 +17,15 @@ export default function GuideScreen({navigation, route}) {
   useEffect(() => {
     navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
     return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
     };
   }, []);
   const [sliderState, setSliderState] = useState({currentPage: 0});
 
-  const setSliderPage = (event: any) => {
-    const { currentPage } = sliderState;
+  const setSliderPage = (event) => {
+    const {currentPage} = sliderState;
 
-    const { x } = event.nativeEvent.contentOffset;
+    const {x} = event.nativeEvent.contentOffset;
     const indexOfNextScreen = Math.round(x / width);
     if (indexOfNextScreen !== currentPage) {
       setSliderState({
@@ -39,93 +40,94 @@ export default function GuideScreen({navigation, route}) {
   const {width, height} = Dimensions.get('window');
   const {currentPage: pageIndex} = sliderState;
   return (
-    <>
+    <_Container style={{paddingHorizontal: 0}}>
       <StatusBar barStyle="dark-content"/>
-      <SafeAreaView style={{flex: 1}}>
-        <ScrollView
-          style={{flex: 1}}
-          horizontal={true}
-          scrollEventThrottle={16}
-          pagingEnabled={true}
-          showsHorizontalScrollIndicator={false}
-          onScroll={(event: any) => {
-            setSliderPage(event);
-          }}
-        >
-          {/* General guide*/}
-          <View style={[{width, height}]}>
-            <Text style={styles.guideTitle}>Przewodnik po aplikacji</Text>
-            <Text style={styles.guideDescription}>
-              Aplikacja składa się z czterech głównych funkcjonalności:
-            </Text>
-            <View style={styles.guideList}>
-              <Text style={styles.guideItem}>• wyszukiwarka</Text>
-              <Text style={styles.guideItem}>• wybory</Text>
-              <Text style={styles.guideItem}>• ekran główny</Text>
-              <Text style={styles.guideItem}>• więcej</Text>
-            </View>
+      <ScrollView
+        style={{flex: 1}}
+        horizontal={true}
+        scrollEventThrottle={16}
+        pagingEnabled={true}
+        showsHorizontalScrollIndicator={false}
+        onScroll={(event) => {
+          setSliderPage(event);
+        }}
+      >
+        {/* General guide*/}
+        <View style={[{width, height}]}>
+          <Text style={styles.guideTitle}>Przewodnik po aplikacji</Text>
+          <Text style={styles.guideDescription}>
+            Aplikacja składa się z czterech głównych funkcjonalności:
+          </Text>
+          <View style={styles.guideList}>
+            <Text style={styles.guideItem}>• wyszukiwarka</Text>
+            <Text style={styles.guideItem}>• wybory</Text>
+            <Text style={styles.guideItem}>• ekran główny</Text>
+            <Text style={styles.guideItem}>• więcej</Text>
           </View>
-
-          {/* Search screen guide*/}
-          <View style={{width, height}}>
-            <View style={styles.ratingContainer}>
-              <Text style={styles.sectionTitle}>🔍 Wyszukiwarka Polityków:</Text>
-              <Text style={styles.sectionDescription}>
-                Przypisz ocenę politykowi, wyrażając swoje emocje na temat jego działań.
-                Wybierz od 1 do 5 gwiazdek, aby wyrazić swoje odczucia. Twoja opinia ma znaczenie!
-              </Text>
-            </View>
-          </View>
-
-          {/* Election screen guide*/}
-          <View style={{width, height}}>
-            <Text style={styles.sectionTitle}>📄 Wyborcze ABC</Text>
-            <Text style={styles.sectionDescription}>
-              W tym miejscu znajdziesz wszystkie podstawowe informacje na temat nadchodzących wyborów.
-              Zapewniamy Ci dostęp do dat, sprawdzenia swojego okręgu wyborczego oraz kalkulatora mandatów.
-            </Text>
-          </View>
-
-          {/* Main Screen guide*/}
-          <View style={{width, height}}>
-            <Text style={styles.sectionTitle}>Ekran Główny</Text>
-            <Text style={styles.sectionDescription}>
-              Na ekranie głównym wyświetlani są politycy, którzy w danym momencie cieszą się największą popularnością wśród naszych użytkowników.
-            </Text>
-            <Text style={styles.sectionDescription}>
-              (Na dobre i na złe)
-            </Text>
-          </View>
-
-          {/* Extras screen guide*/}
-          <View style={{width, height}}>
-            <Text style={styles.sectionTitle}>≡ Więcej</Text>
-            <Text style={styles.sectionDescription}>
-              Odnośniki do ustawień, podsumowania ocen i innych funkcji.
-            </Text>
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() => {navigation.popToTop()}}
-            >
-              <Text style={styles.buttonText}>Zaczynamy!</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-
-        {/* Pagination dots*/}
-        <View style={styles.paginationWrapper}>
-          {Array.from(Array(5).keys()).map((key, index) => (
-            <View
-              style={[
-                styles.paginationDots,
-                { opacity: sliderState.currentPage === index ? 1 : 0.2 }, // Upewnij się, że używasz aktualnego currentPage
-              ]}
-              key={index}
-            />
-          ))}
         </View>
-      </SafeAreaView>
-    </>
+
+        {/* Search screen guide*/}
+        <View style={{width, height}}>
+          <View style={styles.ratingContainer}>
+            <Text style={styles.sectionTitle}>🔍 Wyszukiwarka Polityków:</Text>
+            <Text style={styles.sectionDescription}>
+              Przypisz ocenę politykowi, wyrażając swoje emocje na temat jego działań.
+              Wybierz od 1 do 5 gwiazdek, aby wyrazić swoje odczucia. Twoja opinia ma znaczenie!
+            </Text>
+          </View>
+        </View>
+
+        {/* Election screen guide*/}
+        <View style={{width, height}}>
+          <Text style={styles.sectionTitle}>📄 Wyborcze ABC</Text>
+          <Text style={styles.sectionDescription}>
+            W tym miejscu znajdziesz wszystkie podstawowe informacje na temat nadchodzących wyborów.
+            Zapewniamy Ci dostęp do dat, sprawdzenia swojego okręgu wyborczego oraz kalkulatora mandatów.
+          </Text>
+        </View>
+
+        {/* Main Screen guide*/}
+        <View style={{width, height}}>
+          <Text style={styles.sectionTitle}>Ekran Główny</Text>
+          <Text style={styles.sectionDescription}>
+            Na ekranie głównym wyświetlani są politycy, którzy w danym momencie cieszą się największą popularnością
+            wśród naszych użytkowników.
+          </Text>
+          <Text style={styles.sectionDescription}>
+            (Na dobre i na złe)
+          </Text>
+        </View>
+
+        {/* Extras screen guide*/}
+        <View style={{width, height}}>
+          <Text style={styles.sectionTitle}>≡ Więcej</Text>
+          <Text style={styles.sectionDescription}>
+            Odnośniki do ustawień, podsumowania ocen i innych funkcji.
+          </Text>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() => {
+              navigation.popToTop();
+            }}
+          >
+            <Text style={styles.buttonText}>Zaczynamy!</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+
+      {/* Pagination dots*/}
+      <View style={styles.paginationWrapper}>
+        {Array.from(Array(5).keys()).map((key, index) => (
+          <View
+            style={[
+              styles.paginationDots,
+              {opacity: sliderState.currentPage === index ? 1 : 0.2}, // Upewnij się, że używasz aktualnego currentPage
+            ]}
+            key={index}
+          />
+        ))}
+      </View>
+    </_Container>
   );
 }
 
@@ -229,7 +231,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',  // Centrowanie
     elevation: 5,  // Cień dla Androida
     shadowColor: '#000',  // Cień dla iOS
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 5,
   },
