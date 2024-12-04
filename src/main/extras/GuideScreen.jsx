@@ -5,13 +5,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Linking, Dimensions, SafeAreaView,
+  Linking, Dimensions, SafeAreaView, TextInput, FlatList, Image,
 } from "react-native";
 import {goBack} from "../../backend/CommonMethods";
 import {StatusBar} from "expo-status-bar";
 import _Container from "../styles/Container";
 
 
+
+const {width, height} = Dimensions.get('window');
 
 export default function GuideScreen({navigation, route}) {
   useEffect(() => {
@@ -35,9 +37,17 @@ export default function GuideScreen({navigation, route}) {
     }
   };
 
+  const politicians = [
+    {name: "Andrzej Pobreża", global_rating: 1},
+    {name: "Jan Paweł Adamczewski", global_rating: 5},
+  ];
+
+  const images = {
+    'Jan Paweł Adamczewski': require('./../../../assets/Jan_Paweł_Adamczewski.png'),
+    'Andrzej Pobreża': require('./../../../assets/Andrzej_Pobreża.jpg'),
+  };
   // Pk: Going back
   goBack(navigation);
-  const {width, height} = Dimensions.get('window');
   const {currentPage: pageIndex} = sliderState;
   return (
     <_Container style={{paddingHorizontal: 0}}>
@@ -53,49 +63,147 @@ export default function GuideScreen({navigation, route}) {
         }}
       >
         {/* General guide*/}
-        <View style={[{width, height}]}>
-          <Text style={styles.guideTitle}>Przewodnik po aplikacji</Text>
-          <Text style={styles.guideDescription}>
+        <View style={[{
+          width,
+          height,
+          flexDirection: 'column',
+          padding: 20,
+          alignItems: 'center'
+        }]}>
+          {/* Title */}
+          <Text style={[styles.guideTitle, {alignSelf: 'center', fontSize: 26, fontWeight: 'bold', marginBottom: 15}]}>
+            Przewodnik po aplikacji
+          </Text>
+
+          {/* Description */}
+          <Text style={[styles.guideDescription, {
+            alignSelf: 'center',
+            fontSize: 18,
+            textAlign: 'center',
+            marginBottom: 20
+          }]}>
             Aplikacja składa się z czterech głównych funkcjonalności:
           </Text>
-          <View style={styles.guideList}>
+
+          {/* List of functionalities */}
+          <View style={[styles.guideList, {alignSelf: 'center', paddingHorizontal: 15}]}>
             <Text style={styles.guideItem}>• wyszukiwarka</Text>
             <Text style={styles.guideItem}>• wybory</Text>
             <Text style={styles.guideItem}>• ekran główny</Text>
             <Text style={styles.guideItem}>• więcej</Text>
           </View>
-        </View>
 
+          {/* Additional styling for better readability */}
+          <View style={[{
+            marginTop: 30,
+            padding: 20,
+            borderRadius: 10,
+            alignItems: 'center',
+            width: '100%'
+          }]}>
+            <Text style={{fontSize: 20, fontWeight: 'bold', color: '#333', marginBottom: 10}}>Jak korzystać z
+              aplikacji:</Text>
+            <Text style={{fontSize: 16, color: '#555', textAlign: 'center'}}>
+              Przewodnik pomoże Ci zapoznać się z funkcjami aplikacji i efektywnie je wykorzystać. Przejdź przez każdy
+              krok, aby odkryć nowe możliwości!
+            </Text>
+          </View>
+        </View>
         {/* Search screen guide*/}
-        <View style={{width, height}}>
-          <View style={styles.ratingContainer}>
-            <Text style={styles.sectionTitle}>🔍 Wyszukiwarka Polityków:</Text>
+        <View style={{width, height, padding: 16, backgroundColor: '#f9f9f9'}}>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>🔍 Wyszukiwarka Polityków</Text>
+            <Text style={{...styles.sectionDescription, marginBottom: 30}}>
+              Znajdź polityków, przeglądaj ich profile i dowiedz się podstawowych informacji, takich jak przynależność
+              partyjna i globalna ocena.
+            </Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>⭐ Ocena Polityków</Text>
+            <Text style={{...styles.sectionDescription, marginBottom: 30}}>
+              Oceń polityków, wyrażając swoje emocje na temat ich działań. Wybierz od 1 do 5 gwiazdek i dodaj komentarz,
+              jeśli chcesz.
+            </Text>
+            <View style={styles.ratingContainer}>
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>📋 Twoje Oceny</Text>
             <Text style={styles.sectionDescription}>
-              Przypisz ocenę politykowi, wyrażając swoje emocje na temat jego działań.
-              Wybierz od 1 do 5 gwiazdek, aby wyrazić swoje odczucia. Twoja opinia ma znaczenie!
+              Przeglądaj oceny, które wystawiłeś wcześniej. Śledź, jak zmieniały się Twoje opinie w czasie.
             </Text>
           </View>
         </View>
 
         {/* Election screen guide*/}
-        <View style={{width, height}}>
+        <ScrollView style={{width, height}}>
           <Text style={styles.sectionTitle}>📄 Wyborcze ABC</Text>
           <Text style={styles.sectionDescription}>
-            W tym miejscu znajdziesz wszystkie podstawowe informacje na temat nadchodzących wyborów.
-            Zapewniamy Ci dostęp do dat, sprawdzenia swojego okręgu wyborczego oraz kalkulatora mandatów.
+            Kompleksowy przewodnik po wyborach. Znajdziesz tu wyjaśnienia dotyczące różnych typów wyborów, informacji o
+            okręgach wyborczych, kalendarzu wyborczym oraz kalkulatorze mandatów.
           </Text>
-        </View>
 
-        {/* Main Screen guide*/}
+          <View style={styles.section}>
+            <Text style={styles.subsectionTitle}>🗳 Typy Wyborów</Text>
+            <Text style={styles.subsectionDescription}>
+              - **Wybory do Sejmu RP**: Poznaj zasady wyborów i jak działa metoda d'Hondta przy podziale mandatów.{"\n"}
+              - **Wybory Prezydenckie**: Jak wygląda proces wyboru głowy państwa?{"\n"}
+              - **Wybory do Parlamentu Europejskiego**: Dowiedz się, jak wybierani są przedstawiciele Polski w UE.
+            </Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.subsectionTitle}>📍 Okręgi Wyborcze</Text>
+            <Text style={styles.subsectionDescription}>
+              Sprawdź swój okręg wyborczy. Dowiedz się, ile mandatów przypada na Twój region.
+            </Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.subsectionTitle}>📅 Kalendarz Wyborczy</Text>
+            <Text style={styles.subsectionDescription}>
+              Pozostań na bieżąco z terminami wyborów, rejestracji kandydatów i innymi ważnymi datami.
+            </Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.subsectionTitle}>📊 Kalkulator Mandatów</Text>
+            <Text style={styles.subsectionDescription}>
+              Przeanalizuj, jak głosy w Twoim okręgu mogą przełożyć się na mandaty. Zrozum podział mandatów za pomocą
+              metody d'Hondta.
+            </Text>
+          </View>
+        </ScrollView>
+
+        {/* Trending Screen guide*/}
         <View style={{width, height}}>
-          <Text style={styles.sectionTitle}>Ekran Główny</Text>
+          <Text style={styles.sectionTitle}>🔥 Na Czasie</Text>
           <Text style={styles.sectionDescription}>
-            Na ekranie głównym wyświetlani są politycy, którzy w danym momencie cieszą się największą popularnością
-            wśród naszych użytkowników.
+            Na ekranie "Na czasie" znajdziesz polityków, którzy w ostatnim czasie byli najczęściej oceniani przez
+            naszych użytkowników.
           </Text>
           <Text style={styles.sectionDescription}>
-            (Na dobre i na złe)
+            Możesz sprawdzić ich globalną ocenę oraz kliknąć, aby zobaczyć szczegóły na ich profilu.
           </Text>
+
+          <View style={styles.panel}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} nestedScrollEnabled={true}
+                        snapToInterval={width}
+                        snapToAlignment="center"
+                        decelerationRate="fast">
+              {politicians.map((item, index) => (
+                <View key={index} style={[styles.politicianPanel, {alignItems: 'center'}]}>
+                  <Image source={images[item.name]} style={styles.politicianImage}/>
+                  <Text style={styles.name}>{item.name}</Text>
+                  <Text style={styles.rating}>
+                    Ocena: {item.global_rating ? item.global_rating.toFixed(2) : '—'}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
         </View>
 
         {/* Extras screen guide*/}
@@ -140,11 +248,25 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   sectionDescription: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#666',
     textAlign: 'center',
     marginHorizontal: 20,
     lineHeight: 22,
+    marginBottom: 20,
+  },
+  subsectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  subsectionDescription: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 20,
+    textAlign: "center",
+    paddingHorizontal: 10,
   },
   paginationWrapper: {
     position: 'absolute',
@@ -188,27 +310,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
   },
   guideTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 15,
   },
   guideDescription: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#666',
     textAlign: 'center',
     lineHeight: 22,
-    marginBottom: 20,
+    marginBottom: 25,
+    paddingHorizontal: 20,
   },
   guideList: {
-    width: '100%',
-    paddingHorizontal: 10,
+    marginTop: 20,
   },
   guideItem: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#444',
-    marginVertical: 5,
+    marginVertical: 8,
+    textAlign: 'center',
   },
   searchContainer: {
     flexDirection: "row",
@@ -223,14 +346,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 20,
-    backgroundColor: '#005BB5',  // Niebieskie tło przycisku
-    borderRadius: 30,  // Zaokrąglone rogi
-    paddingVertical: 15,  // Wysokość przycisku
-    paddingHorizontal: 40,  // Szerokość przycisku
-    alignItems: 'center',  // Wyrównanie tekstu
-    justifyContent: 'center',  // Centrowanie
-    elevation: 5,  // Cień dla Androida
-    shadowColor: '#000',  // Cień dla iOS
+    backgroundColor: '#005BB5',
+    borderRadius: 30,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+    shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 5,
@@ -238,7 +361,34 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff', // Kolor tekstu przycisku
+    color: '#fff',
     textAlign: 'center',
+  },
+  panel: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  politicianPanel: {
+    width: width,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
+  politicianImage: {
+    width: 200,
+    height: 200,
+    resizeMode: 'cover',
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginVertical: 10,
+  },
+  rating: {
+    fontSize: 16,
+    color: '#666',
   },
 });
