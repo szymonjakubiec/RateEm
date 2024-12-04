@@ -13,11 +13,7 @@ export default function ExtrasNavigation({route}) {
 
   const _title = route.params?._title;
   return (
-    <Stack.Navigator
-      screenOptions={({route, navigation}) => ({
-        headerShown: true,
-        tabBarStyle: {display: "none"},
-      })}>
+    <Stack.Navigator>
       <Stack.Screen
         name="Extras"
         component={ExtrasScreen}
@@ -45,6 +41,7 @@ export default function ExtrasNavigation({route}) {
           headerTitle: "Przewodnik",
           headerLeft: () => null,
           headerTitleAlign: "center",
+          gestureEnabled: false,
         })}
       />
       <Stack.Screen
