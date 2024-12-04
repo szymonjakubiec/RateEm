@@ -1,18 +1,27 @@
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
-import { useContext, useEffect, useRef, useState } from "react";
-import { Image } from "react-native";
-import { getOwnRating, addOwnRating, updateOwnRating, deleteOwnRating, getAllPoliticianOwnRatings } from "../../backend/database/OwnRatings";
-import { getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating } from "../../backend/database/Ratings";
-import { getPolitician, updatePolitician } from "../../backend/database/Politicians";
+import {Alert, ScrollView, StyleSheet, Text, View} from "react-native";
+import {useContext, useEffect, useRef, useState} from "react";
+import {Image} from "react-native";
+import {
+  getOwnRating,
+  addOwnRating,
+  updateOwnRating,
+  deleteOwnRating,
+  getAllPoliticianOwnRatings
+} from "../../backend/database/OwnRatings";
+import {getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating} from "../../backend/database/Ratings";
+import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
 import OpinionsTile from "./opinionsTileComponents/OpinionsTile";
-import { useTheme } from "react-native-paper";
-import { GlobalContext } from "../nav/GlobalContext";
-import { OpinionsTileContext } from "./nav/OpinionsTileContext";
+import {useTheme} from "react-native-paper";
+import {GlobalContext} from "../nav/GlobalContext";
+import {OpinionsTileContext} from "./nav/OpinionsTileContext";
 import _Container from "../styles/Container";
+import {tabBarAnim} from "../../backend/CommonMethods";
 
-export default function ProfileScreen({ navigation, route }) {
-  const { selectedPoliticianId } = route.params;
-  const { userId } = useContext(GlobalContext);
+
+
+export default function ProfileScreen({navigation, route}) {
+  const {selectedPoliticianId} = route.params;
+  const {userId} = useContext(GlobalContext);
 
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
@@ -42,12 +51,13 @@ export default function ProfileScreen({ navigation, route }) {
 
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
 
+  // PK: Hide bottom TabBar
+  useEffect(() => {
+    return tabBarAnim(navigation);
+  }, []);
+
   useEffect(() => {
     init();
-    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
-    return () => {
-      navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
-    };
   }, []);
 
   /**
@@ -170,7 +180,7 @@ export default function ProfileScreen({ navigation, route }) {
     console.log("Średnia globalna wynosi: " + average);
 
     setGlobalRating(average);
-    updatePolitician(selectedPoliticianId, { global_rating: average });
+    updatePolitician(selectedPoliticianId, {global_rating: average});
   }
 
   async function handleFirstOwnRating() {
@@ -207,9 +217,11 @@ export default function ProfileScreen({ navigation, route }) {
   function handleOtNewSingleRating(starRating) {
     setNewSingleRating(starRating);
   }
+
   function handleOtNewTitle(newTitle) {
     setNewTitle(newTitle);
   }
+
   function handleOtNewDescription(newDescription) {
     setNewDescription(newDescription);
   }
@@ -327,7 +339,7 @@ export default function ProfileScreen({ navigation, route }) {
   }, [ownRating]);
 
   return (
-    <ScrollView style={{ backgroundColor: useTheme().colors.background }}>
+    <ScrollView style={{backgroundColor: useTheme().colors.background}}>
       <_Container style={styles.container}>
         <View style={styles.infoTile}>
           <View style={styles.nameContainer}>
@@ -348,7 +360,7 @@ export default function ProfileScreen({ navigation, route }) {
                   alt="politician"
                 />
               ) : (
-                <Image source={require("./../../../assets/noPhoto.png")} alt="politician" style={styles.image} />
+                <Image source={require("./../../../assets/noPhoto.png")} alt="politician" style={styles.image}/>
               )}
             </View>
           </View>
@@ -383,7 +395,7 @@ export default function ProfileScreen({ navigation, route }) {
             handleSingleRatingDeletion: handleOtSingleRatingDeletion,
           }}
         >
-          <OpinionsTile ownRating={ownRating} handleFirstOwnRating={handleOtFirstOwnRating} />
+          <OpinionsTile ownRating={ownRating} handleFirstOwnRating={handleOtFirstOwnRating}/>
         </OpinionsTileContext.Provider>
       </_Container>
     </ScrollView>
