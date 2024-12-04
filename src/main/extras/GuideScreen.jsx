@@ -10,6 +10,7 @@ import {
 import {tabBarAnim} from "../../backend/CommonMethods";
 import {StatusBar} from "expo-status-bar";
 import _Container from "../styles/Container";
+import _Button from "../styles/Button";
 
 
 
@@ -248,14 +249,13 @@ export default function GuideScreen({navigation}) {
           <Text style={styles.sectionDescription}>
             Odnośniki do ustawień, podsumowania ocen i innych funkcji.
           </Text>
-          <TouchableOpacity
-            style={styles.buttonContainer}
+          <_Button
+            style={{minWidth: "40%", width: "40%", alignSelf: "center", marginTop: "15%"}}
+            buttonText="Zaczynamy!"
             onPress={() => {
               navigation.popToTop();
             }}
-          >
-            <Text style={styles.buttonText}>Zaczynamy!</Text>
-          </TouchableOpacity>
+          />
         </View>
       </ScrollView>
 

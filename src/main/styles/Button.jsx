@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, StyleProp, ViewStyle} from 'react-native';
 import {useTheme} from "react-native-paper";
 
 
@@ -7,9 +7,9 @@ import {useTheme} from "react-native-paper";
  * Creates a button.
  * @param {string} buttonText - text for button.
  * @param {function()} onPress - what happens on press.
- * @param {Object} [textStyle] - additional text styles.
+ * @param {StyleProp<ViewStyle>} [textStyle] - additional text styles.
  * @param {'standard'|'onlyText'} [mode='standard'] - button's mode.
- * @param {object} [style] - additional button styles.
+ * @param {StyleProp<ViewStyle>} [style] - additional button styles.
  * @param {boolean} [disabled='false'] - if button is disabled.
  * @param [props]
  * @returns {JSX.Element}
@@ -38,6 +38,7 @@ export default function _Button({
       shadowOpacity: 0.2,
       shadowRadius: 5,
       borderWidth: 2,
+      justifyContent: "center",
     },
     disabled: {
       opacity: disabled ? 0.6 : 1,

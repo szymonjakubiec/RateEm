@@ -193,7 +193,7 @@ const getUserAddress = async (latitude, longitude) => {
  * @param navigation - navigation.
  */
 function ownGoBack(navigation) {
-  
+
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
     const backAction = () => {
