@@ -1,6 +1,6 @@
 const mysql = require("mysql2");
 const fs = require("fs");
-const { log } = require("console");
+const {log} = require("console");
 
 var config = {
   host: "rateem-server.mysql.database.azure.com",
@@ -8,7 +8,7 @@ var config = {
   password: "ZAQ!2wsx",
   database: "ratem",
   port: 3306,
-  ssl: { ca: fs.readFileSync("./src/backend/populateDatabase/DigiCertGlobalRootCA.crt.pem") },
+  ssl: {ca: fs.readFileSync("./src/backend/populateDatabase/DigiCertGlobalRootCA.crt.pem")},
 };
 
 class InfoDownload {
@@ -37,10 +37,6 @@ class InfoDownload {
       // pobiera z API daty poprzednich wyborów
       const url = `https://api.sejm.gov.pl/eli/acts/search?publisher=DU&title=o%20wynikach%20wyborów%20do%20sejmu%20rzeczypospolitej%20polskiej%20&type=Obwieszczenie`;
       const response = await fetch(url);
-      if (!response.ok) {
-        console.log(response.ok);
-        return;
-      }
       this.sejmWszystkieKadencje = await response.json();
 
       this.sejmWszystkieKadencje.items.forEach((sejmKadencja_info) => {
@@ -52,17 +48,13 @@ class InfoDownload {
         this.sejmKadencje.push(date);
       });
     } catch (error) {
-      console.log(error.message);
+      return null;
     }
 
     try {
       // szacuje date przyszłych wyborów
       const url = `https://api.sejm.gov.pl/sejm/term`;
       const response = await fetch(url);
-      if (!response.ok) {
-        console.log(response.ok);
-        return;
-      }
       this.sejmWszystkieKadencje = await response.json();
 
       var currentTerm = this.sejmWszystkieKadencje[this.sejmWszystkieKadencje.length - 1];
@@ -76,7 +68,7 @@ class InfoDownload {
 
       this.sejmKadencje.unshift(date);
     } catch (error) {
-      console.log(error.message);
+      return null;
     }
   }
 
@@ -85,10 +77,6 @@ class InfoDownload {
       // pobiera z API daty poprzednich wyborów
       const url = `https://api.sejm.gov.pl/eli/acts/search?publisher=DU&title=wyniku%20wyborów%20prezydenta%20rzeczypospolitej%20polskiej%20&type=Obwieszczenie`;
       const response = await fetch(url);
-      if (!response.ok) {
-        console.log(response.ok);
-        return;
-      }
       this.prezydentPoprzednieKadencje = await response.json();
 
       this.prezydentPoprzednieKadencje.items.forEach((prezydentKadencja_info) => {
@@ -104,17 +92,13 @@ class InfoDownload {
         }
       });
     } catch (error) {
-      console.log(error.message);
+      return null;
     }
 
     try {
       // szacuje date przyszłych wyborów
       const url = `https://api.sejm.gov.pl/eli/acts/search?publisher=MP&title=złożenia%20przysięgi%20przez%20nowo%20wybranego%20Prezydenta%20Rzeczypospolitej%20Polskiej&type=Protokół`;
       const response = await fetch(url);
-      if (!response.ok) {
-        console.log(response.ok);
-        return;
-      }
       this.prezydentPrzyszłaKadencja = await response.json();
 
       var currentTerm = this.prezydentPrzyszłaKadencja.items[0];
@@ -136,15 +120,12 @@ class InfoDownload {
       // date = date_start + ' ' + date_stop
       date = date_start;
 
-      // console.log(date_start, date_stop)
 
       this.prezydentKadencje.unshift(date);
     } catch (error) {
-      console.log(error.message);
+      return null;
     }
 
-    // console.log("Prezydent, kadencje:")
-    // console.log(this.prezydentKadencje)
   }
 
   async euKadencja() {
@@ -153,10 +134,6 @@ class InfoDownload {
     try {
       // pobiera z API
       const response = await fetch(url);
-      if (!response.ok) {
-        console.log(response.ok);
-        return;
-      }
       this.euWszystkieKadencje = await response.json();
 
       this.euWszystkieKadencje.items.forEach((euKadencja_info) => {
@@ -175,7 +152,7 @@ class InfoDownload {
 
       this.euKadencje.unshift(date);
     } catch (error) {
-      console.log(error.message);
+      return null;
     }
   }
 
@@ -215,10 +192,6 @@ class InfoDownload {
       // pobiera numery kadencji sejmu (żeby wiedzieć, na jakim numerze zakończyć)
       const url = `https://api.sejm.gov.pl/sejm/term`;
       const response = await fetch(url);
-      if (!response.ok) {
-        console.log(response.ok);
-        return;
-      }
       this.sejmWszystkieKadencje = await response.json();
       this.sejmWszystkieKadencje.reverse();
 
@@ -228,10 +201,6 @@ class InfoDownload {
         if (kadencja.num >= 8) {
           const url = `https://api.sejm.gov.pl/sejm/term${kadencja.num}/MP`;
           const response = await fetch(url);
-          if (!response.ok) {
-            console.log(response.ok);
-            return;
-          }
           var sejmKadencjaPolitycy = await response.json();
 
           await this.getSejmClubsFullNames();
@@ -258,14 +227,14 @@ class InfoDownload {
         }
       }
     } catch (error) {
-      console.log(error.message);
+      return null;
     }
   }
 
   async euPolitycy() {
     try {
       // pobiera numery kadencji eu parlamentu (żeby wiedzieć, na jakim numerze zakończyć)
-      this.euWszystkieKadencje = [{ num: 10 }, { num: 9 }, { num: 8 }]; // rozwiązanie tymczasowe
+      this.euWszystkieKadencje = [{num: 10}, {num: 9}, {num: 8}]; // rozwiązanie tymczasowe
       //
       //
       //
@@ -277,7 +246,6 @@ class InfoDownload {
           const url = `https://data.europarl.europa.eu/api/v2/meps?parliamentary-term=${kadencja.num}&country-of-representation=PL&format=application%2Fld%2Bjson&offset=0`;
           const response = await fetch(url);
           if (!response.ok) {
-            console.log(response.ok);
             return;
           } else {
             var euKadencjaPolitycy = await response.json();
@@ -289,7 +257,6 @@ class InfoDownload {
                 const url = `https://data.europarl.europa.eu/api/v2/meps/${osoba.identifier}?format=application%2Fld%2Bjson`;
                 const response = await fetch(url);
                 if (!response.ok) {
-                  console.log("error fetching eu politician");
                 } else {
                   var politykSzczegoly = await response.json();
 
@@ -346,7 +313,7 @@ class InfoDownload {
         }
       }
     } catch (error) {
-      console.log(error.message);
+      return null;
     }
   }
 
@@ -357,10 +324,6 @@ class InfoDownload {
       if (kadencja.num >= 8) {
         const url = `https://api.sejm.gov.pl/sejm/term${kadencja.num}/clubs`;
         const response = await fetch(url);
-        if (!response.ok) {
-          console.log(response.ok);
-          return;
-        }
         var partieKadencja = await response.json();
 
         for (const partie of partieKadencja) {
@@ -381,23 +344,19 @@ class InfoDownload {
 
     const url = `https://data.europarl.europa.eu/api/v2/corporate-bodies/${orgId}?format=application%2Fld%2Bjson`;
     const response = await fetch(url);
-    if (!response.ok) {
-      console.log(response.ok);
-      return;
-    }
     var clubInfo = (await response.json()).data[0];
 
     // Independent
     if (clubInfo.label == "Independent" || clubInfo.prefLabel.pl == "Independent" || clubInfo.label == "-" || clubInfo.prefLabel.pl == "-") {
       if (gender == "female") {
-        return { party: "niezależna", partyShort: "niezależna" };
+        return {party: "niezależna", partyShort: "niezależna"};
       } else if (gender == "male") {
-        return { party: "niezależny", partyShort: "niezależny" };
+        return {party: "niezależny", partyShort: "niezależny"};
       } else {
-        return { party: "niezależne", partyShort: "niezależne" };
+        return {party: "niezależne", partyShort: "niezależne"};
       }
     } else {
-      return { party: clubInfo.prefLabel.pl, partyShort: clubInfo.label };
+      return {party: clubInfo.prefLabel.pl, partyShort: clubInfo.label};
     }
   }
 
@@ -425,7 +384,6 @@ class InfoDownload {
 
     this.conn.connect(function (err) {
       if (err) {
-        console.log("Cannot connect. Error: ");
         throw err;
       } else {
         self.uploadKadencjaSejm();
@@ -482,15 +440,11 @@ class InfoDownload {
         try {
           await this.insertNewPolitician(polityk);
         } catch (err) {
-          console.error(`Failed to insert ${polityk.fullName}:`, err);
-          console.log(polityk);
         }
       } else {
         try {
           await this.updatePolitician(polityk);
         } catch (err) {
-          console.error(`Failed to update ${polityk.fullName}:`, err);
-          console.log(polityk);
         }
       }
     }
@@ -505,7 +459,6 @@ class InfoDownload {
       return new Promise((resolve, reject) => {
         conn.execute("SELECT id, names_surname FROM politicians WHERE names_surname=?;", [polityk.fullName], (err, results) => {
           if (err) {
-            console.error("Error in getPolitician:", err);
             reject(err);
           } else {
             resultLength = results.length;
@@ -514,7 +467,6 @@ class InfoDownload {
         });
       });
     } catch (err) {
-      console.error("Error in getPolitician:", err);
       throw err;
     } finally {
       await conn.end();
@@ -542,17 +494,14 @@ class InfoDownload {
           ],
           (err, results) => {
             if (err) {
-              console.error("Error inserting politician:", err);
               reject(err);
             } else {
-              console.log(`Inserted new politician: ${polityk.fullName}`);
               resolve(results);
             }
           }
         );
       });
     } catch (err) {
-      console.error("Error in insertNewPolitician:", err);
       throw err;
     } finally {
       await conn.end();
@@ -580,17 +529,14 @@ class InfoDownload {
           ],
           (err, results) => {
             if (err) {
-              console.error("Error updating politician:", err);
               reject(err);
             } else {
-              console.log(`Updated politician: ${polityk.fullName}`);
               resolve(results);
             }
           }
         );
       });
     } catch (err) {
-      console.error("Error in updatePolitician:", err);
       throw err;
     } finally {
       await conn.end();

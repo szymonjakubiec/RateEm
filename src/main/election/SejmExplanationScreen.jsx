@@ -94,14 +94,17 @@ export default function SejmExplanation({navigation}) {
 
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>System liczenia głosów</Text>
-          <Text style={styles.scrollViewText}>W wyborach do Sejmu obowiązuje liczenie głosów metodą d'Hondta.</Text>
-          <Text
-            style={[styles.scrollViewText, styles.textLink]}
-            onPress={() => {
-              navigation.navigate("DhondtExplanation");
-            }}
-          >
-            Opis metody d'Hondta
+          <Text style={styles.scrollViewText}>
+            <Text>W wyborach do Sejmu obowiązuje liczenie głosów metodą </Text>
+            <Text
+              style={[styles.scrollViewText, styles.textLink]}
+              onPress={() => {
+                navigation.navigate("DhondtExplanation");
+              }}
+            >
+              d'Hondta
+            </Text>
+            <Text>.</Text>
           </Text>
         </View>
 
