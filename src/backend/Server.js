@@ -1,6 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
-const { encrypt } = require("./Encryption");
+const {encrypt} = require("./Encryption");
 const app = express();
 
 const config = {
@@ -57,7 +57,7 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
+
         }
       }
     }
@@ -73,7 +73,7 @@ app.use(express.json());
 
       // Sprawdzenie, czy user_id jest podane
       if (!userId) {
-        return res.status(400).json({ error: "User ID is required." });
+        return res.status(400).json({error: "User ID is required."});
       }
 
       const [rows, fields] = await connection.execute(
@@ -111,7 +111,7 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
+
         }
       }
     }
@@ -119,7 +119,7 @@ app.use(express.json());
 
   // --- select USER_ID POLITICIAN_ID -----------------------------------------------------
   app.get("/api/ratings-user-id-politician-id", async (req, res) => {
-    const { user_id, politician_id } = req.query; // Używamy req.query do pobrania parametrów
+    const {user_id, politician_id} = req.query; // Używamy req.query do pobrania parametrów
 
     // Walidacja danych
     if (!user_id || !politician_id) {
@@ -142,19 +142,17 @@ app.use(express.json());
 
       // Sprawdzenie, czy wynik nie jest pusty
       if (rows.length === 0) {
-        return res.status(404).json({ message: "Rating not found" });
+        return res.status(404).json({message: "Rating not found"});
       }
 
       res.json(rows);
     } catch (err) {
-      console.error("Database error:", err);
-      res.status(500).json({ message: "Internal Server Error", error: err.message });
+      res.status(500).json({message: "Internal Server Error", error: err.message});
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -162,7 +160,7 @@ app.use(express.json());
 
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/ratings", async (req, res) => {
-    const { user_id, politician_id, title, value, description, date } = req.body;
+    const {user_id, politician_id, title, value, description, date} = req.body;
     const weight = req.body.weight || 1;
     let connection;
 
@@ -189,7 +187,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -197,8 +194,8 @@ app.use(express.json());
 
   // --- update ---------------------------------------------------------------------------
   app.put("/api/ratings/:id", async (req, res) => {
-    const { id } = req.params;
-    const { user_id, politician_id, title, value, description, date } = req.body;
+    const {id} = req.params;
+    const {user_id, politician_id, title, value, description, date} = req.body;
 
     let connection;
 
@@ -231,7 +228,7 @@ app.use(express.json());
     }
 
     if (fields.length === 0) {
-      return res.status(400).json({ message: "No data provided to update" });
+      return res.status(400).json({message: "No data provided to update"});
     }
 
     values.push(parseInt(id));
@@ -246,19 +243,17 @@ app.use(express.json());
       const [result] = await connection.execute(query, values);
 
       if (result.affectedRows > 0) {
-        res.json({ id, ...req.body });
+        res.json({id, ...req.body});
       } else {
-        res.status(404).json({ message: "Record not found" });
+        res.status(404).json({message: "Record not found"});
       }
     } catch (err) {
-      console.error("Error updating rating:", err.message);
       res.status(500).send(err.message);
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -266,7 +261,7 @@ app.use(express.json());
 
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/ratings/:id", async (req, res) => {
-    const { id } = req.params;
+    const {id} = req.params;
 
     let connection;
     try {
@@ -274,10 +269,10 @@ app.use(express.json());
       const [result] = await connection.execute("DELETE FROM ratings WHERE id = ?", [parseInt(id)]);
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Rating not found" });
+        return res.status(404).json({message: "Rating not found"});
       }
 
-      res.json({ message: "Rating deleted successfully", id });
+      res.json({message: "Rating deleted successfully", id});
     } catch (err) {
       res.status(500).send(err.message);
     } finally {
@@ -285,7 +280,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -311,17 +305,16 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
 
   app.get("/api/all-politician-own-ratings", async (req, res) => {
-    const { politician_id } = req.query;
+    const {politician_id} = req.query;
 
     if (!politician_id) {
-      return res.status(400).json({ message: "No politician_id provided" });
+      return res.status(400).json({message: "No politician_id provided"});
     }
 
     let connection;
@@ -332,21 +325,19 @@ app.use(express.json());
 
       res.json(rows);
     } catch (err) {
-      console.error("Error fetching ratings:", err.message);
       res.status(500).send(err.message);
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
 
   app.get("/api/own-ratings", async (req, res) => {
-    const { user_id, politician_id } = req.query;
+    const {user_id, politician_id} = req.query;
 
     if (!user_id || !politician_id) {
       return res.status(400).json({
@@ -364,19 +355,17 @@ app.use(express.json());
       const [rows] = await connection.execute("SELECT * FROM own_ratings WHERE user_id = ? AND politician_id = ?", [user_id, politician_id]);
 
       if (rows.length === 0) {
-        return res.status(404).json({ message: "Rating not found" });
+        return res.status(404).json({message: "Rating not found"});
       }
 
       res.json(rows);
     } catch (err) {
-      console.error("Database error:", err);
-      res.status(500).json({ message: "Internal Server Error", error: err.message });
+      res.status(500).json({message: "Internal Server Error", error: err.message});
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -384,7 +373,7 @@ app.use(express.json());
 
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/own-ratings", async (req, res) => {
-    const { user_id, politician_id, value } = req.body;
+    const {user_id, politician_id, value} = req.body;
     let connection;
 
     try {
@@ -395,7 +384,7 @@ app.use(express.json());
         value,
       ]);
 
-      res.status(201).json({ id: result.insertId, user_id, politician_id, value });
+      res.status(201).json({id: result.insertId, user_id, politician_id, value});
     } catch (err) {
       res.status(500).send(err.message);
     } finally {
@@ -403,7 +392,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -411,10 +399,9 @@ app.use(express.json());
 
   // --- update ---------------------------------------------------------------------------
   app.put(`/api/own-ratings`, async (req, res) => {
-    const { user_id, politician_id, value } = req.body;
+    const {user_id, politician_id, value} = req.body;
 
     let connection;
-    console.log("Request body:", req.body);
 
     const fields = [];
     const values = [];
@@ -433,7 +420,7 @@ app.use(express.json());
     }
 
     if (fields.length === 0) {
-      return res.status(400).json({ message: "No data provided to update" });
+      return res.status(400).json({message: "No data provided to update"});
     }
 
     const query = `UPDATE own_ratings
@@ -448,19 +435,17 @@ app.use(express.json());
       const [result] = await connection.execute(query, [value, politician_id, user_id]);
 
       if (result.affectedRows > 0) {
-        res.json({ ...req.body });
+        res.json({...req.body});
       } else {
-        res.status(404).json({ message: "Record not found" });
+        res.status(404).json({message: "Record not found"});
       }
     } catch (err) {
-      console.error("Error updating rating:", err.message);
       res.status(500).send(err.message);
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -468,7 +453,7 @@ app.use(express.json());
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/own-ratings", async (req, res) => {
     // const { id } = req.params;
-    const { user_id, politician_id } = req.body;
+    const {user_id, politician_id} = req.body;
 
     let connection;
     try {
@@ -476,10 +461,10 @@ app.use(express.json());
       const [result] = await connection.execute("DELETE FROM own_ratings WHERE politician_id = ? AND user_id = ?", [politician_id, user_id]);
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Rating not found" });
+        return res.status(404).json({message: "Rating not found"});
       }
 
-      res.json({ message: "Rating deleted successfully", politician_id, user_id });
+      res.json({message: "Rating deleted successfully", politician_id, user_id});
     } catch (err) {
       res.status(500).send(err.message);
     } finally {
@@ -487,7 +472,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -513,7 +497,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -521,7 +504,7 @@ app.use(express.json());
 }
 
 app.get("/api/politicians", async (req, res) => {
-  const { politician_id } = req.query;
+  const {politician_id} = req.query;
 
   if (!politician_id) {
     return res.status(400).json({
@@ -539,19 +522,17 @@ app.get("/api/politicians", async (req, res) => {
 
     // Sprawdzenie, czy wynik nie jest pusty
     if (rows.length === 0) {
-      return res.status(404).json({ message: "Politician not found" });
+      return res.status(404).json({message: "Politician not found"});
     }
 
     res.json(rows);
   } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({ message: "Internal Server Error", error: err.message });
+    res.status(500).json({message: "Internal Server Error", error: err.message});
   } finally {
     if (connection) {
       try {
         await connection.end();
       } catch (err) {
-        console.error("Error closing connection:", err.message);
       }
     }
   }
@@ -559,8 +540,19 @@ app.get("/api/politicians", async (req, res) => {
 
 // --- update ---------------------------------------------------------------------------
 app.put("/api/politicians/:id", async (req, res) => {
-  const { id } = req.params;
-  const { names_surname, party, global_rating, facebook_link, twitter_link, birth_date, name, surname, party_short, picture } = req.body;
+  const {id} = req.params;
+  const {
+    names_surname,
+    party,
+    global_rating,
+    facebook_link,
+    twitter_link,
+    birth_date,
+    name,
+    surname,
+    party_short,
+    picture
+  } = req.body;
 
   let connection;
 
@@ -609,7 +601,7 @@ app.put("/api/politicians/:id", async (req, res) => {
   }
 
   if (fields.length === 0) {
-    return res.status(400).json({ message: "No data provided to update" });
+    return res.status(400).json({message: "No data provided to update"});
   }
 
   values.push(parseInt(id));
@@ -624,19 +616,17 @@ app.put("/api/politicians/:id", async (req, res) => {
     const [result] = await connection.execute(query, values);
 
     if (result.affectedRows > 0) {
-      res.json({ id, ...req.body });
+      res.json({id, ...req.body});
     } else {
-      res.status(404).json({ message: "Record not found" });
+      res.status(404).json({message: "Record not found"});
     }
   } catch (err) {
-    console.error("Error updating politician:", err.message);
     res.status(500).send(err.message);
   } finally {
     if (connection) {
       try {
         await connection.end();
       } catch (err) {
-        console.error("Error closing connection:", err.message);
       }
     }
   }
@@ -668,7 +658,6 @@ app.put("/api/politicians/:id", async (req, res) => {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -676,7 +665,7 @@ app.put("/api/politicians/:id", async (req, res) => {
 
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/users", async (req, res) => {
-    const { name, email, password, phone_number, verified, communication_method, login_method } = req.body;
+    const {name, email, password, phone_number, verified, communication_method, login_method} = req.body;
     let connection;
 
     try {
@@ -703,7 +692,6 @@ app.put("/api/politicians/:id", async (req, res) => {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -711,11 +699,10 @@ app.put("/api/politicians/:id", async (req, res) => {
 
   // --- update ---------------------------------------------------------------------------
   app.put("/api/users/:id", async (req, res) => {
-    const { id } = req.params;
-    const { name, email, password, phone_number, verified, communication_method, login_method } = req.body;
+    const {id} = req.params;
+    const {name, email, password, phone_number, verified, communication_method, login_method} = req.body;
 
     let connection;
-    console.log("Request body:", req.body);
 
     const fields = [];
     const values = [];
@@ -750,7 +737,7 @@ app.put("/api/politicians/:id", async (req, res) => {
     }
 
     if (fields.length === 0) {
-      return res.status(400).json({ message: "No data provided to update" });
+      return res.status(400).json({message: "No data provided to update"});
     }
 
     values.push(id);
@@ -765,19 +752,17 @@ app.put("/api/politicians/:id", async (req, res) => {
       const [result] = await connection.execute(query, values);
 
       if (result.affectedRows > 0) {
-        res.json({ id, ...req.body });
+        res.json({id, ...req.body});
       } else {
-        res.status(404).json({ message: "User not found" });
+        res.status(404).json({message: "User not found"});
       }
     } catch (err) {
-      console.error("Error updating user:", err.message);
       res.status(500).send(err.message);
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -785,7 +770,7 @@ app.put("/api/politicians/:id", async (req, res) => {
 
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/users/:id", async (req, res) => {
-    const { id } = req.params;
+    const {id} = req.params;
 
     let connection;
     try {
@@ -793,10 +778,10 @@ app.put("/api/politicians/:id", async (req, res) => {
       const [result] = await connection.execute("DELETE FROM users WHERE id = ?", [parseInt(id)]);
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({message: "User not found"});
       }
 
-      res.json({ message: "User deleted successfully", id });
+      res.json({message: "User deleted successfully", id});
     } catch (err) {
       res.status(500).send(err.message);
     } finally {
@@ -804,7 +789,6 @@ app.put("/api/politicians/:id", async (req, res) => {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -830,7 +814,6 @@ app.put("/api/politicians/:id", async (req, res) => {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -856,7 +839,6 @@ app.put("/api/politicians/:id", async (req, res) => {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -882,7 +864,6 @@ app.put("/api/politicians/:id", async (req, res) => {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -904,7 +885,7 @@ app.put("/api/politicians/:id", async (req, res) => {
       if (result.length > 0) {
         res.json(result);
       } else {
-        res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+        res.json({id: 0, district_number: 0, powiat_name: "błąd"});
       }
     } catch (err) {
       res.status(500).send(err.message);
@@ -913,7 +894,6 @@ app.put("/api/politicians/:id", async (req, res) => {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -935,7 +915,7 @@ app.put("/api/politicians/:id", async (req, res) => {
       if (result.length > 0) {
         res.json(result);
       } else {
-        res.json({ id: 0, district_number: 0, powiat_name: "błąd" });
+        res.json({id: 0, district_number: 0, powiat_name: "błąd"});
       }
     } catch (err) {
       res.status(500).send(err.message);
@@ -944,7 +924,6 @@ app.put("/api/politicians/:id", async (req, res) => {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }

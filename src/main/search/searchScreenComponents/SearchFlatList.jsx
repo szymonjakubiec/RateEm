@@ -1,5 +1,5 @@
-import {useState} from "react";
-import {TouchableHighlight, StyleSheet, Text, FlatList, View} from "react-native";
+import {useEffect, useRef, useState} from "react";
+import {TouchableHighlight, StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard} from "react-native";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../../styles/TextInput";
 
@@ -8,6 +8,32 @@ import {textInputProps} from "../../styles/TextInput";
 export default function SearchFlatList({data, handleOnPress}) {
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState('');
+
+  // PK: Clear button animation
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+
+    // PK: Fade in
+    searchText.length > 0 &&
+    Animated.timing(opacityAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+      easing: value => Easing.ease(value),
+    }).start();
+
+    // PK: Fade out
+    searchText.length === 0 &&
+    Animated.timing(opacityAnim, {
+      toValue: 0,
+      duration: 250,
+      useNativeDriver: true,
+      easing: value => Easing.ease(value),
+    }).start();
+
+  }, [searchText]);
+
 
   /**
    * Filters through the array of politician names, by obtaining indexes of each occurrence of " " and "-" into array of ints.
@@ -52,8 +78,13 @@ export default function SearchFlatList({data, handleOnPress}) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
+          left={<TextInput.Icon
+            icon="magnify"
+            onPress={() => Keyboard.dismiss()}
+          />}
           right={<TextInput.Icon
             icon="close"
+            style={{opacity: opacityAnim}}
             onPress={() => {
               ClearTextInput();
               // Keyboard.dismiss()

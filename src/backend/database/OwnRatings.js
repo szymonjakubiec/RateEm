@@ -14,7 +14,6 @@ const getAllOwnRatings = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching own ratings:", error);
     return null;
   }
 };
@@ -34,7 +33,6 @@ const getOwnRating = async (user_id, politician_id) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    // console.error("Error fetching own ratings:", error);
     return null;
   }
 };
@@ -49,7 +47,6 @@ const getOwnRating = async (user_id, politician_id) => {
  */
 const getAllPoliticianOwnRatings = async (politician_id) => {
   const url = `${global.SERVER_URL}/all-politician-own-ratings?politician_id=${politician_id}`;
-  console.log(url);
 
   try {
     const response = await fetch(url);
@@ -59,7 +56,6 @@ const getAllPoliticianOwnRatings = async (politician_id) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
     return null;
   }
 };
@@ -84,17 +80,9 @@ const addOwnRating = async (user_id, politician_id, value) => {
       body: JSON.stringify({user_id, politician_id, value}), // Send data in JSON format
     });
 
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Error: ${response.status} - ${errorMessage}`);
-    }
-
-    // Reading updated data
     const newRating = await response.json();
-    console.log("New own rating added:", newRating);
     return newRating;
   } catch (error) {
-    console.error("An error occurred while adding the rating:", error.message);
     return undefined;
   }
 };
@@ -114,8 +102,6 @@ const addOwnRating = async (user_id, politician_id, value) => {
  */
 const updateOwnRating = async (politician_id, user_id, value) => {
   const url = `${global.SERVER_URL}/own-ratings`;
-  console.log(url);
-  console.log("in updateOwnRating: " + value);
   try {
     const response = await fetch(url, {
       method: "PUT",
@@ -128,10 +114,8 @@ const updateOwnRating = async (politician_id, user_id, value) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const updatedData = await response.json();
-    console.log("Own rating updated successfully:", updatedData);
     return updatedData;
   } catch (error) {
-    console.error("Error updating rating:", error);
     return undefined;
   }
 };
@@ -152,16 +136,14 @@ const deleteOwnRating = async (user_id, politician_id) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ user_id, politician_id }), // Send data in JSON format
+      body: JSON.stringify({user_id, politician_id}), // Send data in JSON format
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const deletedData = await response.json();
-    console.log("Own rating deleted successfully:", deletedData);
     return deletedData;
   } catch (error) {
-    console.error("Error deleting rating:", error);
     return undefined;
   }
 };
