@@ -5,11 +5,11 @@ import {useTheme} from "react-native-paper";
 
 /**
  * Makes SafeAreaView Container for screens.
- * @param {object} style - additional styles.
  * @param {any} children - Children structure wrapped in container (not passed as parameter).
+ * @param {object} [style] - additional styles.
  * @returns {JSX.Element}
  */
-export default function _Container({style, children}) {
+export default function _Container({children, style}) {
 
   const styles = StyleSheet.create({
     container: {
