@@ -1,35 +1,28 @@
-import {Alert,ScrollView, StyleSheet, Text, View} from "react-native";
-import {useContext, useEffect, useRef, useState} from "react";
-import {Image} from "react-native";
-import {
-  getOwnRating,
-  addOwnRating,
-  updateOwnRating,
-  deleteOwnRating,
-  getAllPoliticianOwnRatings,
-} from "../../backend/database/OwnRatings";
-import {getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating} from "../../backend/database/Ratings";
-import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Image } from "react-native";
+import { getOwnRating, addOwnRating, updateOwnRating, deleteOwnRating, getAllPoliticianOwnRatings } from "../../backend/database/OwnRatings";
+import { getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating } from "../../backend/database/Ratings";
+import { getPolitician, updatePolitician } from "../../backend/database/Politicians";
 import OpinionsTile from "./opinionsTileComponents/OpinionsTile";
-import {useTheme} from "react-native-paper";
-import {GlobalContext} from "../nav/GlobalContext";
-import {OpinionsTileContext} from "./nav/OpinionsTileContext";
+import { useTheme } from "react-native-paper";
+import { GlobalContext } from "../nav/GlobalContext";
+import { OpinionsTileContext } from "./nav/OpinionsTileContext";
 import _Container from "../styles/Container";
 
-
-
 export default function ProfileScreen({ navigation, route }) {
-  const {selectedPoliticianId} = route.params;
-  const {userId} = useContext(GlobalContext);
-  
+  const { selectedPoliticianId } = route.params;
+  const { userId } = useContext(GlobalContext);
+
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
   const [politicianSurname, setPoliticianSurname] = useState();
+  const [photo, setPhoto] = useState();
 
   const [surnameTextHeight, setSurnameTextHeight] = useState(0); // for adjusting names and surname font sizes on long surnames
 
-  const [party, setParty] = useState("Brak Partii"); 
-  const [partyShort, setPartyShort] = useState("Brak Partii"); 
+  const [party, setParty] = useState("Brak Partii");
+  const [partyShort, setPartyShort] = useState("Brak Partii");
 
   const [globalRating, setGlobalRating] = useState(0.0);
   const [ownRating, setOwnRating] = useState(0.0);
@@ -46,14 +39,14 @@ export default function ProfileScreen({ navigation, route }) {
    * Variable preventing the ownRating from writing feedback before loading the globalRating to the screen.
    */
   const canUpdateGlobalRating = useRef(false);
-  
+
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
 
   useEffect(() => {
     init();
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
+    navigation.getParent().setOptions({ tabBarStyle: { display: "none" } });
     return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
+      navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
     };
   }, []);
 
@@ -61,15 +54,14 @@ export default function ProfileScreen({ navigation, route }) {
    * Runs right after the loadOwnRating from useEffect above.
    */
   useEffect(() => {
-    if (isLoadOwnRatingInitialized){
+    if (isLoadOwnRatingInitialized) {
       canUpdateGlobalRating.current = true;
     }
-    
   }, [isLoadOwnRatingInitialized]);
 
   async function init() {
     loadPoliticianData();
-    if (await loadOwnRating()){
+    if (await loadOwnRating()) {
       loadSingleRatings();
     }
   }
@@ -83,28 +75,27 @@ export default function ProfileScreen({ navigation, route }) {
   async function loadPoliticianData() {
     const data = await getPolitician(selectedPoliticianId);
     setPoliticianData(data);
-    if (data.at(0).global_rating !== null)
-      setGlobalRating(data.at(0).global_rating);
+    if (data.at(0).global_rating !== null) setGlobalRating(data.at(0).global_rating);
     if (data.at(0).party !== null) {
       setParty(data.at(0).party);
     }
     setPoliticianNames(data.at(0).name);
     setPoliticianSurname(data.at(0).surname);
+    setPhoto(data.at(0).picture);
   }
 
   /**
-   * Loads asynchronously ownRating and if it is not null then allows to run loadSingleRatings. 
+   * Loads asynchronously ownRating and if it is not null then allows to run loadSingleRatings.
    * Also sets isLoadOwnRatingInitialized to allow updating the globalRating after completing the whole function.
    * @returns {Promise<boolean>}
    */
   async function loadOwnRating() {
-    const data  = await getOwnRating(userId, selectedPoliticianId);
-    if (data !== null){
+    const data = await getOwnRating(userId, selectedPoliticianId);
+    if (data !== null) {
       setOwnRating(data.at(0).value);
       setIsLoadOwnRatingInitialized(true);
       return true;
-    }
-    else{
+    } else {
       setIsLoadOwnRatingInitialized(true);
       return false;
     }
@@ -114,10 +105,7 @@ export default function ProfileScreen({ navigation, route }) {
    * Loads asynchronously all single ratings from Ratings.js from a user about politician into singleRatings array.
    */
   async function loadSingleRatings() {
-    const data = await getRatingsUserIdPoliticianId(
-      userId,
-      selectedPoliticianId
-    );
+    const data = await getRatingsUserIdPoliticianId(userId, selectedPoliticianId);
     if (data !== null) {
       setSingleRatings(data);
     }
@@ -134,7 +122,6 @@ export default function ProfileScreen({ navigation, route }) {
     return 24;
   }
 
-
   /**
    * Runs every time the singleRatings table is updated and has at least 1 record.
    * It calculates ownRating as the weighted average, and uploads the result to the base.
@@ -142,52 +129,50 @@ export default function ProfileScreen({ navigation, route }) {
   function countOwnRating() {
     let numerator = 0;
     let denominator = 0;
-    
+
     for (singleRating of singleRatings) {
       numerator = numerator + singleRating.value * singleRating.weight;
       denominator = denominator + singleRating.weight;
     }
-    
+
     let weightedAverage = Math.round((numerator * 100) / denominator) / 100; // round number to 2 decimal places
-    
+
     console.log("Srednia ważona wychodzi: " + weightedAverage);
     setOwnRating(weightedAverage);
     updateOwnRating(selectedPoliticianId, userId, weightedAverage);
   }
 
-
   /**
-   * Runs right after ownRating is added/updated. 
+   * Runs right after ownRating is added/updated.
    * It downloads ownRatings if there are any, from all users, calculates globalRating as the arithmetical average, and uploads the result to the base.
    * @returns {Promise<void>}
    */
-  async function countGlobalRating(){
+  async function countGlobalRating() {
     const politicianOwnRatings = await getAllPoliticianOwnRatings(selectedPoliticianId);
     let numerator = 0;
     let denominator = 0;
     let average = 0;
-    
-    for (politicianOwnRating of politicianOwnRatings) { 
-      if (politicianOwnRating.user_id !== userId){
+
+    for (politicianOwnRating of politicianOwnRatings) {
+      if (politicianOwnRating.user_id !== userId) {
         numerator += politicianOwnRating.value;
         denominator += 1;
       }
     }
-    if (ownRating > 0){
+    if (ownRating > 0) {
       numerator += ownRating;
       denominator = denominator + 1;
     }
-    if (denominator > 0){
+    if (denominator > 0) {
       average = Math.round((numerator * 100) / denominator) / 100;
     }
-    
-    console.log("Średnia globalna wynosi: " + average);    
-    
+
+    console.log("Średnia globalna wynosi: " + average);
+
     setGlobalRating(average);
-    updatePolitician(selectedPoliticianId, {global_rating: average});
+    updatePolitician(selectedPoliticianId, { global_rating: average });
   }
-  
-  
+
   async function handleFirstOwnRating() {
     await addRating(
       userId,
@@ -200,53 +185,44 @@ export default function ProfileScreen({ navigation, route }) {
     );
     addOwnRating(userId, selectedPoliticianId, firstOwnRating);
     setFirstOwnRating(0);
-    loadSingleRatings(); 
+    loadSingleRatings();
   }
 
-  async function handleNewSingleRating(){
-    await addRating(
-      userId,
-      selectedPoliticianId,
-      newTitle,
-      newSingleRating,
-      newDescription,
-      currentDate,
-      1
-    );
+  async function handleNewSingleRating() {
+    await addRating(userId, selectedPoliticianId, newTitle, newSingleRating, newDescription, currentDate, 1);
     setNewSingleRating(0);
     setNewTitle("");
     setNewDescription("");
-    loadSingleRatings(); 
+    loadSingleRatings();
   }
 
-  
   /**
    * Update states passed to the OpinionsTile.jsx
    */
-  function handleOtFirstOwnRating(starRating){ // Ot - OpinionsTile
-    setFirstOwnRating(starRating)
+  function handleOtFirstOwnRating(starRating) {
+    // Ot - OpinionsTile
+    setFirstOwnRating(starRating);
   }
 
-  function handleOtNewSingleRating(starRating){
+  function handleOtNewSingleRating(starRating) {
     setNewSingleRating(starRating);
   }
-  function handleOtNewTitle(newTitle){
+  function handleOtNewTitle(newTitle) {
     setNewTitle(newTitle);
   }
-  function handleOtNewDescription(newDescription){
+  function handleOtNewDescription(newDescription) {
     setNewDescription(newDescription);
   }
 
-
   /**
-   * Updates specific single rating and runs loadSingleRatings which triggers setOwnRating. 
+   * Updates specific single rating and runs loadSingleRatings which triggers setOwnRating.
    * @param itemId
    * @param titleUpdate
    * @param ratingUpdate
    * @param descriptionUpdate
    * @returns {Promise<void>}
    */
-  async function updateSingleRating(itemId, titleUpdate, ratingUpdate, descriptionUpdate){
+  async function updateSingleRating(itemId, titleUpdate, ratingUpdate, descriptionUpdate) {
     await updateRating(itemId, {
       user_id: userId,
       politicianId: selectedPoliticianId,
@@ -264,7 +240,7 @@ export default function ProfileScreen({ navigation, route }) {
    * @param ratingUpdate
    * @returns {Promise<void>}
    */
-  async function updateFirstOwnRating(itemId, ratingUpdate){
+  async function updateFirstOwnRating(itemId, ratingUpdate) {
     await updateRating(itemId, {
       user_id: userId,
       politicianId: selectedPoliticianId,
@@ -279,7 +255,7 @@ export default function ProfileScreen({ navigation, route }) {
    * @param itemId
    * @returns {Promise<void>}
    */
-  async function deleteSingleRating(itemId){
+  async function deleteSingleRating(itemId) {
     await deleteRating(itemId);
     loadSingleRatings();
   }
@@ -289,7 +265,7 @@ export default function ProfileScreen({ navigation, route }) {
    * @param itemId
    * @returns {Promise<void>}
    */
-  async function deleteFirstOwnRating(itemId){
+  async function deleteFirstOwnRating(itemId) {
     await deleteRating(itemId);
     await deleteOwnRating(userId, selectedPoliticianId);
     setSingleRatings([]);
@@ -297,8 +273,8 @@ export default function ProfileScreen({ navigation, route }) {
   }
 
   /**
-   * If the rating to update is of weight = 1 (singleRating) then updates the title, description and value of rating. 
-   * If the rating is of weight = 10, but it is the only value on the list then updates only the value. 
+   * If the rating to update is of weight = 1 (singleRating) then updates the title, description and value of rating.
+   * If the rating is of weight = 10, but it is the only value on the list then updates only the value.
    * @param itemId
    * @param itemWeight
    * @param titleUpdate
@@ -306,27 +282,26 @@ export default function ProfileScreen({ navigation, route }) {
    * @param descriptionUpdate
    * @returns {Promise<void>}
    */
-  async function handleOtSingleRatingUpdate(itemId, itemWeight, titleUpdate, ratingUpdate, descriptionUpdate){
-    if (itemWeight === 1){
+  async function handleOtSingleRatingUpdate(itemId, itemWeight, titleUpdate, ratingUpdate, descriptionUpdate) {
+    if (itemWeight === 1) {
       updateSingleRating(itemId, titleUpdate, ratingUpdate, descriptionUpdate);
-    } else if (singleRatings.length === 1){
+    } else if (singleRatings.length === 1) {
       updateFirstOwnRating(itemId, ratingUpdate);
     } else {
       Alert.alert("Nie można modyfikować oceny bazowej kiedy są jeszcze inne opinie.");
     }
   }
-  
-  async function handleOtSingleRatingDeletion(itemId, itemWeight){
-    if (itemWeight === 1){
+
+  async function handleOtSingleRatingDeletion(itemId, itemWeight) {
+    if (itemWeight === 1) {
       deleteSingleRating(itemId);
-    } else if (singleRatings.length === 1){
-      deleteFirstOwnRating(itemId)
+    } else if (singleRatings.length === 1) {
+      deleteFirstOwnRating(itemId);
     } else {
       Alert.alert("Nie można usunąć oceny bazowej kiedy są jeszcze inne opinie.");
     }
   }
-  
-  
+
   useEffect(() => {
     if (firstOwnRating) {
       handleFirstOwnRating();
@@ -340,39 +315,41 @@ export default function ProfileScreen({ navigation, route }) {
   }, [newSingleRating, newTitle, newDescription]);
 
   useEffect(() => {
-    if(singleRatings.length > 0){
-      countOwnRating()
+    if (singleRatings.length > 0) {
+      countOwnRating();
     }
-  }, [singleRatings]);  
+  }, [singleRatings]);
 
   useEffect(() => {
-    if (canUpdateGlobalRating.current === true){
+    if (canUpdateGlobalRating.current === true) {
       countGlobalRating();
     }
   }, [ownRating]);
 
-
   return (
-    <ScrollView style={{backgroundColor: useTheme().colors.background}}>
+    <ScrollView style={{ backgroundColor: useTheme().colors.background }}>
       <_Container style={styles.container}>
         <View style={styles.infoTile}>
           <View style={styles.nameContainer}>
             <View style={styles.nameSurnameColumn}>
-              <Text
-                adjustsFontSizeToFit={true}
-                numberOfLines={1}
-                style={styles.surname}
-              >
+              <Text adjustsFontSizeToFit={true} numberOfLines={1} style={styles.surname}>
                 {politicianSurname}
               </Text>
               <Text style={styles.names}>{politicianNames}</Text>
             </View>
             <View style={styles.imageContainer}>
-              <Image
-                style={styles.image}
-                source={require("./../../../assets/Jan_Paweł_Adamczewski.png")}
-                alt="politician"
-              />
+              {photo ? (
+                <Image
+                  style={styles.image}
+                  source={{
+                    uri: `data:image/jpeg;base64,${photo}`,
+                    cache: "force-cache",
+                  }}
+                  alt="politician"
+                />
+              ) : (
+                <Image source={require("./../../../assets/noPhoto.png")} alt="politician" style={styles.image} />
+              )}
             </View>
           </View>
           <View>
@@ -396,26 +373,21 @@ export default function ProfileScreen({ navigation, route }) {
             <Text>{party}.</Text>
           </View>
         </View>
-        <OpinionsTileContext.Provider 
+        <OpinionsTileContext.Provider
           value={{
             singleRatings: singleRatings,
             handleNewSingleRating: handleOtNewSingleRating,
             handleNewTitle: handleOtNewTitle,
             handleNewDescription: handleOtNewDescription,
             handleSingleRatingUpdate: handleOtSingleRatingUpdate,
-            handleSingleRatingDeletion: handleOtSingleRatingDeletion
+            handleSingleRatingDeletion: handleOtSingleRatingDeletion,
           }}
         >
-          <OpinionsTile
-            ownRating={ownRating}
-            handleFirstOwnRating={handleOtFirstOwnRating}
-          />
+          <OpinionsTile ownRating={ownRating} handleFirstOwnRating={handleOtFirstOwnRating} />
         </OpinionsTileContext.Provider>
-        
       </_Container>
     </ScrollView>
   );
-
 }
 
 const styles = StyleSheet.create({

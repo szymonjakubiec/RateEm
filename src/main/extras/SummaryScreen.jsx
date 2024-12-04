@@ -43,13 +43,17 @@ export default function SummaryScreen({ navigation }) {
   const renderRatingItem = ({ item }) => (
     <View style={styles.ratingItemContainer}>
       <TouchableOpacity style={styles.ratingItem} onPress={() => handleratingClick(item)}>
-        <Image
-          source={{
-            uri: `data:image/jpeg;base64,${item.picture}`,
-            cache: "force-cache",
-          }}
-          style={styles.ratingImage}
-        />
+        {item.picture ? (
+          <Image
+            source={{
+              uri: `data:image/jpeg;base64,${item.picture}`,
+              cache: "force-cache",
+            }}
+            style={styles.ratingImage}
+          />
+        ) : (
+          <Image source={require("./../../../assets/noPhoto.png")} style={styles.ratingImage} />
+        )}
         <Text style={styles.ratingItemText}>
           {item.names_surname} {item.value}
         </Text>
