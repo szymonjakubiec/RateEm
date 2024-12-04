@@ -38,7 +38,7 @@ export default function ElectionNavigation({ route }) {
         name="Calculator"
         component={CalculatorScreen}
         options={() => ({
-          headerTitle: "Kalkulator mandatów",
+          headerTitle: "Kalkulator mandatów do Sejmu",
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
