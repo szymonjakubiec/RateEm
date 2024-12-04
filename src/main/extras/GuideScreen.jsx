@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Linking, Dimensions, SafeAreaView, TextInput, FlatList, Image, LayoutAnimation,
+  Linking, Dimensions, SafeAreaView, TextInput, FlatList, Image, LayoutAnimation, BackHandler,
 } from "react-native";
 import {tabBarAnim} from "../../backend/CommonMethods";
 import {StatusBar} from "expo-status-bar";
@@ -21,6 +21,13 @@ export default function GuideScreen({navigation}) {
   useEffect(() => {
     return tabBarAnim(navigation);
   }, []);
+
+  // Pk: Preventing navigating back
+  useEffect(() => {
+    const backAction = () => true;
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    return () => backHandler.remove();
+  }, [navigation]);
 
   const [sliderState, setSliderState] = useState({currentPage: 0});
 

@@ -193,6 +193,7 @@ const getUserAddress = async (latitude, longitude) => {
  * @param navigation - navigation.
  */
 function ownGoBack(navigation) {
+  
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
     const backAction = () => {
@@ -217,5 +218,6 @@ function tabBarAnim(navigation) {
     navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
   };
 }
+
 
 module.exports = {tabBarAnim, sendVerificationSMS, checkVerificationSMS, sendMail, alert, ownGoBack, getUserAddress};
