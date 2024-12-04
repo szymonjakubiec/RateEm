@@ -1,6 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
-const {encrypt} = require("./Encryption");
+const { encrypt } = require("./Encryption");
 const app = express();
 
 const config = {
@@ -13,6 +13,7 @@ const config = {
     rejectUnauthorized: true,
   },
 };
+
 app.use(express.json());
 
 //
@@ -61,6 +62,7 @@ app.use(express.json());
       }
     }
   });
+
   // --- select USER_ID -------------------------------------------------------------------
   app.get("/api/ratings-user-id", async (req, res) => {
     const userId = req.query.user_id; // Pobieranie user_id z parametrów zapytania
@@ -115,6 +117,7 @@ app.use(express.json());
       }
     }
   });
+
   // --- select USER_ID POLITICIAN_ID -----------------------------------------------------
   app.get("/api/ratings-user-id-politician-id", async (req, res) => {
     const {user_id, politician_id} = req.query; // Używamy req.query do pobrania parametrów
@@ -496,13 +499,14 @@ app.use(express.json());
     }
   });
   // --- delete ---------------------------------------------------------------------------
-  app.delete("/api/own-ratings/:id", async (req, res) => {
-    const {id} = req.params;
+  app.delete("/api/own-ratings", async (req, res) => {
+    // const { id } = req.params;
+    const { user_id, politician_id } = req.body;
 
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [result] = await connection.execute("DELETE FROM own_ratings WHERE id = ?", [parseInt(id)]);
+      const [result] = await connection.execute("DELETE FROM own_ratings WHERE politician_id = ? AND user_id = ?", [politician_id, user_id]);
 
       if (result.affectedRows === 0) {
         return res.status(404).json({message: "Rating not found"});
@@ -564,7 +568,6 @@ app.use(express.json());
       connection = await mysql.createConnection(config);
       const [rows] = await connection.execute("SELECT * FROM politicians WHERE id = ?", [politician_id]);
 
-      // Sprawdzenie, czy wynik nie jest pusty
       if (rows.length === 0) {
         return res.status(404).json({message: "Politician not found"});
       }

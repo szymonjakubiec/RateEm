@@ -35,7 +35,7 @@ const getOwnRating = async (user_id, politician_id) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching own ratings:", error);
+    // console.error("Error fetching own ratings:", error);
     return null;
   }
 };
@@ -141,17 +141,19 @@ const updateOwnRating = async (politician_id, user_id, value) => {
  * Deletes own rating.
  *
  * @async
- * @param {string} id - ID of the rating to delete
+ * @param {number} user_id - ID of the user
+ * @param {number} politician_id - ID of the politician
  * @returns {Promise<object|undefined>} Deleted rating data object
  */
-const deleteOwnRating = async (id) => {
-  const url = `${global.SERVER_URL}/own-ratings/${id}`;
+const deleteOwnRating = async (user_id, politician_id) => {
+  const url = `${global.SERVER_URL}/own-ratings`;
   try {
     const response = await fetch(url, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({ user_id, politician_id }), // Send data in JSON format
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
