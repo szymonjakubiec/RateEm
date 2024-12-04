@@ -1,5 +1,6 @@
 const mysql = require("mysql2");
 const fs = require("fs");
+const axios = require("axios");
 const { log } = require("console");
 
 var config = {
@@ -246,9 +247,17 @@ class InfoDownload {
               osobaTemp.partiaSkrot = osoba.club ? osoba.club : "";
               osobaTemp.partia = this.getClubFullName(osobaTemp.partiaSkrot);
               osobaTemp.dataUrodzenia = osoba.birthDate;
-              osobaTemp.zdjecie = `https://api.sejm.gov.pl/sejm/term${kadencja.num}/MP/${osoba.id}/photo`
-                ? `https://api.sejm.gov.pl/sejm/term${kadencja.num}/MP/${osoba.id}/photo`
-                : "";
+
+              try {
+                const photoResponse = await axios.get(`https://api.sejm.gov.pl/sejm/term${kadencja.num}/MP/${osoba.id}/photo`, {
+                  responseType: "arraybuffer",
+                });
+                const base64Photo = Buffer.from(photoResponse.data, "binary").toString("base64");
+                osobaTemp.zdjecie = base64Photo;
+              } catch (error) {
+                osobaTemp.zdjecie = "";
+              }
+
               osobaTemp.linkFacebook = "";
               osobaTemp.linkTweeter = "";
 
@@ -300,7 +309,16 @@ class InfoDownload {
                   osobaTemp.partiaSkrot = "";
                   osobaTemp.partia = "";
                   osobaTemp.dataUrodzenia = politykSzczegoly.data[0].bday;
-                  osobaTemp.zdjecie = politykSzczegoly.data[0].img;
+
+                  try {
+                    const photoResponse = await axios.get(politykSzczegoly.data[0].img, {
+                      responseType: "arraybuffer",
+                    });
+                    const base64Photo = Buffer.from(photoResponse.data, "binary").toString("base64");
+                    osobaTemp.zdjecie = base64Photo;
+                  } catch (error) {
+                    osobaTemp.zdjecie = "";
+                  }
 
                   if (politykSzczegoly.data[0].hasGender.includes("FEMALE")) {
                     osobaTemp.gender = "female";
@@ -483,14 +501,14 @@ class InfoDownload {
           await this.insertNewPolitician(polityk);
         } catch (err) {
           console.error(`Failed to insert ${polityk.fullName}:`, err);
-          console.log(polityk);
+          console.log(polityk.fullName);
         }
       } else {
         try {
           await this.updatePolitician(polityk);
         } catch (err) {
           console.error(`Failed to update ${polityk.fullName}:`, err);
-          console.log(polityk);
+          console.log(polityk.fullName);
         }
       }
     }
