@@ -14,7 +14,6 @@ const getAllPoliticians = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching politicians:", error);
     return null;
   }
 };
@@ -44,7 +43,6 @@ const getAllPoliticianNames = async () => {
     }
     return data;
   } catch (error) {
-    console.error("Error fetching politicians:", error);
     return null;
   }
 };
@@ -72,7 +70,6 @@ const getPolitician = async (politician_id) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching politicians:", error);
     return null;
   }
 };
@@ -92,11 +89,9 @@ const updatePolitician = async (id, newData = {}) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const updatedData = await response.json();
-    console.log("Politician updated successfully:", updatedData);
     return updatedData;
   } catch (error) {
-    console.error("Error updating politician:", error);
-    return undefined;
+    return null;
   }
 };
 

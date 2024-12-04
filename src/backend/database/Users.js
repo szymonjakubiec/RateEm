@@ -1,4 +1,6 @@
-import { decrypt } from "../Encryption";
+import {decrypt} from "../Encryption";
+
+
 
 /**
  * Gets all users.
@@ -25,8 +27,7 @@ export const getAllUsers = async () => {
 
     return data;
   } catch (error) {
-    console.error("Error fetching users:", error);
-    return undefined;
+    return null;
   }
 };
 
@@ -41,8 +42,7 @@ export const getUserIdByEmail = (email) => {
       return users.find((user) => user.email === email).id;
     })
     .catch((error) => {
-      console.error("Error fetching users:", error);
-      return undefined;
+      return null;
     });
 };
 
@@ -85,11 +85,9 @@ export const addUser = async (name, email, password, phone_number, verified, com
 
     // Reading the added user data
     const newUser = await response.json();
-    console.log("New user added:", newUser);
     return newUser;
   } catch (error) {
-    console.error("An error occurred while adding a user:", error.message);
-    return undefined;
+    return null;
   }
 };
 
@@ -124,11 +122,9 @@ export const updateUser = async (id, newData = {}) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const updatedData = await response.json();
-    console.log("User updated successfully:", updatedData);
     return updatedData;
   } catch (error) {
-    console.error("Error updating user:", error);
-    return undefined;
+    return null;
   }
 };
 
@@ -152,10 +148,8 @@ export const deleteUser = async (id) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const deletedData = await response.json();
-    console.log("User deleted successfully:", deletedData);
     return deletedData;
   } catch (error) {
-    console.error("Error deleting user:", error);
-    return undefined;
+    return null;
   }
 };

@@ -47,7 +47,6 @@ const getOwnRating = async (user_id, politician_id) => {
  */
 const getAllPoliticianOwnRatings = async (politician_id) => {
   const url = `${global.SERVER_URL}/all-politician-own-ratings?politician_id=${politician_id}`;
-  console.log(url);
 
   try {
     const response = await fetch(url);
@@ -103,8 +102,6 @@ const addOwnRating = async (user_id, politician_id, value) => {
  */
 const updateOwnRating = async (politician_id, user_id, value) => {
   const url = `${global.SERVER_URL}/own-ratings`;
-  console.log(url);
-  console.log("in updateOwnRating: " + value);
   try {
     const response = await fetch(url, {
       method: "PUT",
