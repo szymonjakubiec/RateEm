@@ -1,4 +1,4 @@
-import { createStackNavigator } from "@react-navigation/stack";
+import {createStackNavigator} from "@react-navigation/stack";
 import ElectionScreen from "../ElectionScreen.jsx";
 import CalculatorScreen from "../CalculatorScreen.jsx";
 import CalendarScreen from "../CalendarScreen.jsx";
@@ -9,9 +9,11 @@ import PrezydentExplanationScreen from "../PrezydentExplanationScreen.jsx";
 import EuExplanationScreen from "../EuExplanationScreen.jsx";
 import DhondtExplanationScreen from "../DhondtExplanationScreen.jsx";
 
+
+
 var Stack = createStackNavigator();
 
-export default function ElectionNavigation({ route }) {
+export default function ElectionNavigation({route}) {
   const _title = route.params?._title;
 
   return (
@@ -22,6 +24,7 @@ export default function ElectionNavigation({ route }) {
         options={() => ({
           headerTitle: "Wybory",
           headerTitleAlign: "center",
+          headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
       />
