@@ -23,6 +23,7 @@ export default function GuideScreen({navigation, route}) {
     };
   }, []);
   const [sliderState, setSliderState] = useState({currentPage: 0});
+  const [politicianSliderState, setPoliticianSliderState] = useState({currentPage: 0});
 
   const setSliderPage = (event) => {
     const {currentPage} = sliderState;
@@ -32,6 +33,19 @@ export default function GuideScreen({navigation, route}) {
     if (indexOfNextScreen !== currentPage) {
       setSliderState({
         ...sliderState,
+        currentPage: indexOfNextScreen,
+      });
+    }
+  };
+
+  const setPoliticiansSliderPage = (event) => {
+    const {currentPage} = sliderState;
+
+    const {x} = event.nativeEvent.contentOffset;
+    const indexOfNextScreen = Math.round(x / width);
+    if (indexOfNextScreen !== currentPage) {
+      setPoliticianSliderState({
+        ...politicianSliderState,
         currentPage: indexOfNextScreen,
       });
     }
@@ -192,6 +206,10 @@ export default function GuideScreen({navigation, route}) {
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} nestedScrollEnabled={true}
                         snapToInterval={width}
                         snapToAlignment="center"
+                        bounces={false}
+                        pagingEnabled={true}
+                        overScrollMode="never"
+                        onScroll={setPoliticiansSliderPage}
                         decelerationRate="fast">
               {politicians.map((item, index) => (
                 <View key={index} style={[styles.politicianPanel, {alignItems: 'center'}]}>
@@ -203,6 +221,17 @@ export default function GuideScreen({navigation, route}) {
                 </View>
               ))}
             </ScrollView>
+            <View style={[styles.paginationWrapper, {position: 'relative', marginTop: '7%'}]}>
+              {Array.from(Array(2).keys()).map((key, index) => (
+                <View
+                  style={[
+                    styles.paginationDots,
+                    {opacity: politicianSliderState.currentPage === index ? 1 : 0.2},
+                  ]}
+                  key={index}
+                />
+              ))}
+            </View>
           </View>
         </View>
 
@@ -229,7 +258,7 @@ export default function GuideScreen({navigation, route}) {
           <View
             style={[
               styles.paginationDots,
-              {opacity: sliderState.currentPage === index ? 1 : 0.2}, // Upewnij się, że używasz aktualnego currentPage
+              {opacity: sliderState.currentPage === index ? 1 : 0.2},
             ]}
             key={index}
           />
