@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {TouchableHighlight, StyleSheet, Text, FlatList, View, Animated, Easing} from "react-native";
+import {TouchableHighlight, StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard} from "react-native";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../../styles/TextInput";
 
@@ -78,6 +78,10 @@ export default function SearchFlatList({data, handleOnPress}) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
+          left={<TextInput.Icon
+            icon="magnify"
+            onPress={() => Keyboard.dismiss()}
+          />}
           right={<TextInput.Icon
             icon="close"
             style={{opacity: opacityAnim}}
