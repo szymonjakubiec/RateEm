@@ -1,6 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
-const { encrypt } = require("./Encryption");
+const {encrypt} = require("./Encryption");
 const app = express();
 
 const config = {
@@ -57,7 +57,7 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
+
         }
       }
     }
@@ -85,7 +85,6 @@ app.use(express.json());
                    r.value,
                    r.description,
                    r.date,
-                   r.weight,
                    p.id AS politician_id,
                    p.names_surname,
                    p.party,
@@ -112,7 +111,7 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
+
         }
       }
     }
@@ -148,58 +147,17 @@ app.use(express.json());
 
       res.json(rows);
     } catch (err) {
-      console.error("Database error:", err);
       res.status(500).json({message: "Internal Server Error", error: err.message});
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
-  // --- select TRENDING POLITICIANS -----------------------------------------------------
-  app.get("/api/trending-politicians", async (req, res) => {
-    const count = req.query.count || '5';
-    const days = req.query.days || '30';
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      const [rows] = await connection.execute(`
-          SELECT politician_id, COUNT(*) AS ratings_count
-          FROM ratings
-          WHERE date >= CURDATE() - INTERVAL ? DAY
-          GROUP BY politician_id
-          ORDER BY ratings_count DESC
-              LIMIT ?
-      `, [days, count]);
 
-      const politicianIds = rows.map(row => row.politician_id);
-
-      if (politicianIds.length > 0) {
-        const [politicians] = await connection.execute(`
-            SELECT *
-            FROM politicians
-            WHERE id IN (${politicianIds.join(",")})
-        `);
-        res.json(politicians);
-      } else {
-        res.json([]);
-      }
-    } catch (err) {
-      res.status(500).send(err.message);
-    } finally {
-      if (connection) {
-        try {
-          await connection.end();
-        } catch (err) {
-          console.error("Error closing connection:", err.message);
-        }
-      }
-    }
-  });
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/ratings", async (req, res) => {
     const {user_id, politician_id, title, value, description, date} = req.body;
@@ -229,11 +187,11 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
+
   // --- update ---------------------------------------------------------------------------
   app.put("/api/ratings/:id", async (req, res) => {
     const {id} = req.params;
@@ -290,18 +248,17 @@ app.use(express.json());
         res.status(404).json({message: "Record not found"});
       }
     } catch (err) {
-      console.error("Error updating rating:", err.message);
       res.status(500).send(err.message);
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
+
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/ratings/:id", async (req, res) => {
     const {id} = req.params;
@@ -323,7 +280,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -349,11 +305,11 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
+
   app.get("/api/all-politician-own-ratings", async (req, res) => {
     const {politician_id} = req.query;
 
@@ -369,18 +325,17 @@ app.use(express.json());
 
       res.json(rows);
     } catch (err) {
-      console.error("Error fetching ratings:", err.message);
       res.status(500).send(err.message);
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
+
   app.get("/api/own-ratings", async (req, res) => {
     const {user_id, politician_id} = req.query;
 
@@ -402,20 +357,20 @@ app.use(express.json());
       if (rows.length === 0) {
         return res.status(404).json({message: "Rating not found"});
       }
+
       res.json(rows);
     } catch (err) {
-      console.error("Database error:", err);
       res.status(500).json({message: "Internal Server Error", error: err.message});
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
+
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/own-ratings", async (req, res) => {
     const {user_id, politician_id, value} = req.body;
@@ -437,17 +392,16 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
+
   // --- update ---------------------------------------------------------------------------
   app.put(`/api/own-ratings`, async (req, res) => {
     const {user_id, politician_id, value} = req.body;
 
     let connection;
-    console.log("Request body:", req.body);
 
     const fields = [];
     const values = [];
@@ -486,14 +440,12 @@ app.use(express.json());
         res.status(404).json({message: "Record not found"});
       }
     } catch (err) {
-      console.error("Error updating rating:", err.message);
       res.status(500).send(err.message);
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -501,7 +453,7 @@ app.use(express.json());
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/own-ratings", async (req, res) => {
     // const { id } = req.params;
-    const { user_id, politician_id } = req.body;
+    const {user_id, politician_id} = req.body;
 
     let connection;
     try {
@@ -512,7 +464,7 @@ app.use(express.json());
         return res.status(404).json({message: "Rating not found"});
       }
 
-      res.json({message: "Rating deleted successfully", id});
+      res.json({message: "Rating deleted successfully", politician_id, user_id});
     } catch (err) {
       res.status(500).send(err.message);
     } finally {
@@ -520,7 +472,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -546,142 +497,140 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
-        }
-      }
-    }
-  });
-  app.get("/api/politicians", async (req, res) => {
-    const {politician_id} = req.query;
-
-    if (!politician_id) {
-      return res.status(400).json({
-        message: "politician_id must be provided",
-        missing: {
-          politician_id: !politician_id ? "Missing" : "Provided",
-        },
-      });
-    }
-
-    let connection;
-    try {
-      connection = await mysql.createConnection(config);
-      const [rows] = await connection.execute("SELECT * FROM politicians WHERE id = ?", [politician_id]);
-
-      if (rows.length === 0) {
-        return res.status(404).json({message: "Politician not found"});
-      }
-
-      res.json(rows);
-    } catch (err) {
-      console.error("Database error:", err);
-      res.status(500).json({message: "Internal Server Error", error: err.message});
-    } finally {
-      if (connection) {
-        try {
-          await connection.end();
-        } catch (err) {
-          console.error("Error closing connection:", err.message);
-        }
-      }
-    }
-  });
-// --- update ---------------------------------------------------------------------------
-  app.put("/api/politicians/:id", async (req, res) => {
-    const {id} = req.params;
-    const {
-      names_surname,
-      party,
-      global_rating,
-      facebook_link,
-      twitter_link,
-      birth_date,
-      name,
-      surname,
-      party_short,
-      picture
-    } = req.body;
-
-    let connection;
-
-    const fields = [];
-    const values = [];
-
-    if (names_surname) {
-      fields.push("names_surname = ?");
-      values.push(names_surname);
-    }
-    if (party) {
-      fields.push("party = ?");
-      values.push(party);
-    }
-    if (global_rating) {
-      fields.push("global_rating = ?");
-      values.push(global_rating);
-    }
-    if (facebook_link) {
-      fields.push("facebook_link = ?");
-      values.push(facebook_link);
-    }
-    if (twitter_link) {
-      fields.push("twitter_link = ?");
-      values.push(twitter_link);
-    }
-    if (birth_date) {
-      fields.push("birth_date = ?");
-      values.push(birth_date);
-    }
-    if (name) {
-      fields.push("name = ?");
-      values.push(name);
-    }
-    if (surname) {
-      fields.push("surname = ?");
-      values.push(surname);
-    }
-    if (party_short) {
-      fields.push("party_short = ?");
-      values.push(party_short);
-    }
-    if (picture) {
-      fields.push("picture = ?");
-      values.push(picture);
-    }
-
-    if (fields.length === 0) {
-      return res.status(400).json({message: "No data provided to update"});
-    }
-
-    values.push(parseInt(id));
-
-    const query = `UPDATE politicians
-                   SET ${fields.join(", ")}
-                   WHERE id = ?`;
-
-    try {
-      connection = await mysql.createConnection(config);
-
-      const [result] = await connection.execute(query, values);
-
-      if (result.affectedRows > 0) {
-        res.json({id, ...req.body});
-      } else {
-        res.status(404).json({message: "Record not found"});
-      }
-    } catch (err) {
-      console.error("Error updating politician:", err.message);
-      res.status(500).send(err.message);
-    } finally {
-      if (connection) {
-        try {
-          await connection.end();
-        } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
   });
 }
+
+app.get("/api/politicians", async (req, res) => {
+  const {politician_id} = req.query;
+
+  if (!politician_id) {
+    return res.status(400).json({
+      message: "politician_id must be provided",
+      missing: {
+        politician_id: !politician_id ? "Missing" : "Provided",
+      },
+    });
+  }
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(config);
+    const [rows] = await connection.execute("SELECT * FROM politicians WHERE id = ?", [politician_id]);
+
+    // Sprawdzenie, czy wynik nie jest pusty
+    if (rows.length === 0) {
+      return res.status(404).json({message: "Politician not found"});
+    }
+
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({message: "Internal Server Error", error: err.message});
+  } finally {
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+      }
+    }
+  }
+});
+
+// --- update ---------------------------------------------------------------------------
+app.put("/api/politicians/:id", async (req, res) => {
+  const {id} = req.params;
+  const {
+    names_surname,
+    party,
+    global_rating,
+    facebook_link,
+    twitter_link,
+    birth_date,
+    name,
+    surname,
+    party_short,
+    picture
+  } = req.body;
+
+  let connection;
+
+  const fields = [];
+  const values = [];
+
+  if (names_surname !== undefined) {
+    fields.push("names_surname = ?");
+    values.push(names_surname);
+  }
+  if (party !== undefined) {
+    fields.push("party = ?");
+    values.push(party);
+  }
+  if (global_rating !== undefined) {
+    fields.push("global_rating = ?");
+    values.push(global_rating);
+  }
+  if (facebook_link !== undefined) {
+    fields.push("facebook_link = ?");
+    values.push(facebook_link);
+  }
+  if (twitter_link !== undefined) {
+    fields.push("twitter_link = ?");
+    values.push(twitter_link);
+  }
+  if (birth_date !== undefined) {
+    fields.push("birth_date = ?");
+    values.push(birth_date);
+  }
+  if (name !== undefined) {
+    fields.push("name = ?");
+    values.push(name);
+  }
+  if (surname !== undefined) {
+    fields.push("surname = ?");
+    values.push(surname);
+  }
+  if (party_short !== undefined) {
+    fields.push("party_short = ?");
+    values.push(party_short);
+  }
+  if (picture !== undefined) {
+    fields.push("picture = ?");
+    values.push(picture);
+  }
+
+  if (fields.length === 0) {
+    return res.status(400).json({message: "No data provided to update"});
+  }
+
+  values.push(parseInt(id));
+
+  const query = `UPDATE politicians
+                 SET ${fields.join(", ")}
+                 WHERE id = ?`;
+
+  try {
+    connection = await mysql.createConnection(config);
+
+    const [result] = await connection.execute(query, values);
+
+    if (result.affectedRows > 0) {
+      res.json({id, ...req.body});
+    } else {
+      res.status(404).json({message: "Record not found"});
+    }
+  } catch (err) {
+    res.status(500).send(err.message);
+  } finally {
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+      }
+    }
+  }
+});
 
 //
 // === USERS TABLE ========================================================================
@@ -709,7 +658,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -744,7 +692,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -756,7 +703,6 @@ app.use(express.json());
     const {name, email, password, phone_number, verified, communication_method, login_method} = req.body;
 
     let connection;
-    console.log("Request body:", req.body);
 
     const fields = [];
     const values = [];
@@ -811,14 +757,12 @@ app.use(express.json());
         res.status(404).json({message: "User not found"});
       }
     } catch (err) {
-      console.error("Error updating user:", err.message);
       res.status(500).send(err.message);
     } finally {
       if (connection) {
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -845,7 +789,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -871,7 +814,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -897,7 +839,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -923,7 +864,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -954,7 +894,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
@@ -985,7 +924,6 @@ app.use(express.json());
         try {
           await connection.end();
         } catch (err) {
-          console.error("Error closing connection:", err.message);
         }
       }
     }
