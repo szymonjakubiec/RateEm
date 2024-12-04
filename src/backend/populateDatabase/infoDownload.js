@@ -560,7 +560,3 @@ class InfoDownload {
 
 const infoDownload = new InfoDownload();
 infoDownload.main();
-
-// pobierać przynależność partyjną EU
-
-// weryfikacja czy osoba żyje - jeśli nie wywalić z pamięci
