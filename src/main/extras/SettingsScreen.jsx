@@ -6,7 +6,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import {getAllUsers, updateUser} from "../../backend/database/Users";
-import {goBack} from "../../backend/CommonMethods";
+import {ownGoBack, tabBarAnim} from "../../backend/CommonMethods";
 import {TextInput} from "react-native-paper";
 import {textInputProps} from "../styles/TextInput";
 import {GlobalContext} from "../nav/GlobalContext";
@@ -16,8 +16,13 @@ import _Container from "../styles/Container";
 
 export default function SettingsScreen({navigation}) {
 
-  // Pk: Going back
-  goBack(navigation);
+  // PK: Hide bottom TabBar
+  useEffect(() => {
+    return tabBarAnim(navigation);
+  }, []);
+
+  // // Pk: Going back
+  // goBack(navigation);
 
   const [user, setUser] = useState(null);
 
@@ -31,17 +36,12 @@ export default function SettingsScreen({navigation}) {
   useEffect(() => {
     const fetchUsers = async () => {
       const users = await getAllUsers();
-      setUser(users.filter(function(item){
+      setUser(users.filter(function (item) {
         return item.id === userId;
-      }))
+      }));
     };
 
     fetchUsers();
-
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
-    return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10,  borderTopRightRadius: 10}});
-    };
   }, []);
 
 

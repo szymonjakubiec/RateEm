@@ -5,9 +5,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Linking, Dimensions, SafeAreaView, TextInput, FlatList, Image,
+  Linking, Dimensions, SafeAreaView, TextInput, FlatList, Image, LayoutAnimation, BackHandler,
 } from "react-native";
-import {goBack} from "../../backend/CommonMethods";
+import {tabBarAnim} from "../../backend/CommonMethods";
 import {StatusBar} from "expo-status-bar";
 import _Container from "../styles/Container";
 
@@ -15,13 +15,20 @@ import _Container from "../styles/Container";
 
 const {width, height} = Dimensions.get('window');
 
-export default function GuideScreen({navigation, route}) {
+export default function GuideScreen({navigation}) {
+
+  // PK: Hide bottom TabBar
   useEffect(() => {
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
-    return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
-    };
+    return tabBarAnim(navigation);
   }, []);
+
+  // Pk: Preventing navigating back
+  useEffect(() => {
+    const backAction = () => true;
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    return () => backHandler.remove();
+  }, [navigation]);
+
   const [sliderState, setSliderState] = useState({currentPage: 0});
   const [politicianSliderState, setPoliticianSliderState] = useState({currentPage: 0});
 
@@ -60,9 +67,9 @@ export default function GuideScreen({navigation, route}) {
     'Jan Paweł Adamczewski': require('./../../../assets/Jan_Paweł_Adamczewski.png'),
     'Andrzej Pobreża': require('./../../../assets/Andrzej_Pobreża.jpg'),
   };
-  // Pk: Going back
-  goBack(navigation);
+
   const {currentPage: pageIndex} = sliderState;
+
   return (
     <_Container style={{paddingHorizontal: 0}}>
       <StatusBar barStyle="dark-content"/>
