@@ -1,17 +1,9 @@
 import {StatusBar} from "expo-status-bar";
-import {
-  Animated,
-  Keyboard, KeyboardAvoidingView,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import isEmail from "validator/lib/isEmail";
 import {useEffect, useRef, useState} from "react";
 import {getAllUsers} from "../../backend/database/Users";
-import {TextInput, useTheme} from "react-native-paper";
+import {TextInput} from "react-native-paper";
 import {textInputProps} from "../styles/TextInput";
 import {useIsFocused} from "@react-navigation/native";
 import _Container from "../styles/Container";

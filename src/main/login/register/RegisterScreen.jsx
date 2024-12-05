@@ -167,40 +167,31 @@ export default function RegisterScreen({navigation}) {
         />
         <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
 
-        <View style={{flexDirection: "row", justifyContent: "center"}}>
-          <TextInput
-            {...textInputProps}
-            label="numer telefonu"
-            outlineColor={wrongPhone ? "#e41c1c" : "black"}
-            activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
-            maxLength={12}
-            style={[textInputProps.style, {paddingLeft: 31}]}
-            // left={ <TextInput.Affix textStyle={ {fontSize: 16, marginLeft: 4} } text="+48 |"/> }
-            autoComplete="tel"
-            keyboardType="phone-pad"
-            value={phone}
-            onChangeText={(text) => {
-              text.slice(0, 3) === "+48" && (text = text.slice(3));
-              text = text.trim().replace(/[^0-9]/g, "");
-              if (text.length > 9) return;
-              setPhone(text.trim());
-              validatePhone(text.trim());
-              validateFieldsOnBlur();
-            }}
-            onBlur={() => {
-              // validatePhoneOut(phone);
-            }}
-          />
-          <Text style={{
-            alignSelf: "center",
-            left: 9,
-            fontSize: 16,
-            fontWeight: 300,
-            position: "absolute",
-            paddingTop: 8
-          }}>+48 | </Text>
-        </View>
+
+        <TextInput
+          {...textInputProps}
+          label="numer telefonu"
+          outlineColor={wrongPhone ? "#e41c1c" : "black"}
+          activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
+          maxLength={12}
+          left={<TextInput.Affix text="+48 |" textStyle={{marginRight: -10}}/>}
+          autoComplete="tel"
+          keyboardType="phone-pad"
+          value={phone}
+          onChangeText={(text) => {
+            text.slice(0, 3) === "+48" && (text = text.slice(3));
+            text = text.trim().replace(/[^0-9]/g, "");
+            if (text.length > 9) return;
+            setPhone(text.trim());
+            validatePhone(text.trim());
+            validateFieldsOnBlur();
+          }}
+          onBlur={() => {
+            // validatePhoneOut(phone);
+          }}
+        />
         <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
+
 
         <TextInput
           {...textInputProps}
