@@ -158,6 +158,45 @@ app.use(express.json());
     }
   });
 
+  // --- select TRENDING POLITICIANS -----------------------------------------------------
+  app.get("/api/trending-politicians", async (req, res) => {
+    const count = req.query.count || '5';
+    const days = req.query.days || '30';
+    let connection;
+    try {
+      connection = await mysql.createConnection(config);
+      const [rows] = await connection.execute(`
+          SELECT politician_id, COUNT(*) AS ratings_count
+          FROM ratings
+          WHERE date >= CURDATE() - INTERVAL ? DAY
+          GROUP BY politician_id
+          ORDER BY ratings_count DESC
+              LIMIT ?
+      `, [days, count]);
+      const politicianIds = rows.map(row => row.politician_id);
+      if (politicianIds.length > 0) {
+        const [politicians] = await connection.execute(`
+            SELECT *
+            FROM politicians
+            WHERE id IN (${politicianIds.join(",")})
+        `);
+        res.json(politicians);
+      } else {
+        res.json([]);
+      }
+    } catch (err) {
+      res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {
+          console.error("Error closing connection:", err.message);
+        }
+      }
+    }
+  });
+
   // --- insert ---------------------------------------------------------------------------
   app.post("/api/ratings", async (req, res) => {
     const {user_id, politician_id, title, value, description, date} = req.body;
