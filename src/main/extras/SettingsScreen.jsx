@@ -8,7 +8,7 @@ import {
 import {getAllUsers, updateUser} from "../../backend/database/Users";
 import {ownGoBack, tabBarAnim} from "../../backend/CommonMethods";
 import {TextInput} from "react-native-paper";
-import {textInputProps} from "../styles/TextInput";
+import {useTextInputProps} from "../styles/TextInput";
 import {GlobalContext} from "../nav/GlobalContext";
 import _Container from "../styles/Container";
 
@@ -51,13 +51,13 @@ export default function SettingsScreen({navigation}) {
       {user ? (
         <>
           <TextInput
-            {...textInputProps}
+            {...useTextInputProps()}
             label={`${user[0].email}`}
             value={email}
             onChangeText={setEmail}
           />
           <TextInput
-            {...textInputProps}
+            {...useTextInputProps()}
             label={`${user[0].phone_number}`}
             value={phone}
             onChangeText={setPhone}
@@ -66,11 +66,11 @@ export default function SettingsScreen({navigation}) {
       ) : (
         <>
           <TextInput
-            {...textInputProps}
+            {...useTextInputProps()}
             value="Ładowanie"
           />
           <TextInput
-            {...textInputProps}
+            {...useTextInputProps()}
             value="Ładowanie"
           />
         </>
@@ -79,21 +79,21 @@ export default function SettingsScreen({navigation}) {
 
       <Text style={styles.subSection}>Zmień hasło:</Text>
       <TextInput
-        {...textInputProps}
+        {...useTextInputProps()}
         label="Aktualne hasło"
         secureTextEntry={true}
         value={currentPassword}
         onChangeText={setCurrentPassword}
       />
       <TextInput
-        {...textInputProps}
+        {...useTextInputProps()}
         label="Nowe hasło"
         secureTextEntry={true}
         value={newPassword}
         onChangeText={setNewPassword}
       />
       <TextInput
-        {...textInputProps}
+        {...useTextInputProps()}
         label="Powtórz nowe hasło"
         secureTextEntry={true}
         value={repeatPassword}

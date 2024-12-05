@@ -4,7 +4,7 @@ import isEmail from "validator/lib/isEmail";
 import {useEffect, useRef, useState} from "react";
 import {getAllUsers} from "../../backend/database/Users";
 import {TextInput} from "react-native-paper";
-import {textInputProps} from "../styles/TextInput";
+import {useTextInputProps} from "../styles/TextInput";
 import {useIsFocused} from "@react-navigation/native";
 import _Container from "../styles/Container";
 import _Button from "../styles/Button";
@@ -137,7 +137,6 @@ export default function LoggingScreen({navigation}) {
     setUserData(data);
   }
 
-
   return (
     <_AnimViewKeyboard>
       <_Container>
@@ -146,7 +145,7 @@ export default function LoggingScreen({navigation}) {
 
         {/* PK: Mail input */}
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps()}
           label="e-mail"
           outlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
           activeOutlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
@@ -165,7 +164,7 @@ export default function LoggingScreen({navigation}) {
 
         {/* PK: Password input */}
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps()}
           label="hasło"
           outlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
           activeOutlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}

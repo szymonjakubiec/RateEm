@@ -2,7 +2,7 @@ import {StyleSheet, Text, TouchableHighlight, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
 import {checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
 import {TextInput} from "react-native-paper";
-import {textInputProps} from "../../styles/TextInput";
+import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 
 
@@ -91,7 +91,7 @@ export default function ResetConfirmScreen({navigation, route}) {
       )}
 
       <TextInput
-        {...textInputProps}
+        {...useTextInputProps()}
         label="kod"
         outlineColor={wrongCode ? "#e41c1c" : "black"}
         activeOutlineColor={wrongCode ? "#e41c1c" : "black"}

@@ -1,9 +1,9 @@
-import {StyleSheet, Text, TouchableHighlight, BackHandler} from "react-native";
+import {StyleSheet, Text, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
 import {checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
 import {addUser} from "../../../backend/database/Users";
 import {TextInput} from "react-native-paper";
-import {textInputProps} from "../../styles/TextInput";
+import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 import _Button from "../../styles/Button";
 import _AnimViewKeyboard from "../../styles/AnimViewKeyboard";
@@ -100,7 +100,7 @@ export default function ConfirmScreen({navigation, route}) {
 
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps()}
           label="kod"
           outlineColor={wrongCode ? "#e41c1c" : "black"}
           activeOutlineColor={wrongCode ? "#e41c1c" : "black"}

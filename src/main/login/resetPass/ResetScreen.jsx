@@ -1,9 +1,9 @@
 import {useState} from "react";
-import {StyleSheet, Text, TouchableHighlight, SafeAreaView} from "react-native";
+import {StyleSheet, Text, TouchableHighlight} from "react-native";
 import isEmail from "validator/lib/isEmail";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
-import {textInputProps} from "../../styles/TextInput";
+import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 
 
@@ -80,7 +80,7 @@ export default function ResetScreen({navigation}) {
         <>
           {/* PK: SMS */}
           <TextInput
-            {...textInputProps}
+            {...useTextInputProps()}
             label="numer telefonu"
             outlineColor={wrongPhone ? "#e41c1c" : "black"}
             activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
@@ -108,7 +108,7 @@ export default function ResetScreen({navigation}) {
           {/* PK: E-mail */}
           <Text style={styles.title}>Podaj e-mail do zresetowania hasła:</Text>
           <TextInput
-            {...textInputProps}
+            {...useTextInputProps()}
             label="e-mail"
             outlineColor={wrongEmail ? "#e41c1c" : "black"}
             activeOutlineColor={wrongEmail ? "#e41c1c" : "black"}

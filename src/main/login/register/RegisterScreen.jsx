@@ -1,9 +1,9 @@
 import {useState} from "react";
-import {StyleSheet, Text, TouchableHighlight, View} from "react-native";
+import {StyleSheet, Text} from "react-native";
 import isEmail from "validator/lib/isEmail";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
-import {textInputProps} from "../../styles/TextInput";
+import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 import _Button from "../../styles/Button";
 import _AnimViewKeyboard from "../../styles/AnimViewKeyboard";
@@ -124,7 +124,7 @@ export default function RegisterScreen({navigation}) {
         <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps()}
           label="imię"
           outlineColor={wrongName ? "#e41c1c" : "black"}
           activeOutlineColor={wrongName ? "#e41c1c" : "black"}
@@ -146,7 +146,7 @@ export default function RegisterScreen({navigation}) {
         <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps()}
           label="e-mail"
           outlineColor={wrongEmail ? "#e41c1c" : "black"}
           activeOutlineColor={wrongEmail ? "#e41c1c" : "black"}
@@ -169,7 +169,7 @@ export default function RegisterScreen({navigation}) {
 
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps()}
           label="numer telefonu"
           outlineColor={wrongPhone ? "#e41c1c" : "black"}
           activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
@@ -194,7 +194,7 @@ export default function RegisterScreen({navigation}) {
 
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps()}
           label="hasło"
           outlineColor={wrongPass ? "#e41c1c" : "black"}
           activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
@@ -222,7 +222,7 @@ export default function RegisterScreen({navigation}) {
         <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps()}
           label="powtórz hasło"
           outlineColor={wrongPassRep ? "#e41c1c" : "black"}
           activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}

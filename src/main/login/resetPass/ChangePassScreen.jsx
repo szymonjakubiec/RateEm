@@ -2,7 +2,7 @@ import {useState} from "react";
 import {StyleSheet, Text, TouchableHighlight} from "react-native";
 import {TextInput} from "react-native-paper";
 import {getUserIdByEmail, updateUser} from "../../../backend/database/Users";
-import {textInputProps} from "../../styles/TextInput";
+import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 
 
@@ -74,7 +74,7 @@ export default function ChangePassScreen({navigation, route}) {
       <Text style={styles.title}>Podaj nowe hasło:</Text>
 
       <TextInput
-        {...textInputProps}
+        {...useTextInputProps()}
         label="hasło"
         outlineColor={wrongPass ? "#e41c1c" : "black"}
         activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
@@ -102,7 +102,7 @@ export default function ChangePassScreen({navigation, route}) {
       <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
 
       <TextInput
-        {...textInputProps}
+        {...useTextInputProps()}
         label="powtórz hasło"
         outlineColor={wrongPassRep ? "#e41c1c" : "black"}
         activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}

@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import {TouchableHighlight, StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard} from "react-native";
 import {TextInput} from "react-native-paper";
-import {textInputProps} from "../../styles/TextInput";
+import {useTextInputProps} from "../../styles/TextInput";
 
 
 
@@ -70,7 +70,7 @@ export default function SearchFlatList({data, handleOnPress}) {
       <View style={styles.searchBox}>
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps()}
           style={styles.searchInput}
           label="Wyszukaj polityka"
           returnKeyType="search"
