@@ -85,6 +85,7 @@ app.use(express.json());
                    r.value,
                    r.description,
                    r.date,
+                   r.weight,
                    p.id AS politician_id,
                    p.names_surname,
                    p.party,
