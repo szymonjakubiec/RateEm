@@ -28,7 +28,7 @@ export default function SummaryScreen({navigation}) {
   useEffect(() => {
     const fetchRatings = async () => {
       const fetchedRatings = await getRatingsUserId(userId);
-      setRatings(fetchedRatings.reverse());
+      setRatings(fetchedRatings.reverse().filter(rating => rating.weight !== 10));
 
       if (fetchedRatings.length > 0) {
         const highest = Math.max(...fetchedRatings.map((rating) => rating.value));
