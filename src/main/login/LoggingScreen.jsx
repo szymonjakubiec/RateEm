@@ -1,5 +1,7 @@
 import {StatusBar} from "expo-status-bar";
 import {
+  Animated,
+  Keyboard, KeyboardAvoidingView,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -9,10 +11,12 @@ import {
 import isEmail from "validator/lib/isEmail";
 import {useEffect, useRef, useState} from "react";
 import {getAllUsers} from "../../backend/database/Users";
-import {TextInput} from "react-native-paper";
+import {TextInput, useTheme} from "react-native-paper";
 import {textInputProps} from "../styles/TextInput";
 import {useIsFocused} from "@react-navigation/native";
 import _Container from "../styles/Container";
+import _Button from "../styles/Button";
+import _AnimViewKeyboard from "../styles/AnimViewKeyboard";
 
 
 
@@ -143,104 +147,74 @@ export default function LoggingScreen({navigation}) {
 
 
   return (
-    <_Container>
-      <Text style={styles.title}>{_title}</Text>
-      <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
+    <_AnimViewKeyboard>
+      <_Container>
+        <Text style={styles.title}>{_title}</Text>
+        <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
 
-      <TextInput
-        {...textInputProps}
-        label="e-mail"
-        outlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
-        autoComplete="email"
-        textContentType="emailAddress"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={(text) => {
-          text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
-          setEmail(text.trim());
-          validateEmail(text.trim());
-        }}
-        onBlur={() => validateEmail(email)}
-      />
-      <Text style={styles.wrongInputText(wrongEmailInfo)}>{wrongEmailInfo}</Text>
-
-      <TextInput
-        {...textInputProps}
-        label="hasło"
-        outlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
-        returnKeyType="done"
-        autoCapitalize="none"
-        autoComplete="current-password"
-        textContentType="currentPassword"
-        secureTextEntry={passHidden}
-        right={<TextInput.Icon icon={passHidden ? "eye" : "eye-off"} onPress={() => setPassHidden(!passHidden)}/>}
-        value={password}
-        onChangeText={(text) => {
-          if (text.includes(" ")) return;
-          setPassword(text.trim());
-          validatePass(text.trim());
-        }}
-      />
-      <Text style={styles.wrongInputText(wrongPasswordInfo)}>{wrongPasswordInfo}</Text>
-
-      <TouchableHighlight
-        style={[styles.buttonMain, {marginTop: wrongPasswordInfo ? 18 : 40}]}
-        onPress={() => handleLogin()}
-      >
-        <Text style={styles.buttonText}>Zaloguj</Text>
-      </TouchableHighlight>
-
-      <View style={{marginTop: 20}}>
-        <TouchableOpacity
-          // disabled
-          style={{
-            marginLeft: 10,
+        {/* PK: Mail input */}
+        <TextInput
+          {...textInputProps}
+          label="e-mail"
+          outlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
+          activeOutlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
+          autoComplete="email"
+          textContentType="emailAddress"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={(text) => {
+            text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
+            setEmail(text.trim());
+            validateEmail(text.trim());
           }}
-          onPress={() => {
-            navigation.navigate("ResetNav", {_title}); // domyślny ekran, parametry
+          onBlur={() => validateEmail(email)}
+        />
+        <Text style={styles.wrongInputText(wrongEmailInfo)}>{wrongEmailInfo}</Text>
+
+        {/* PK: Password input */}
+        <TextInput
+          {...textInputProps}
+          label="hasło"
+          outlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
+          activeOutlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
+          returnKeyType="done"
+          autoCapitalize="none"
+          autoComplete="current-password"
+          textContentType="currentPassword"
+          secureTextEntry={passHidden}
+          right={<TextInput.Icon icon={passHidden ? "eye" : "eye-off"} onPress={() => setPassHidden(!passHidden)}/>}
+          value={password}
+          onChangeText={(text) => {
+            if (text.includes(" ")) return;
+            setPassword(text.trim());
+            validatePass(text.trim());
           }}
+        />
+        <Text style={styles.wrongInputText(wrongPasswordInfo)}>{wrongPasswordInfo}</Text>
+
+        {/* PK: Login button */}
+        <_Button buttonText="Zaloguj" onPress={() => handleLogin()} style={{marginTop: wrongPasswordInfo ? 18 : 40}}/>
+
+        {/* PK: Password reset button */}
+        <_Button buttonText="Zapomniałeś hasła?" onPress={() => navigation.navigate("ResetNav", {_title})}
+                 mode="onlyText" style={{marginTop: 20}}/>
+
+        {/* PK: Register button */}
+        <View
+          style={{flexDirection: "row", alignItems: "center", marginTop: 30}}
         >
-          <Text
-            style={{
-              color: "blue",
-              // color: "#232323",
-              // opacity: 0.5,
-            }}
-          >
-            Zapomniałeś hasła?
+          <Text style={{fontSize: 14}}>
+            Nie masz jeszcze konta?
           </Text>
-        </TouchableOpacity>
-      </View>
 
-      <View
-        style={{flexDirection: "row", alignItems: "center", marginTop: 30}}
-      >
-        <Text style={{ /* marginTop: 15, marginBottom: 5, */ fontSize: 13}}>
-          Nie masz jeszcze konta?
-        </Text>
+          <_Button buttonText="Zarejestruj" onPress={() => navigation.navigate("RegisterNav", {_title})}
+                   mode="onlyText" style={{marginLeft: 5}}/>
 
-        <TouchableOpacity
-          style={{
-            marginLeft: 10,
-          }}
-          onPress={() => {
-            navigation.navigate("RegisterNav", {_title}); // domyślny ekran, parametry
-          }}
-        >
-          <Text
-            style={{
-              color: "blue",
-            }}
-          >
-            Zarejestruj
-          </Text>
-        </TouchableOpacity>
-      </View>
+        </View>
 
-      <StatusBar style="light"/>
-    </_Container>
+        <StatusBar style="light"/>
+      </_Container>
+    </_AnimViewKeyboard>
   );
 }
 

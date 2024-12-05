@@ -44,7 +44,6 @@ const getRating = async (user_id, politician_id) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
     return null;
   }
 };
@@ -69,8 +68,7 @@ const getRatingsUserId = async (userId) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
-    return undefined;
+    return null;
   }
 };
 
@@ -97,8 +95,7 @@ const getRatingsUserIdPoliticianId = async (user_id, politician_id) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
-    return undefined;
+    return null;
   }
 };
 
@@ -149,11 +146,9 @@ const addRating = async (
 
     // Reading the added rating data
     const newRating = await response.json();
-    console.log("New user data:", newRating);
     return newRating;
   } catch (error) {
-    console.error("An error occurred while adding a rating:", error.message);
-    return undefined;
+    return null;
   }
 };
 
@@ -186,11 +181,9 @@ const updateRating = async (id, newData = {}) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const updatedData = await response.json();
-    console.log("Rating updated successfully:", updatedData);
     return updatedData;
   } catch (error) {
-    console.error("Error updating rating:", error);
-    return undefined;
+    return null;
   }
 };
 
@@ -214,11 +207,9 @@ const deleteRating = async (id) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const deletedData = await response.json();
-    console.log("Rating deleted successfully:", deletedData);
     return deletedData;
   } catch (error) {
-    console.error("Error deleting rating:", error);
-    return undefined;
+    return null;
   }
 };
 

@@ -1,7 +1,9 @@
-import { Alert, BackHandler } from "react-native";
-import { Resend } from "resend";
+import {Alert, BackHandler, LayoutAnimation} from "react-native";
+import {Resend} from "resend";
 import emailjs from "@emailjs/react-native";
-import { useEffect } from "react";
+import {useEffect} from "react";
+
+
 
 /**
  * Sends SMS verification - Twilio.
@@ -190,7 +192,8 @@ const getUserAddress = async (latitude, longitude) => {
  * @function
  * @param navigation - navigation.
  */
-function goBack(navigation) {
+function ownGoBack(navigation) {
+
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
     const backAction = () => {
@@ -202,4 +205,19 @@ function goBack(navigation) {
   }, [navigation]);
 }
 
-module.exports = { sendVerificationSMS, checkVerificationSMS, sendMail, alert, goBack, getUserAddress };
+/**
+ * Animates bottom TabBar on nested screens in Stack.
+ * @param navigation
+ * @returns {(function(): void)}
+ */
+function tabBarAnim(navigation) {
+  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  navigation.getParent().setOptions({tabBarStyle: {height: 0}});
+  return () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+    navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
+  };
+}
+
+
+module.exports = {tabBarAnim, sendVerificationSMS, checkVerificationSMS, sendMail, alert, ownGoBack, getUserAddress};

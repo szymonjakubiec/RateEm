@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput, LayoutAnimation } from "react-native";
+import {useState, useEffect} from "react";
+import {StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput, LayoutAnimation} from "react-native";
 import CheckBox from "react-native-check-box";
 import _Container from "../styles/Container";
+import {tabBarAnim} from "../../backend/CommonMethods";
+
+
 
 const plusIcon = require("../../../assets/plus_icon.png");
 const deleteIcon = require("../../../assets/delete_icon.png");
 
-export default function CalculatorScreen({ navigation }) {
+export default function CalculatorScreen({navigation}) {
   const [parties, setParties] = useState([]);
 
   const [inputValues, setInputValues] = useState([]);
@@ -17,14 +20,13 @@ export default function CalculatorScreen({ navigation }) {
   const [theRestValue, setTheRestValue] = useState("100");
   const [theRestMandatesValue, setTheRestMandatesValue] = useState(0);
 
+  // PK: Hide bottom TabBar
+  useEffect(() => {
+    return tabBarAnim(navigation);
+  }, []);
+
   useEffect(() => {
     setParties([{}]);
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    navigation.getParent().setOptions({ tabBarStyle: { height: 0 } });
-    return () => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-      navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
-    };
   }, []);
 
   function addParty() {
@@ -87,47 +89,47 @@ export default function CalculatorScreen({ navigation }) {
     votes[votes.length] = sumTemp.toFixed(2) * 10000;
 
     const districts = [
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 8 },
-      { votes: votes, seats: 14 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 13 },
-      { votes: votes, seats: 15 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 10 },
-      { votes: votes, seats: 9 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 8 },
-      { votes: votes, seats: 14 },
-      { votes: votes, seats: 10 },
-      { votes: votes, seats: 9 },
-      { votes: votes, seats: 10 },
-      { votes: votes, seats: 9 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 20 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 11 },
-      { votes: votes, seats: 15 },
-      { votes: votes, seats: 14 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 14 },
-      { votes: votes, seats: 9 },
-      { votes: votes, seats: 7 },
-      { votes: votes, seats: 9 },
-      { votes: votes, seats: 9 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 9 },
-      { votes: votes, seats: 16 },
-      { votes: votes, seats: 8 },
-      { votes: votes, seats: 10 },
-      { votes: votes, seats: 12 },
-      { votes: votes, seats: 9 },
-      { votes: votes, seats: 9 },
-      { votes: votes, seats: 10 },
-      { votes: votes, seats: 8 },
-      { votes: votes, seats: 12 },
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 8},
+      {votes: votes, seats: 14},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 13},
+      {votes: votes, seats: 15},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 10},
+      {votes: votes, seats: 9},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 8},
+      {votes: votes, seats: 14},
+      {votes: votes, seats: 10},
+      {votes: votes, seats: 9},
+      {votes: votes, seats: 10},
+      {votes: votes, seats: 9},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 20},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 11},
+      {votes: votes, seats: 15},
+      {votes: votes, seats: 14},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 14},
+      {votes: votes, seats: 9},
+      {votes: votes, seats: 7},
+      {votes: votes, seats: 9},
+      {votes: votes, seats: 9},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 9},
+      {votes: votes, seats: 16},
+      {votes: votes, seats: 8},
+      {votes: votes, seats: 10},
+      {votes: votes, seats: 12},
+      {votes: votes, seats: 9},
+      {votes: votes, seats: 9},
+      {votes: votes, seats: 10},
+      {votes: votes, seats: 8},
+      {votes: votes, seats: 12},
     ];
 
     var results = simulateElections(districts);
@@ -179,7 +181,7 @@ export default function CalculatorScreen({ navigation }) {
   }
 
   return (
-    <_Container style={{ padding: "4%" }}>
+    <_Container style={{padding: "4%"}}>
       <ScrollView style={styles.scrollView}>
         {parties.map((partyItem, index) => (
           <View key={index} style={styles.partyTile}>
@@ -197,7 +199,7 @@ export default function CalculatorScreen({ navigation }) {
                   maxLength={5}
                 />
                 <Text style={styles.partyTileText}>%</Text>
-                <TextInput style={styles.partyTileOutput} readOnly={true} value={outputValues[index]} />
+                <TextInput style={styles.partyTileOutput} readOnly={true} value={outputValues[index]}/>
               </View>
               <View style={styles.viweHorizontal}>
                 <CheckBox
@@ -213,25 +215,27 @@ export default function CalculatorScreen({ navigation }) {
               </View>
             </View>
             <TouchableHighlight onPress={() => deleteParty(index)}>
-              <Image source={deleteIcon} style={styles.deleteIcon} />
+              <Image source={deleteIcon} style={styles.deleteIcon}/>
             </TouchableHighlight>
           </View>
         ))}
         <View style={styles.partyTileRest}>
           <Text style={styles.partyTileText}>Reszta </Text>
-          <TextInput style={styles.partyTileInput} value={theRestValue} readOnly={true} />
+          <TextInput style={styles.partyTileInput} value={theRestValue} readOnly={true}/>
           <Text style={styles.partyTileText}>%</Text>
-          <TextInput style={styles.partyTileOutput} value={theRestMandatesValue} readOnly={true} />
+          <TextInput style={styles.partyTileOutput} value={theRestMandatesValue} readOnly={true}/>
         </View>
         <TouchableHighlight style={styles.addPartyTile} onPress={addParty}>
-          <Image source={plusIcon} style={styles.plusIcon} />
+          <Image source={plusIcon} style={styles.plusIcon}/>
         </TouchableHighlight>
 
         <View style={styles.calculatorDescDiv}>
           <Text style={styles.calculatorDescTitle}>Uwaga</Text>
-          <Text style={styles.calculatorDescText}>Dane wyliczone przez kalkulator są tylko szacunkiem. Nie należy się do nich przywiązywać.</Text>
+          <Text style={styles.calculatorDescText}>Dane wyliczone przez kalkulator są tylko szacunkiem. Nie należy się do
+            nich przywiązywać.</Text>
           <Text style={styles.calculatorDescText}>
-            Zalecamy uzupełnić dane w taki sposób, aby "Inni" mieli jak najmniej % głosów. W przeciwnym wypadku dostaną oni nieproporcjonalnie dużo
+            Zalecamy uzupełnić dane w taki sposób, aby "Inni" mieli jak najmniej % głosów. W przeciwnym wypadku dostaną
+            oni nieproporcjonalnie dużo
             mandatów. Wynika to z algorytmu liczenia głosów.
           </Text>
           <Text style={styles.calculatorDescText}>

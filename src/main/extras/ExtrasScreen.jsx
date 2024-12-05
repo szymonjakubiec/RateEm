@@ -1,6 +1,8 @@
 import React from "react";
 import {Text, TouchableHighlight, StyleSheet} from "react-native";
 import _Container from "../styles/Container";
+import _Button from "../styles/Button";
+import {useTheme} from "react-native-paper";
 
 
 
@@ -31,7 +33,7 @@ export default function ExtrasScreen({navigation}) {
         <Text style={styles.buttonText}>Przewodnik po aplikacji</Text>
       </TouchableHighlight>
 
-      <TouchableHighlight
+      {/* <TouchableHighlight
         style={styles.button}
         onPress={() => {
           navigation.popToTop(); //todo większa logika
@@ -39,7 +41,16 @@ export default function ExtrasScreen({navigation}) {
         underlayColor="#D23F3F" // feedback when pressed
       >
         <Text style={styles.buttonText}>Wyloguj się</Text>
-      </TouchableHighlight>
+      </TouchableHighlight> */}
+
+      <_Button
+        buttonText="Wyloguj się"
+        style={{backgroundColor: useTheme().colors.error, width: '100%', height: '8%'}}
+        onPress={() => {
+          navigation.popToTop(); //todo większa logika
+        }}
+      />
+      
     </_Container>
   );
 }

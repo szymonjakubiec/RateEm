@@ -1,17 +1,15 @@
 import {useEffect} from "react";
 import {StyleSheet, Text, View, TouchableHighlight, LayoutAnimation} from "react-native";
 import _Container from "../styles/Container";
+import {tabBarAnim} from "../../backend/CommonMethods";
 
 
 
 export default function ElectionExplanation({navigation}) {
+
+  // PK: Hide bottom TabBar
   useEffect(() => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    navigation.getParent().setOptions({tabBarStyle: {height: 0}});
-    return () => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
-    };
+    return tabBarAnim(navigation);
   }, []);
 
   return (

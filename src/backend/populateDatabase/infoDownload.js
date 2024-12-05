@@ -1,6 +1,7 @@
 const mysql = require("mysql2");
 const fs = require("fs");
-const {log} = require("console");
+const axios = require("axios");
+const { log } = require("console");
 
 var config = {
   host: "rateem-server.mysql.database.azure.com",
@@ -8,7 +9,7 @@ var config = {
   password: "ZAQ!2wsx",
   database: "ratem",
   port: 3306,
-  ssl: {ca: fs.readFileSync("./src/backend/populateDatabase/DigiCertGlobalRootCA.crt.pem")},
+  ssl: { ca: fs.readFileSync("./src/backend/populateDatabase/DigiCertGlobalRootCA.crt.pem") },
 };
 
 class InfoDownload {
@@ -120,12 +121,10 @@ class InfoDownload {
       // date = date_start + ' ' + date_stop
       date = date_start;
 
-
       this.prezydentKadencje.unshift(date);
     } catch (error) {
       return null;
     }
-
   }
 
   async euKadencja() {
@@ -215,9 +214,17 @@ class InfoDownload {
               osobaTemp.partiaSkrot = osoba.club ? osoba.club : "";
               osobaTemp.partia = this.getClubFullName(osobaTemp.partiaSkrot);
               osobaTemp.dataUrodzenia = osoba.birthDate;
-              osobaTemp.zdjecie = `https://api.sejm.gov.pl/sejm/term${kadencja.num}/MP/${osoba.id}/photo`
-                ? `https://api.sejm.gov.pl/sejm/term${kadencja.num}/MP/${osoba.id}/photo`
-                : "";
+
+              try {
+                const photoResponse = await axios.get(`https://api.sejm.gov.pl/sejm/term${kadencja.num}/MP/${osoba.id}/photo`, {
+                  responseType: "arraybuffer",
+                });
+                const base64Photo = Buffer.from(photoResponse.data, "binary").toString("base64");
+                osobaTemp.zdjecie = base64Photo;
+              } catch (error) {
+                osobaTemp.zdjecie = "";
+              }
+
               osobaTemp.linkFacebook = "";
               osobaTemp.linkTweeter = "";
 
@@ -234,7 +241,7 @@ class InfoDownload {
   async euPolitycy() {
     try {
       // pobiera numery kadencji eu parlamentu (żeby wiedzieć, na jakim numerze zakończyć)
-      this.euWszystkieKadencje = [{num: 10}, {num: 9}, {num: 8}]; // rozwiązanie tymczasowe
+      this.euWszystkieKadencje = [{ num: 10 }, { num: 9 }, { num: 8 }]; // rozwiązanie tymczasowe
       //
       //
       //
@@ -267,7 +274,16 @@ class InfoDownload {
                   osobaTemp.partiaSkrot = "";
                   osobaTemp.partia = "";
                   osobaTemp.dataUrodzenia = politykSzczegoly.data[0].bday;
-                  osobaTemp.zdjecie = politykSzczegoly.data[0].img;
+
+                  try {
+                    const photoResponse = await axios.get(politykSzczegoly.data[0].img, {
+                      responseType: "arraybuffer",
+                    });
+                    const base64Photo = Buffer.from(photoResponse.data, "binary").toString("base64");
+                    osobaTemp.zdjecie = base64Photo;
+                  } catch (error) {
+                    osobaTemp.zdjecie = "";
+                  }
 
                   if (politykSzczegoly.data[0].hasGender.includes("FEMALE")) {
                     osobaTemp.gender = "female";
@@ -349,14 +365,14 @@ class InfoDownload {
     // Independent
     if (clubInfo.label == "Independent" || clubInfo.prefLabel.pl == "Independent" || clubInfo.label == "-" || clubInfo.prefLabel.pl == "-") {
       if (gender == "female") {
-        return {party: "niezależna", partyShort: "niezależna"};
+        return { party: "niezależna", partyShort: "niezależna" };
       } else if (gender == "male") {
-        return {party: "niezależny", partyShort: "niezależny"};
+        return { party: "niezależny", partyShort: "niezależny" };
       } else {
-        return {party: "niezależne", partyShort: "niezależne"};
+        return { party: "niezależne", partyShort: "niezależne" };
       }
     } else {
-      return {party: clubInfo.prefLabel.pl, partyShort: clubInfo.label};
+      return { party: clubInfo.prefLabel.pl, partyShort: clubInfo.label };
     }
   }
 
@@ -439,13 +455,11 @@ class InfoDownload {
       if (resultLength === 0) {
         try {
           await this.insertNewPolitician(polityk);
-        } catch (err) {
-        }
+        } catch (err) {}
       } else {
         try {
           await this.updatePolitician(polityk);
-        } catch (err) {
-        }
+        } catch (err) {}
       }
     }
   }
@@ -546,7 +560,3 @@ class InfoDownload {
 
 const infoDownload = new InfoDownload();
 infoDownload.main();
-
-// pobierać przynależność partyjną EU
-
-// weryfikacja czy osoba żyje - jeśli nie wywalić z pamięci

@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Linking, Alert, AppState, LayoutAnimation } from "react-native";
+import {useState, useEffect} from "react";
+import {StyleSheet, Text, View, ScrollView, Linking, Alert, AppState, LayoutAnimation} from "react-native";
 import * as Location from "expo-location";
-import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
-import { getUserAddress } from "../../backend/CommonMethods";
-import { getSejmDistrict, getEuDistrict } from "../../backend/database/Districts";
+import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
+import {getUserAddress, tabBarAnim} from "../../backend/CommonMethods";
+import {getSejmDistrict, getEuDistrict} from "../../backend/database/Districts";
 import _Container from "../styles/Container";
 
-export default function ElectoralDistricts({ navigation }) {
+
+
+export default function ElectoralDistricts({navigation}) {
   const [addressCurrent, setAddressCurrent] = useState(null);
   const [sejmDistrictCurrent, setSejmDistrictCurrent] = useState("");
   const [euDistrictCurrent, setEuDistrictCurrent] = useState("");
@@ -14,19 +16,17 @@ export default function ElectoralDistricts({ navigation }) {
 
   const [mapComponent, setMapComponent] = useState(null);
 
+  // PK: Hide bottom TabBar
+  useEffect(() => {
+    return tabBarAnim(navigation);
+  }, []);
+
   useEffect(() => {
     setMapComponent(createMap());
-
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    navigation.getParent().setOptions({ tabBarStyle: { height: 0 } });
-    return () => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-      navigation.getParent().setOptions({ tabBarStyle: { height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10 } });
-    };
   }, []);
 
   const requestLocationPermission = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
+    const {status} = await Location.requestForegroundPermissionsAsync();
 
     if (status == "granted") {
       return true;
@@ -42,7 +42,7 @@ export default function ElectoralDistricts({ navigation }) {
     if (permissionResponse) {
       locationTemp = await Location.getCurrentPositionAsync({});
     } else {
-      locationTemp = { coords: { latitude: 50.25962, longitude: 19.021725 } };
+      locationTemp = {coords: {latitude: 50.25962, longitude: 19.021725}};
     }
 
     const result = await getAddress(parseFloat(locationTemp.coords.latitude.toFixed(5)), parseFloat(locationTemp.coords.longitude.toFixed(5)));
@@ -63,7 +63,7 @@ export default function ElectoralDistricts({ navigation }) {
         longitude: parseFloat(location.longitude.toFixed(5)),
       });
     } catch (error) {
-      setLocationMap({ latitude: 50.25962, longitude: 19.021725 });
+      setLocationMap({latitude: 50.25962, longitude: 19.021725});
     }
   }
 
@@ -113,15 +113,15 @@ export default function ElectoralDistricts({ navigation }) {
             euDistrict: euDistrictData.district_number,
           };
         } else {
-          return { address: "błąd", sejmDistrict: 0, euDistrict: 0 };
+          return {address: "błąd", sejmDistrict: 0, euDistrict: 0};
         }
       } else if (countyName == "") {
-        return { address: "Morze", sejmDistrict: 19, euDistrict: 4 };
+        return {address: "Morze", sejmDistrict: 19, euDistrict: 4};
       } else {
-        return { address: "Zagranica", sejmDistrict: 19, euDistrict: 4 };
+        return {address: "Zagranica", sejmDistrict: 19, euDistrict: 4};
       }
     } catch (error) {
-      return { address: "błąd", sejmDistrict: 0, euDistrict: 0 };
+      return {address: "błąd", sejmDistrict: 0, euDistrict: 0};
     }
   }
 
@@ -203,7 +203,7 @@ export default function ElectoralDistricts({ navigation }) {
   }
 
   return (
-    <_Container style={{ padding: "4%" }}>
+    <_Container style={{padding: "4%"}}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.districtElementMap}>
           <View>{mapComponent}</View>

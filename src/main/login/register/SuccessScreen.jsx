@@ -1,5 +1,6 @@
-import {StyleSheet, Text, TouchableHighlight} from "react-native";
+import {StyleSheet, Text, TouchableHighlight, View} from "react-native";
 import _Container from "../../styles/Container";
+import _Button from "../../styles/Button";
 
 
 
@@ -8,12 +9,14 @@ export default function SuccessScreen({navigation, route}) {
 
   return (
     <_Container>
-      <Text style={styles.title}>Sukces!</Text>
-      <Text style={styles.subTitle}>Konto zostało założone.</Text>
 
-      <TouchableHighlight
-        style={styles.button}
+      <View style={{alignSelf: "center"}}>
+        <Text style={styles.title}>Sukces!</Text>
+        <Text style={styles.subTitle}>Konto zostało założone.</Text>
+      </View>
 
+      <_Button
+        buttonText="Wyświetl tutorial"
         // PK: Goes to logging screen with clearing the navigation stack
         onPress={() => {
           navigation.navigate("MainNav", {
@@ -21,15 +24,13 @@ export default function SuccessScreen({navigation, route}) {
             params: {
               screen: "Guide",
               options: {
-                animationEnabled: true,
+                animationEnabled: true, // Włącza animację przejścia
               },
             },
           });
 
         }}
-      >
-        <Text style={styles.buttonText}>Przejdź dalej</Text>
-      </TouchableHighlight>
+      />
 
     </_Container>
   );
@@ -38,21 +39,10 @@ export default function SuccessScreen({navigation, route}) {
 export const styles = StyleSheet.create({
   title: {
     fontSize: 24,
-    alignSelf: "flex-start",
-    left: 20,
   },
   subTitle: {
     fontSize: 16,
-    marginBottom: 50,
-    alignSelf: "flex-start",
-    left: 20,
-  },
-  button: {
-    backgroundColor: "#000",
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: "70%",
-    borderRadius: 20,
+    marginBottom: 70,
   },
   buttonText: {
     alignSelf: "center",

@@ -5,6 +5,8 @@ import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
 import {textInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
+import _Button from "../../styles/Button";
+import _AnimViewKeyboard from "../../styles/AnimViewKeyboard";
 
 
 
@@ -117,160 +119,162 @@ export default function RegisterScreen({navigation}) {
   };
 
   return (
-    <_Container>
-      <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
+    <_AnimViewKeyboard margin={-40}>
+      <_Container>
+        <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
 
-      <TextInput
-        {...textInputProps}
-        label="imię"
-        outlineColor={wrongName ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongName ? "#e41c1c" : "black"}
-        maxLength={22}
-        autoComplete="name"
-        value={name}
-        onChangeText={(text) => {
-          // if (text.includes(" ")) return;
-          text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "");
-          text.length > 0 && (text = text[0].toUpperCase() + text.slice(1).toLowerCase());
-          setName(text.trim());
-          validateName(text.trim());
-          validateFieldsOnBlur();
-        }}
-        onBlur={() => {
-          validateName(name);
-        }}
-      />
-      <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
-
-      <TextInput
-        {...textInputProps}
-        label="e-mail"
-        outlineColor={wrongEmail ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongEmail ? "#e41c1c" : "black"}
-        autoComplete="email"
-        textContentType="emailAddress"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={(text) => {
-          if (text.includes(" ")) return;
-          text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
-          setEmail(text.trim());
-          validateEmail(text.trim());
-          validateFieldsOnBlur();
-        }}
-        onBlur={() => {
-          // console.log("BLUR");
-        }}
-      />
-      <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
-
-      <View style={{flexDirection: "row", justifyContent: "center"}}>
         <TextInput
           {...textInputProps}
-          label="numer telefonu"
-          outlineColor={wrongPhone ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
-          maxLength={12}
-          style={[textInputProps.style, {paddingLeft: 31}]}
-          // left={ <TextInput.Affix textStyle={ {fontSize: 16, marginLeft: 4} } text="+48 |"/> }
-          autoComplete="tel"
-          keyboardType="phone-pad"
-          value={phone}
+          label="imię"
+          outlineColor={wrongName ? "#e41c1c" : "black"}
+          activeOutlineColor={wrongName ? "#e41c1c" : "black"}
+          maxLength={22}
+          autoComplete="name"
+          value={name}
           onChangeText={(text) => {
-            text.slice(0, 3) === "+48" && (text = text.slice(3));
-            text = text.trim().replace(/[^0-9]/g, "");
-            if (text.length > 9) return;
-            setPhone(text.trim());
-            validatePhone(text.trim());
+            // if (text.includes(" ")) return;
+            text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "");
+            text.length > 0 && (text = text[0].toUpperCase() + text.slice(1).toLowerCase());
+            setName(text.trim());
+            validateName(text.trim());
             validateFieldsOnBlur();
           }}
           onBlur={() => {
-            // validatePhoneOut(phone);
+            validateName(name);
           }}
         />
-        <Text style={{
-          alignSelf: "center",
-          left: 9,
-          fontSize: 16,
-          fontWeight: 300,
-          position: "absolute",
-          paddingTop: 8
-        }}>+48 | </Text>
-      </View>
-      <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
+        <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
 
-      <TextInput
-        {...textInputProps}
-        label="hasło"
-        outlineColor={wrongPass ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
-        autoCapitalize="none"
-        autoComplete="new-password"
-        textContentType="newPassword"
-        secureTextEntry={passVisible}
-        right={<TextInput.Icon icon={passVisible ? "eye" : "eye-off"}
-                               onPress={() => setPassVisible(!passVisible)}/>
-        }
-        value={password}
-        onChangeText={(text) => {
-          text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
-          repeatPassword && setRepeatPassword('');
-          setPassword(text.trim());
-          validatePass(text.trim());
-          validateFieldsOnBlur();
-        }}
-        onBlur={() => {
-          // validatePassOut(password);
-        }}
-      />
-      <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
+        <TextInput
+          {...textInputProps}
+          label="e-mail"
+          outlineColor={wrongEmail ? "#e41c1c" : "black"}
+          activeOutlineColor={wrongEmail ? "#e41c1c" : "black"}
+          autoComplete="email"
+          textContentType="emailAddress"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={(text) => {
+            if (text.includes(" ")) return;
+            text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
+            setEmail(text.trim());
+            validateEmail(text.trim());
+            validateFieldsOnBlur();
+          }}
+          onBlur={() => {
+            // console.log("BLUR");
+          }}
+        />
+        <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
 
-      <TextInput
-        {...textInputProps}
-        label="powtórz hasło"
-        outlineColor={wrongPassRep ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}
-        returnKeyType="done"
-        autoCapitalize="none"
-        autoComplete="current-password"
-        textContentType="currentPassword"
-        secureTextEntry={repeatPassVisible}
-        right={<TextInput.Icon icon={repeatPassVisible ? "eye" : "eye-off"}
-                               onPress={() => setRepeatPassVisible(!repeatPassVisible)}/>
-        }
-        value={repeatPassword}
-        onChangeText={(text) => {
-          if (text.includes(" ")) return;
-          setRepeatPassword(text.trim());
-          validatePassRep(text.trim());
-          validateFieldsOnBlur();
-        }}
-        onBlur={() => {
-          // validatePassRep(repeatPassword.trim());
-        }}
-      />
-      <Text style={styles.wrongInputText(wrongPassRep)}>{wrongPassRep}</Text>
+        <View style={{flexDirection: "row", justifyContent: "center"}}>
+          <TextInput
+            {...textInputProps}
+            label="numer telefonu"
+            outlineColor={wrongPhone ? "#e41c1c" : "black"}
+            activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
+            maxLength={12}
+            style={[textInputProps.style, {paddingLeft: 31}]}
+            // left={ <TextInput.Affix textStyle={ {fontSize: 16, marginLeft: 4} } text="+48 |"/> }
+            autoComplete="tel"
+            keyboardType="phone-pad"
+            value={phone}
+            onChangeText={(text) => {
+              text.slice(0, 3) === "+48" && (text = text.slice(3));
+              text = text.trim().replace(/[^0-9]/g, "");
+              if (text.length > 9) return;
+              setPhone(text.trim());
+              validatePhone(text.trim());
+              validateFieldsOnBlur();
+            }}
+            onBlur={() => {
+              // validatePhoneOut(phone);
+            }}
+          />
+          <Text style={{
+            alignSelf: "center",
+            left: 9,
+            fontSize: 16,
+            fontWeight: 300,
+            position: "absolute",
+            paddingTop: 8
+          }}>+48 | </Text>
+        </View>
+        <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
 
-      <TouchableHighlight
-        style={[styles.button, {marginTop: 40}, !validateFieldsOnBlur() && {opacity: 0.5}]}
-        disabled={!validateFieldsOnBlur()}
-        onPress={() => {
-          validateFieldsOnSubmit().then((result) => {
-            if (result) {
-              navigation.navigate("Confirm", {
-                // _title,
-                name,
-                email,
-                phone,
-                password,
-              });
-            }
-          });
-        }}
-      >
-        <Text style={styles.buttonText}>Zarejestruj</Text>
-      </TouchableHighlight>
-    </_Container>
+        <TextInput
+          {...textInputProps}
+          label="hasło"
+          outlineColor={wrongPass ? "#e41c1c" : "black"}
+          activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
+          autoCapitalize="none"
+          autoComplete="new-password"
+          textContentType="newPassword"
+          secureTextEntry={passVisible}
+          right={<TextInput.Icon icon={passVisible ? "eye" : "eye-off"}
+                                 onPress={() => setPassVisible(!passVisible)}/>
+          }
+          value={password}
+          onChangeText={(text) => {
+            text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
+            repeatPassword && setRepeatPassword('');
+            setPassword(text.trim());
+            validatePass(text.trim());
+            validateFieldsOnBlur();
+          }}
+          onBlur={() => {
+            // validatePassOut(password);
+          }}
+        />
+        <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
+
+        <TextInput
+          {...textInputProps}
+          label="powtórz hasło"
+          outlineColor={wrongPassRep ? "#e41c1c" : "black"}
+          activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}
+          returnKeyType="done"
+          autoCapitalize="none"
+          autoComplete="current-password"
+          textContentType="currentPassword"
+          secureTextEntry={repeatPassVisible}
+          right={<TextInput.Icon icon={repeatPassVisible ? "eye" : "eye-off"}
+                                 onPress={() => setRepeatPassVisible(!repeatPassVisible)}/>
+          }
+          value={repeatPassword}
+          onChangeText={(text) => {
+            if (text.includes(" ")) return;
+            setRepeatPassword(text.trim());
+            validatePassRep(text.trim());
+            validateFieldsOnBlur();
+          }}
+          onBlur={() => {
+            // validatePassRep(repeatPassword.trim());
+          }}
+        />
+        <Text style={styles.wrongInputText(wrongPassRep)}>{wrongPassRep}</Text>
+
+        {/* PK: Register button */}
+        <_Button
+          buttonText="Zarejestruj"
+          onPress={() => {
+            validateFieldsOnSubmit().then((result) => {
+              if (result) {
+                navigation.navigate("Confirm", {
+                  // _title,
+                  name,
+                  email,
+                  phone,
+                  password,
+                });
+              }
+            });
+          }}
+          disabled={!validateFieldsOnBlur()}
+          style={{marginTop: 30}}/>
+
+      </_Container>
+    </_AnimViewKeyboard>
   );
 }
 

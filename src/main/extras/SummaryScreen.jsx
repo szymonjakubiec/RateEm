@@ -1,22 +1,21 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  Image,
-  FlatList,
-} from "react-native";
+import {View, Text, StyleSheet, Modal, TouchableOpacity, Image, FlatList} from "react-native";
 import {useContext, useEffect, useState} from "react";
 import {getRatingsUserId} from "../../backend/database/Ratings";
-import {goBack} from "../../backend/CommonMethods";
+import {ownGoBack, tabBarAnim} from "../../backend/CommonMethods";
 import {GlobalContext} from "../nav/GlobalContext";
 import _Container from "../styles/Container";
 
+
+
 export default function SummaryScreen({navigation}) {
 
+  // PK: Hide bottom TabBar
+  useEffect(() => {
+    return tabBarAnim(navigation);
+  }, []);
+
   // Pk: Going back
-  goBack(navigation);
+  //goBack(navigation);
 
   const [ratings, setRatings] = useState([]);
   const [highestRating, setHighestRating] = useState(null);
@@ -29,57 +28,42 @@ export default function SummaryScreen({navigation}) {
   useEffect(() => {
     const fetchRatings = async () => {
       const fetchedRatings = await getRatingsUserId(userId);
-      const result = fetchedRatings.filter((rating) =>
-        rating.weight !== 10
-      );
-      setRatings(result.reverse());
-      if (result.length > 0) {
-        const highest = Math.max(
-          ...result.map((rating) => rating.value)
-        );
-        const lowest = Math.min(
-          ...result.map((rating) => rating.value)
-        );
+      setRatings(fetchedRatings.reverse());
 
-        setHighestRating(
-          result.find((rating) => rating.value === highest)
-        );
-        setLowestRating(
-          result.find((rating) => rating.value === lowest)
-        );
+      if (fetchedRatings.length > 0) {
+        const highest = Math.max(...fetchedRatings.map((rating) => rating.value));
+        const lowest = Math.min(...fetchedRatings.map((rating) => rating.value));
 
-        setTotalRatings(result.length);
+        setHighestRating(fetchedRatings.find((rating) => rating.value === highest));
+        setLowestRating(fetchedRatings.find((rating) => rating.value === lowest));
+
+        setTotalRatings(fetchedRatings.length); // Ustawienie łącznej liczby ocen
       }
     };
     fetchRatings();
-
-    navigation.getParent().setOptions({tabBarStyle: {display: 'none'}});
-    return () => {
-      navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
-    };
-
   }, []);
 
   const renderRatingItem = ({item}) => (
     <View style={styles.ratingItemContainer}>
-      <TouchableOpacity
-        style={styles.ratingItem}
-        onPress={() => handleRatingClick(item)}
-      >
-        <Image
-          source={{
-            uri: item.picture,
-            cache: "force-cache",
-          }}
-          style={styles.ratingImage}
-        />
+      <TouchableOpacity style={styles.ratingItem} onPress={() => handleratingClick(item)}>
+        {item.picture ? (
+          <Image
+            source={{
+              uri: `data:image/jpeg;base64,${item.picture}`,
+              cache: "force-cache",
+            }}
+            style={styles.ratingImage}
+          />
+        ) : (
+          <Image source={require("./../../../assets/noPhoto.png")} style={styles.ratingImage}/>
+        )}
         <Text style={styles.ratingItemText}>
           {item.names_surname} {item.value}
         </Text>
       </TouchableOpacity>
     </View>
   );
-  const handleRatingClick = (item) => {
+  const handleratingClick = (item) => {
     setSelectedPolitician(item);
     setModalVisible(true);
   };
@@ -92,30 +76,21 @@ export default function SummaryScreen({navigation}) {
   return (
     <_Container style={{alignItems: "stretch", padding: 20}}>
       <Text style={styles.title}>Wystawione oceny</Text>
-      {(ratings.length === 0) ?
+      {ratings.length === 0 ? (
         <View style={styles.ratingContainer}>
-          <Text>
-            Nie ma niczego do pokazania... Najpierw dodaj opinię!
-          </Text>
+          <Text>Nie ma niczego do pokazania... Najpierw dodaj opinię!</Text>
         </View>
-        :
+      ) : (
         <View>
-
           <View style={styles.totalRatingsContainer}>
-            <Text style={styles.totalRatingsText}>
-              Łączna liczba ocen: {totalRatings}
-            </Text>
+            <Text style={styles.totalRatingsText}>Łączna liczba ocen: {totalRatings}</Text>
           </View>
 
           <View style={styles.ratingContainer}>
             {highestRating && (
-              <TouchableOpacity
-                style={styles.ratingItem}
-                onPress={() => handleRatingClick(highestRating)}
-              >
+              <TouchableOpacity style={styles.ratingItem} onPress={() => handleratingClick(highestRating)}>
                 <Text style={styles.ratingText}>
-                  Najwyższa ocena: {highestRating.names_surname}{" "}
-                  {highestRating.value}
+                  Najwyższa ocena: {highestRating.names_surname} {highestRating.value}
                 </Text>
               </TouchableOpacity>
             )}
@@ -123,22 +98,15 @@ export default function SummaryScreen({navigation}) {
 
           <View style={styles.ratingContainer}>
             {lowestRating && (
-              <TouchableOpacity
-                style={styles.ratingItem}
-                onPress={() => handleRatingClick(lowestRating)}
-              >
+              <TouchableOpacity style={styles.ratingItem} onPress={() => handleratingClick(lowestRating)}>
                 <Text style={styles.ratingText}>
                   Najniższa ocena: {lowestRating.names_surname} {lowestRating.value}
                 </Text>
               </TouchableOpacity>
             )}
           </View>
-
         </View>
-
-
-
-      }
+      )}
       {ratings && (
         <FlatList
           data={ratings}
@@ -149,12 +117,7 @@ export default function SummaryScreen({navigation}) {
       )}
 
       {/* Modal z informacjami o polityku */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
+      <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={closeModal}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <TouchableOpacity style={styles.closeIcon} onPress={closeModal}>
@@ -162,9 +125,7 @@ export default function SummaryScreen({navigation}) {
             </TouchableOpacity>
             {selectedPolitician && (
               <>
-                <Text style={styles.modalTitle}>
-                  {selectedPolitician.names_surname}
-                </Text>
+                <Text style={styles.modalTitle}>{selectedPolitician.names_surname}</Text>
                 <Text style={styles.modalText}>
                   <Text style={styles.modalLabel}>Ocena: </Text>
                   {selectedPolitician.value}

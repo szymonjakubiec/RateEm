@@ -1,12 +1,12 @@
 import {StyleSheet, Text, TouchableHighlight} from "react-native";
-import {goBack} from "../../backend/CommonMethods";
+import {ownGoBack} from "../../backend/CommonMethods";
 import _Container from "../styles/Container";
 
 
 
 export default function ElectionScreen({navigation}) {
 
-  goBack(navigation);
+  //goBack(navigation);
 
   return (
     <_Container>
