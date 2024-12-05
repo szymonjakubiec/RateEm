@@ -174,7 +174,10 @@ export default function LoggingScreen({navigation}) {
           autoComplete="current-password"
           textContentType="currentPassword"
           secureTextEntry={passHidden}
-          right={<TextInput.Icon icon={passHidden ? "eye" : "eye-off"} onPress={() => setPassHidden(!passHidden)}/>}
+          right={<TextInput.Icon
+            icon={passHidden ? "eye" : "eye-off"}
+            onPress={() => setPassHidden(!passHidden)}
+            forceTextInputFocus={false}/>}
           value={password}
           onChangeText={(text) => {
             if (text.includes(" ")) return;

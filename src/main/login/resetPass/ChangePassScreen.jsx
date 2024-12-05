@@ -82,8 +82,10 @@ export default function ChangePassScreen({navigation, route}) {
         autoComplete="new-password"
         textContentType="newPassword"
         secureTextEntry={passVisible}
-        right={<TextInput.Icon icon={passVisible ? "eye" : "eye-off"}
-                               onPress={() => setPassVisible(!passVisible)}/>
+        right={<TextInput.Icon
+          icon={passVisible ? "eye" : "eye-off"}
+          onPress={() => setPassVisible(!passVisible)}
+          forceTextInputFocus={false}/>
         }
         value={password}
         onChangeText={(text) => {
@@ -109,8 +111,10 @@ export default function ChangePassScreen({navigation, route}) {
         autoComplete="current-password"
         textContentType="currentPassword"
         secureTextEntry={repeatPassVisible}
-        right={<TextInput.Icon icon={repeatPassVisible ? "eye" : "eye-off"}
-                               onPress={() => setRepeatPassVisible(!repeatPassVisible)}/>
+        right={<TextInput.Icon
+          icon={repeatPassVisible ? "eye" : "eye-off"}
+          onPress={() => setRepeatPassVisible(!repeatPassVisible)}
+          forceTextInputFocus={false}/>
         }
         value={repeatPassword}
         onChangeText={(text) => {
