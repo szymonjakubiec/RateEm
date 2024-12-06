@@ -211,8 +211,10 @@ export default function CalculatorScreen({ navigation }) {
             <View>
               <View style={styles.viweHorizontal}>
                 <Text style={styles.partyTileText}>Partia {index + 1}</Text>
+              </View>
+              <View style={styles.viweHorizontal}>
                 <TextInput
-                  style={styles.partyTileInput}
+                  style={[styles.partyTileInput, { marginTop: 10 }]}
                   value={inputValues[index]}
                   onChangeText={(newValue) => {
                     inputValues[index] = newValue;
@@ -221,8 +223,8 @@ export default function CalculatorScreen({ navigation }) {
                   keyboardType="numeric"
                   maxLength={5}
                 />
-                <Text style={styles.partyTileText}>%</Text>
-                <TextInput style={styles.partyTileOutput} readOnly={true} value={outputValues[index]} />
+                <Text style={[styles.partyTileText, { marginTop: 10 }]}>%</Text>
+                <TextInput style={[styles.partyTileOutput, { marginTop: 10 }]} readOnly={true} value={outputValues[index]} />
               </View>
               <View style={styles.viweHorizontal}>
                 <CheckBox
@@ -242,11 +244,15 @@ export default function CalculatorScreen({ navigation }) {
             </TouchableHighlight>
           </View>
         ))}
-        <View style={styles.partyTileRest}>
-          <Text style={styles.partyTileText}>Reszta </Text>
-          <TextInput style={styles.partyTileInput} value={theRestValue} readOnly={true} />
-          <Text style={styles.partyTileText}>%</Text>
-          <TextInput style={styles.partyTileOutput} value={theRestMandatesValue} readOnly={true} />
+        <View style={styles.partyTile}>
+          <View>
+            <Text style={styles.partyTileText}>Reszta </Text>
+            <View style={styles.partyTileRestInner}>
+              <TextInput style={[styles.partyTileInput, { marginBottom: 10 }]} value={theRestValue} readOnly={true} />
+              <Text style={styles.partyTileText}>%</Text>
+              <TextInput style={[styles.partyTileOutput, { marginBottom: 10 }]} value={theRestMandatesValue} readOnly={true} />
+            </View>
+          </View>
         </View>
         <TouchableHighlight style={styles.addPartyTile} onPress={addParty}>
           <Image source={plusIcon} style={styles.plusIcon} />
@@ -290,12 +296,10 @@ const styles = StyleSheet.create({
 
   partyTile: {
     backgroundColor: "#000",
-    height: 100,
+    minHeight: 80,
     width: "96%",
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
     marginTop: 20,
     marginLeft: "2%",
     marginRight: "2%",
@@ -303,20 +307,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  partyTileRest: {
-    backgroundColor: "#000",
-    height: 80,
-    width: "96%",
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 15,
-    paddingRight: 15,
-    marginTop: 20,
-    marginLeft: "2%",
-    marginRight: "2%",
-    borderRadius: 20,
+  partyTileRestInner: {
+    marginTop: 10,
     flexDirection: "row",
-    alignItems: "center",
   },
   partyTileText: {
     color: "white",
@@ -332,7 +325,6 @@ const styles = StyleSheet.create({
   partyTileInput: {
     color: "white",
     width: 60,
-    marginLeft: 10,
     fontSize: 20,
     borderColor: "white",
     borderWidth: 1,
