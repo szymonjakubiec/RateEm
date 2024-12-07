@@ -169,18 +169,23 @@ app.use(express.json());
       const [rows] = await connection.execute(`
           SELECT politician_id, COUNT(*) AS ratings_count
           FROM ratings
-          WHERE date >= CURDATE() - INTERVAL ? DAY
+          WHERE date >= CURDATE() - INTERVAL ? DAY AND weight = 1
           GROUP BY politician_id
           ORDER BY ratings_count DESC
               LIMIT ?
       `, [days, count]);
       const politicianIds = rows.map(row => row.politician_id);
+      const ratingsCounts = rows.map(row => row.ratings_count);
       if (politicianIds.length > 0) {
         const [politicians] = await connection.execute(`
             SELECT *
             FROM politicians
             WHERE id IN (${politicianIds.join(",")})
+            ORDER BY FIELD(id, ${politicianIds.join(",")})
         `);
+        for (i = 0; i < politicians.length; i++) {
+          politicians[i].ratings_count = ratingsCounts[i];
+        }
         res.json(politicians);
       } else {
         res.json([]);
