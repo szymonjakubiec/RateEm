@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { TouchableHighlight, StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image } from "react-native";
 import { TextInput } from "react-native-paper";
 import { textInputProps } from "../../styles/TextInput";
 
 export default function SearchFlatList({ data, handleOnPress }) {
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState(data);
   const [searchText, setSearchText] = useState("");
 
   // PK: Clear button animation
@@ -29,10 +29,6 @@ export default function SearchFlatList({ data, handleOnPress }) {
         easing: (value) => Easing.ease(value),
       }).start();
   }, [searchText]);
-
-  useEffect(() => {
-    handleInput("");
-  }, []);
 
   /**
    * Filters through the array of politician names, by obtaining indexes of each occurrence of " " and "-" into array of ints.
@@ -59,7 +55,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
    */
   function ClearTextInput() {
     setSearchText("");
-    setFilteredData([]);
+    setFilteredData(data);
   }
 
   return (
@@ -99,14 +95,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
           data={filteredData}
           keyExtractor={(item) => item.key}
           renderItem={({ item }) => (
-            <Item
-              id={item.key}
-              nameSurname={item.value}
-              globalRating={item.globalRating}
-              picture={item.picture}
-              handleOnPress={handleOnPress}
-              ClearTextInput={ClearTextInput}
-            />
+            <Item id={item.key} nameSurname={item.value} globalRating={item.globalRating} picture={item.picture} handleOnPress={handleOnPress} />
           )}
         />
       ) : (
@@ -116,13 +105,12 @@ export default function SearchFlatList({ data, handleOnPress }) {
   );
 }
 
-function Item({ id, nameSurname, globalRating, picture, handleOnPress, ClearTextInput }) {
+function Item({ id, nameSurname, globalRating, picture, handleOnPress }) {
   return (
     <TouchableOpacity
       style={styles.politicianItem}
       onPress={() => {
         handleOnPress(id);
-        ClearTextInput();
       }}
     >
       <View>
