@@ -113,7 +113,24 @@ function Item({ id, nameSurname, globalRating, picture, handleOnPress }) {
         handleOnPress(id);
       }}
     >
-      <View>
+      <Image
+        source={
+          picture && picture !== ""
+            ? {
+                uri: `data:image/jpeg;base64,${picture}`,
+                cache: "force-cache",
+              }
+            : require("./../../../../assets/noPhoto.png")
+        }
+        style={styles.politicianItemImage}
+      />
+      <View style={styles.politicianInfo}>
+        <Text style={styles.politicianItemText}>{nameSurname}</Text>
+        <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
+        {/* <Text style={styles.ratingScore}>Ilość ocen: {item.ratings_count ? item.ratings_count : "—"}</Text> */}
+      </View>
+
+      {/* <View>
         {picture && picture !== "" ? (
           <Image
             source={{
@@ -127,7 +144,7 @@ function Item({ id, nameSurname, globalRating, picture, handleOnPress }) {
         )}
         {globalRating ? <Text>{parseFloat(globalRating).toFixed(2)}</Text> : <Text>0</Text>}
       </View>
-      <Text style={styles.politicianItemText}>{nameSurname}</Text>
+      <Text style={styles.politicianItemText}>{nameSurname}</Text> */}
     </TouchableOpacity>
   );
 }
@@ -173,25 +190,33 @@ const styles = StyleSheet.create({
   },
 
   politicianItem: {
+    flexDirection: "row",
+    alignItems: "center",
     padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
+    backgroundColor: "#FFF",
+    marginVertical: 5,
+    borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
+    shadowRadius: 5,
     elevation: 3,
   },
   politicianItemText: {
     fontSize: 16,
-    color: "#333",
+    fontWeight: "600",
+  },
+  politicianScore: {
+    fontSize: 14,
+    color: "#555",
   },
   politicianItemImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25, // Zaokrąglone zdjęcie
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  politicianInfo: {
+    flex: 1,
   },
 });
