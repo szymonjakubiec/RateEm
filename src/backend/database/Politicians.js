@@ -41,6 +41,7 @@ const getAllPoliticianNames = async () => {
         value: element.names_surname,
         picture: element.picture,
         globalRating: element.global_rating,
+        ratingCount: element.rating_count,
       });
     }
     return data;

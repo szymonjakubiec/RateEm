@@ -516,7 +516,21 @@ app.use(express.json());
     let connection;
     try {
       connection = await mysql.createConnection(config);
-      const [rows, fields] = await connection.execute("SELECT * FROM politicians");
+      const [rows, fields] = await connection.execute(
+        `SELECT 
+          p.id, 
+          p.names_surname, 
+          p.name, p.surname, 
+          p.party, 
+          p.party_short, 
+          p.picture, 
+          p.global_rating, 
+          (SELECT COUNT(*) FROM ratings WHERE politician_id=p.id) as rating_count, 
+          p.birth_date, 
+          p.facebook_link, 
+          p.twitter_link 
+        FROM politicians as p;`
+      );
 
       res.json(rows);
     } catch (err) {

@@ -95,7 +95,14 @@ export default function SearchFlatList({ data, handleOnPress }) {
           data={filteredData}
           keyExtractor={(item) => item.key}
           renderItem={({ item }) => (
-            <Item id={item.key} nameSurname={item.value} globalRating={item.globalRating} picture={item.picture} handleOnPress={handleOnPress} />
+            <Item
+              id={item.key}
+              nameSurname={item.value}
+              globalRating={item.globalRating}
+              ratingCount={item.ratingCount}
+              picture={item.picture}
+              handleOnPress={handleOnPress}
+            />
           )}
         />
       ) : (
@@ -105,7 +112,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
   );
 }
 
-function Item({ id, nameSurname, globalRating, picture, handleOnPress }) {
+function Item({ id, nameSurname, globalRating, ratingCount, picture, handleOnPress }) {
   return (
     <TouchableOpacity
       style={styles.politicianItem}
@@ -127,24 +134,8 @@ function Item({ id, nameSurname, globalRating, picture, handleOnPress }) {
       <View style={styles.politicianInfo}>
         <Text style={styles.politicianItemText}>{nameSurname}</Text>
         <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
-        {/* <Text style={styles.ratingScore}>Ilość ocen: {item.ratings_count ? item.ratings_count : "—"}</Text> */}
+        <Text style={styles.politicianScore}>Ilość ocen: {ratingCount ? ratingCount : "—"}</Text>
       </View>
-
-      {/* <View>
-        {picture && picture !== "" ? (
-          <Image
-            source={{
-              uri: `data:image/jpeg;base64,${picture}`,
-              cache: "force-cache",
-            }}
-            style={styles.politicianItemImage}
-          />
-        ) : (
-          <Image source={require("./../../../../assets/noPhoto.png")} style={styles.politicianItemImage} />
-        )}
-        {globalRating ? <Text>{parseFloat(globalRating).toFixed(2)}</Text> : <Text>0</Text>}
-      </View>
-      <Text style={styles.politicianItemText}>{nameSurname}</Text> */}
     </TouchableOpacity>
   );
 }
