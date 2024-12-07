@@ -32,10 +32,14 @@ export default function TrendingScreen({navigation}) {
       onPress={() => handlePoliticianClick(item)}
     >
       <Image
-        source={{
-          uri: `data:image/jpeg;base64,${item.picture}`,
-          cache: "force-cache",
-        }}
+        source={
+          item.picture && item.picture !== ""
+            ? {
+                uri: `data:image/jpeg;base64,${item.picture}`,
+                cache: "force-cache",
+              }
+            : require("./../../../assets/noPhoto.png")
+        }
         style={styles.ratingImage}
       />
       <View style={styles.ratingInfo}>
