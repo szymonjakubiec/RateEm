@@ -1,26 +1,30 @@
 import {ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
 import React, {useEffect, useState} from "react";
 import {getTrendingPoliticians} from "../../backend/database/Politicians";
-import {Chip, MD2Colors} from "react-native-paper";
+import {Button, MD2Colors} from "react-native-paper";
 
 
 
 export default function TrendingScreen({navigation}) {
-  const [numberOfPoliticians, setNumberOfPoliticians] = useState(5);
-  const [days, setDays] = useState(90);
+  const [numberOfPoliticians, setNumberOfPoliticians] = useState(3);
+  const [numberOfDays, setNumberOfDays] = useState(1);
+  const [numberOfPoliticiansIndex, setnumberOfPoliticiansIndex] = useState(0);
+  const [numberOfDaysIndex, setnumberOfDaysIndex] = useState(0);
+  const [numberOfPoliticiansTable, setNumberOfPoliticiansTable] = useState([3, 5, 10, 30]);
+  const [numberOfDaysTable, setnumberOfDaysTable] = useState([1, 7, 30, 90]);
   const [trending, setTrending] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
     async function fetchRatings() {
       setIsLoading(true);
-      const fetchedRatings = await getTrendingPoliticians(numberOfPoliticians, days);
+      const fetchedRatings = await getTrendingPoliticians(numberOfPoliticians, numberOfDays);
       setTrending(fetchedRatings);
       setIsLoading(false);
     }
 
     fetchRatings();
-  }, [numberOfPoliticians, days]);
+  }, [numberOfPoliticians, numberOfDays]);
+
 
   const renderRatingItem = ({item}) => (
     <TouchableOpacity
@@ -46,10 +50,27 @@ export default function TrendingScreen({navigation}) {
     </TouchableOpacity>
   );
 
+  const handleNumberOfPoliticiansClick = () => {
+    setnumberOfPoliticiansIndex((prevIndex) => {
+      const newIndex = prevIndex < 3 ? prevIndex + 1 : 0;
+      setNumberOfPoliticians(numberOfPoliticiansTable[newIndex]);
+      return newIndex;
+    });
+  };
+
+  const handleNumberOfDaysClick = () => {
+    setnumberOfDaysIndex((prevIndex) => {
+      const newIndex = prevIndex < 3 ? prevIndex + 1 : 0;
+      setNumberOfDays(numberOfDaysTable[newIndex]);
+      return newIndex;
+    });
+  };
+
   const handlePoliticianClick = (item) => {
     const selectedPoliticianId = item.id;
     navigation.navigate("Profile", {selectedPoliticianId});
   };
+
 
   return (
     <View style={styles.container}>
@@ -58,31 +79,18 @@ export default function TrendingScreen({navigation}) {
       {/* Chips do zmiany dni */}
       <View style={styles.chipsContainer}>
         <Text style={styles.chipLabel}>Okres czasu:</Text>
-        {[1, 7, 30, 90].map((value) => (
-          <Chip
-            key={value}
-            selected={days === value}
-            onPress={() => setDays(value)}
-            style={styles.chip}
-          >
-            {value === 1 ? "Dziś" : `${value} dni`}
-          </Chip>
-        ))}
+        <Button mode="contained" onPress={handleNumberOfDaysClick}>
+          {numberOfDays}
+        </Button>
       </View>
 
       {/* Chips do zmiany liczby polityków */}
       <View style={styles.chipsContainer}>
         <Text style={styles.chipLabel}>Liczba polityków:</Text>
-        {[3, 5, 10].map((value) => (
-          <Chip
-            key={value}
-            selected={numberOfPoliticians === value}
-            onPress={() => setNumberOfPoliticians(value)}
-            style={styles.chip}
-          >
-            {value}
-          </Chip>
-        ))}
+
+        <Button mode="contained" onPress={handleNumberOfPoliticiansClick}>
+          {numberOfPoliticians}
+        </Button>
       </View>
 
       {isLoading ? (
