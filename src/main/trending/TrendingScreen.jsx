@@ -1,7 +1,7 @@
 import {ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
 import React, {useEffect, useState} from "react";
-import {getTrendingPoliticians} from "../../backend/database/Politicians";
-import {Button, MD2Colors} from "react-native-paper";
+import {getAllPoliticians, getTrendingPoliticians} from "../../backend/database/Politicians";
+import {Button, Chip, MD2Colors} from "react-native-paper";
 
 
 
@@ -12,19 +12,41 @@ export default function TrendingScreen({navigation}) {
   const [numberOfDaysIndex, setnumberOfDaysIndex] = useState(0);
   const [numberOfPoliticiansTable, setNumberOfPoliticiansTable] = useState([3, 5, 10, 30]);
   const [numberOfDaysTable, setnumberOfDaysTable] = useState([1, 7, 30, 90]);
-  const [trending, setTrending] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isTrending, setIsTrending] = useState(true);
+  const [data, setData] = useState([]);
+  const [allPoliticians, setAllPoliticians] = useState([]);
+  const [trendingPoliticians, setTrendingPoliticians] = useState([]);
+  const [sorting, setSorting] = useState('surname');
+  const [isNameSortingASC, setIsNameSortingASC] = useState(true);
+  const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
+  const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(true);
   useEffect(() => {
     async function fetchRatings() {
       setIsLoading(true);
       const fetchedRatings = await getTrendingPoliticians(numberOfPoliticians, numberOfDays);
-      setTrending(fetchedRatings);
+      setData(fetchedRatings);
+      setTrendingPoliticians(fetchedRatings);
       setIsLoading(false);
     }
 
     fetchRatings();
   }, [numberOfPoliticians, numberOfDays]);
 
+  useEffect(() => {
+    async function fetchAllPoliticians() {
+      const fetchedPoliticians = await getAllPoliticians();
+      setAllPoliticians(fetchedPoliticians);
+    }
+
+    fetchAllPoliticians();
+  }, []);
+
+  useEffect(() => {
+    {
+      isTrending ? setData(trendingPoliticians) : setData(allPoliticians);
+    }
+  }, [isTrending]);
 
   const renderRatingItem = ({item}) => (
     <TouchableOpacity
@@ -76,25 +98,61 @@ export default function TrendingScreen({navigation}) {
   };
 
 
+  const handleSort = (key, isAsc) => {
+    console.log(sorting, isAsc);
+    {
+      isAsc ? setData(data.sort((a, b) => a[key] < b[key] ? 1 : -1)) : setData(data.sort((a, b) => a[key] > b[key] ? 1 : -1));
+    }
+  };
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Politycy na czasie</Text>
 
-      {/* Chips do zmiany dni */}
+      {/* Czips do zmiany listy "Na czasie" - "Wszyscy" */}
+      <Chip icon="account"
+            onPress={() => setIsTrending(!isTrending)}>{isTrending ? "Na Czasie" : "Wszyscy politycy"}</Chip>
+
+      {isTrending ? (
+        <View style={styles.chipsContainer}>
+          <Text style={styles.chipLabel}>Okres czasu:</Text>
+          <Button mode="contained" onPress={handleNumberOfDaysClick}>
+            {numberOfDays}
+          </Button>
+          <Text style={styles.chipLabel}>Liczba polityków:</Text>
+
+          <Button mode="contained" onPress={handleNumberOfPoliticiansClick}>
+            {numberOfPoliticians}
+          </Button>
+        </View>
+      ) : null}
+
+      <Chip icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+            mode={sorting === "surname" ? 'flat' : 'outlined'}
+            onPress={() => {
+              sorting === "surname" ? setIsSurnameSortingASC(!isSurnameSortingASC) : setSorting('surname');
+              handleSort("surname", isSurnameSortingASC);
+            }}>
+        Nazwisko
+      </Chip>
+
+      <Chip icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+            mode={sorting === "name" ? 'flat' : 'outlined'}
+            onPress={() => {
+              sorting === "name" ? setIsNameSortingASC(!isNameSortingASC) : setSorting('name');
+              handleSort("name", isNameSortingASC);
+            }}>
+        Imię
+      </Chip>
+
+
+      {/* Button do zmiany dni */}
       <View style={styles.chipsContainer}>
-        <Text style={styles.chipLabel}>Okres czasu:</Text>
-        <Button mode="contained" onPress={handleNumberOfDaysClick}>
-          {numberOfDays}
-        </Button>
       </View>
 
-      {/* Chips do zmiany liczby polityków */}
+      {/* Button do zmiany liczby polityków */}
       <View style={styles.chipsContainer}>
-        <Text style={styles.chipLabel}>Liczba polityków:</Text>
-
-        <Button mode="contained" onPress={handleNumberOfPoliticiansClick}>
-          {numberOfPoliticians}
-        </Button>
       </View>
 
       {isLoading ? (
@@ -104,7 +162,7 @@ export default function TrendingScreen({navigation}) {
         </View>
       ) : (
         <FlatList
-          data={trending}
+          data={data}
           renderItem={renderRatingItem}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.listContainer}
