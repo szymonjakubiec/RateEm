@@ -28,8 +28,6 @@ export default function ProfileScreen({navigation, route}) {
   const [politicianSurname, setPoliticianSurname] = useState();
   const [photo, setPhoto] = useState();
 
-  const [surnameTextHeight, setSurnameTextHeight] = useState(0); // for adjusting names and surname font sizes on long surnames
-
   const [party, setParty] = useState("Brak Partii");
   const [partyShort, setPartyShort] = useState("Brak Partii");
 
@@ -39,15 +37,15 @@ export default function ProfileScreen({navigation, route}) {
   const [singleRatings, setSingleRatings] = useState([]); // ratings from ratings.js
   const [newSingleRating, setNewSingleRating] = useState(0);
 
-  const [isLoadOwnRatingInitialized, setIsLoadOwnRatingInitialized] = useState(false);
 
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
 
   /**
-   * Variable preventing the ownRating from writing feedback before loading the globalRating to the screen.
+   * Variable preventing using useEffect from ownRating right after it is initialized. 
    */
-  const canUpdateGlobalRating = useRef(false);
+  const useEffectFirstTime = useRef(true);
+  
 
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
 
@@ -60,19 +58,11 @@ export default function ProfileScreen({navigation, route}) {
     init();
   }, []);
 
-  /**
-   * Runs right after the loadOwnRating from useEffect above.
-   */
-  useEffect(() => {
-    if (isLoadOwnRatingInitialized) {
-      canUpdateGlobalRating.current = true;
-    }
-  }, [isLoadOwnRatingInitialized]);
 
   async function init() {
     loadPoliticianData();
-    if (await loadOwnRating()) {
-      loadSingleRatings();
+    if (await loadSingleRatings() === false){
+      countGlobalRating()
     }
   }
 
@@ -85,7 +75,7 @@ export default function ProfileScreen({navigation, route}) {
   async function loadPoliticianData() {
     const data = await getPolitician(selectedPoliticianId);
     setPoliticianData(data);
-    if (data.at(0).global_rating !== null) setGlobalRating(data.at(0).global_rating);
+    // if (data.at(0).global_rating !== null) setGlobalRating(data.at(0).global_rating);
     if (data.at(0).party !== null) {
       setParty(data.at(0).party);
     }
@@ -96,17 +86,15 @@ export default function ProfileScreen({navigation, route}) {
 
   /**
    * Loads asynchronously ownRating and if it is not null then allows to run loadSingleRatings.
-   * Also sets isLoadOwnRatingInitialized to allow updating the globalRating after completing the whole function.
+   * Also sets loadOwnRatingInitialized to allow updating the globalRating after completing the whole function.
    * @returns {Promise<boolean>}
    */
   async function loadOwnRating() {
     const data = await getOwnRating(userId, selectedPoliticianId);
     if (data !== null) {
       setOwnRating(data.at(0).value);
-      setIsLoadOwnRatingInitialized(true);
       return true;
     } else {
-      setIsLoadOwnRatingInitialized(true);
       return false;
     }
   }
@@ -118,25 +106,16 @@ export default function ProfileScreen({navigation, route}) {
     const data = await getRatingsUserIdPoliticianId(userId, selectedPoliticianId);
     if (data !== null) {
       setSingleRatings(data);
+      return true;
     }
-  }
-
-  /**
-   * Calculates whether surnameTextHeight takes more than 1 line.
-   * @returns {number}
-   */
-  function calculateFontSize() {
-    if (surnameTextHeight > 32) {
-      return 21;
-    }
-    return 24;
+    return false;
   }
 
   /**
    * Runs every time the singleRatings table is updated and has at least 1 record.
    * It calculates ownRating as the weighted average, and uploads the result to the base.
    */
-  function countOwnRating() {
+  async function countOwnRating() {
     let numerator = 0;
     let denominator = 0;
 
@@ -148,8 +127,9 @@ export default function ProfileScreen({navigation, route}) {
     let weightedAverage = Math.round((numerator * 100) / denominator) / 100; // round number to 2 decimal places
 
     console.log("Srednia ważona wychodzi: " + weightedAverage);
+    await updateOwnRating(selectedPoliticianId, userId, weightedAverage);
+    
     setOwnRating(weightedAverage);
-    updateOwnRating(selectedPoliticianId, userId, weightedAverage);
   }
 
   /**
@@ -164,19 +144,15 @@ export default function ProfileScreen({navigation, route}) {
     let average = 0;
 
     for (politicianOwnRating of politicianOwnRatings) {
-      if (politicianOwnRating.user_id !== userId) {
-        numerator += politicianOwnRating.value;
-        denominator += 1;
-      }
+      numerator += politicianOwnRating.value;
+      console.log("value: " + politicianOwnRating.value);
+      denominator += 1;
     }
-    if (ownRating > 0) {
-      numerator += ownRating;
-      denominator = denominator + 1;
-    }
+    
     if (denominator > 0) {
       average = Math.round((numerator * 100) / denominator) / 100;
     }
-
+    
     console.log("Średnia globalna wynosi: " + average);
 
     setGlobalRating(average);
@@ -209,8 +185,7 @@ export default function ProfileScreen({navigation, route}) {
   /**
    * Update states passed to the OpinionsTile.jsx
    */
-  function handleOtFirstOwnRating(starRating) {
-    // Ot - OpinionsTile
+  function handleOtFirstOwnRating(starRating) { // Ot - OpinionsTile
     setFirstOwnRating(starRating);
   }
 
@@ -331,10 +306,14 @@ export default function ProfileScreen({navigation, route}) {
       countOwnRating();
     }
   }, [singleRatings]);
+  
 
   useEffect(() => {
-    if (canUpdateGlobalRating.current === true) {
+    if (useEffectFirstTime.current === false) {
       countGlobalRating();
+    }
+    else {
+      useEffectFirstTime.current = false;
     }
   }, [ownRating]);
 
@@ -368,14 +347,14 @@ export default function ProfileScreen({navigation, route}) {
             <View style={styles.ratingRow}>
               <Text style={styles.rating}>Globalna ocena:</Text>
               <View>
-                <Text style={styles.rating}>{globalRating.toFixed(2)}</Text>
+                {globalRating > 0 ? <Text style={styles.rating}>{globalRating.toFixed(2)}</Text> : <Text style={styles.rating}>Brak</Text>}
                 {/* <Image>star</Image> */}
               </View>
             </View>
             <View style={styles.ratingRow}>
               <Text style={styles.rating}>Twoja ocena:</Text>
               <View>
-                <Text style={styles.rating}>{ownRating.toFixed(2)}</Text>
+                {ownRating > 0 ? <Text style={styles.rating}>{ownRating.toFixed(2)}</Text> : <Text style={styles.rating}>Brak</Text>}
                 {/* <Image>star</Image> */}
               </View>
             </View>
