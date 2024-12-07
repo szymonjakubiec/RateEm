@@ -4,10 +4,10 @@ import { Image } from "react-native";
 import { getOwnRating, addOwnRating, updateOwnRating, deleteOwnRating, getAllPoliticianOwnRatings } from "../../backend/database/OwnRatings";
 import { getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating } from "../../backend/database/Ratings";
 import { getPolitician, updatePolitician } from "../../backend/database/Politicians";
-import OpinionsTile from "../search/opinionsTileComponents/OpinionsTile";
+import OpinionsTile from "../home/opinionsTileComponents/OpinionsTile";
 import { useTheme } from "react-native-paper";
 import { GlobalContext } from "../nav/GlobalContext";
-import { OpinionsTileContext } from "../search/nav/OpinionsTileContext";
+import { OpinionsTileContext } from "../home/nav/OpinionsTileContext";
 import _Container from "../styles/Container";
 import { tabBarAnim } from "../../backend/CommonMethods";
 

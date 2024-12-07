@@ -39,6 +39,8 @@ const getAllPoliticianNames = async () => {
       data.push({
         key: element.id,
         value: element.names_surname,
+        picture: element.picture,
+        globalRating: element.global_rating,
       });
     }
     return data;
@@ -118,5 +120,4 @@ const getTrendingPoliticians = async (count, days) => {
   }
 };
 
-
-module.exports = {getAllPoliticians, getAllPoliticianNames, getPolitician, updatePolitician, getTrendingPoliticians};
+module.exports = { getAllPoliticians, getAllPoliticianNames, getPolitician, updatePolitician, getTrendingPoliticians };

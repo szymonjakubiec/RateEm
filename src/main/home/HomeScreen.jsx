@@ -1,12 +1,14 @@
 import { BackHandler, Text } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
+import { getAllPoliticianNames } from "../../backend/database/Politicians.js";
 import { GlobalContext } from "../nav/GlobalContext.jsx";
 import _Container from "../styles/Container";
 
 export default function HomeScreen({ navigation }) {
   const politicianNameData = useContext(GlobalContext).namesData;
   const userId = useContext(GlobalContext).userId;
+  const { setNamesData } = useContext(GlobalContext);
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
   // Pk: Exiting app from HomeScreen
@@ -36,6 +38,16 @@ export default function HomeScreen({ navigation }) {
     }
   }, [selectedPoliticianId]);
 
+  // async function init() {
+  //   const data = await getAllPoliticianNames();
+  //   setNamesData(data);
+  //   console.log("updated all politicians2");
+  // }
+
+  // useEffect(() => {
+  //   init();
+  // }, []);
+
   function handlePress(selected) {
     setSelectedPoliticianId(selected);
   }
@@ -46,7 +58,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <_Container style={{ justifyContent: "flex-start", padding: 0 }}>
-      <SearchFlatList data={politicianNameData} handleOnPress={handlePress} />
+      {politicianNameData ? <SearchFlatList data={politicianNameData} handleOnPress={handlePress} /> : <Text>Loading</Text>}
     </_Container>
   );
 }

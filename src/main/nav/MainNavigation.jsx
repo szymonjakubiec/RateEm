@@ -23,6 +23,7 @@ export default function MainNavigation({ route }) {
   async function init() {
     const data = await getAllPoliticianNames();
     setNamesData(data);
+    console.log("updated all politicians");
   }
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function MainNavigation({ route }) {
   }, []);
 
   return (
-    <GlobalContext.Provider value={{ namesData, userId }}>
+    <GlobalContext.Provider value={{ namesData, setNamesData, userId }}>
       <Tab.Navigator
         backBehavior="initialRoute"
         initialRouteName="Home"
@@ -51,20 +52,6 @@ export default function MainNavigation({ route }) {
           },
         }}
       >
-        {/* <Tab.Screen
-          name="SearchNav"
-          component={HomeNavigation}
-          initialParams={{ _title }}
-          options={{
-            title: "Wyszukaj", // tytuł na dole ekranu
-            // headerLeft: () => null,
-            gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: () => <Icon source="account-search" size={36} />,
-            tabBarIconStyle: { top: 1 },
-            // tabBarShowLabel: false,
-            // tabBarBadge: "+1"
-          }}
-        /> */}
         <Tab.Screen
           name="Election"
           component={ElectionNavigation}

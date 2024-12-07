@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { TouchableHighlight, StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard } from "react-native";
+import { TouchableHighlight, StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image } from "react-native";
 import { TextInput } from "react-native-paper";
 import { textInputProps } from "../../styles/TextInput";
 
@@ -30,22 +30,25 @@ export default function SearchFlatList({ data, handleOnPress }) {
       }).start();
   }, [searchText]);
 
+  useEffect(() => {
+    handleInput("");
+  }, []);
+
   /**
    * Filters through the array of politician names, by obtaining indexes of each occurrence of " " and "-" into array of ints.
    * Then iterates through each starting position checking if any of them matches the input string.
    * @param {object} input
    */
   function handleInput(input) {
-    if (input.length !== 0) {
-      let result = data.filter((obj) =>
-        [0, ...obj.value.matchAll(/[ -]/g)]
-          .map((x) => x.index + 1 ?? 0) // creates a table of indexes of all words in name
-          .some(
-            (ind) => obj.value.toLowerCase().startsWith(input.toLowerCase(), ind) // searches through each of these words
-          )
-      );
-      if (result.length !== 0) setFilteredData(result);
-      else setFilteredData([]);
+    let result = data.filter((obj) =>
+      [0, ...obj.value.matchAll(/[ -]/g)]
+        .map((x) => x.index + 1 ?? 0) // creates a table of indexes of all words in name
+        .some(
+          (ind) => obj.value.toLowerCase().startsWith(input.toLowerCase(), ind) // searches through each of these words
+        )
+    );
+    if (result.length !== 0) {
+      setFilteredData(result);
     } else {
       setFilteredData([]);
     }
@@ -90,13 +93,21 @@ export default function SearchFlatList({ data, handleOnPress }) {
       </View>
       {filteredData.length !== 0 ? (
         <FlatList
-          keyboardDismissMode={"on-drag"}
           keyboardShouldPersistTaps={"handled"}
           persistentScrollbar={true}
           style={styles.list(filteredData)}
           data={filteredData}
           keyExtractor={(item) => item.key}
-          renderItem={({ item }) => <Item id={item.key} nameSurname={item.value} handleOnPress={handleOnPress} ClearTextInput={ClearTextInput} />}
+          renderItem={({ item }) => (
+            <Item
+              id={item.key}
+              nameSurname={item.value}
+              globalRating={item.globalRating}
+              picture={item.picture}
+              handleOnPress={handleOnPress}
+              ClearTextInput={ClearTextInput}
+            />
+          )}
         />
       ) : (
         <Text style={styles.noResultsText(searchText)}>Brak wyników.</Text>
@@ -105,18 +116,31 @@ export default function SearchFlatList({ data, handleOnPress }) {
   );
 }
 
-function Item({ id, nameSurname, handleOnPress, ClearTextInput }) {
+function Item({ id, nameSurname, globalRating, picture, handleOnPress, ClearTextInput }) {
   return (
-    <TouchableHighlight
-      underlayColor="#00000033"
-      style={styles.item}
+    <TouchableOpacity
+      style={styles.politicianItem}
       onPress={() => {
         handleOnPress(id);
         ClearTextInput();
       }}
     >
-      <Text style={styles.itemText}>{nameSurname}</Text>
-    </TouchableHighlight>
+      <View>
+        {picture && picture !== "" ? (
+          <Image
+            source={{
+              uri: `data:image/jpeg;base64,${picture}`,
+              cache: "force-cache",
+            }}
+            style={styles.politicianItemImage}
+          />
+        ) : (
+          <Image source={require("./../../../../assets/noPhoto.png")} style={styles.politicianItemImage} />
+        )}
+        {globalRating ? <Text>{parseFloat(globalRating).toFixed(2)}</Text> : <Text>0</Text>}
+      </View>
+      <Text style={styles.politicianItemText}>{nameSurname}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -133,9 +157,6 @@ const styles = StyleSheet.create({
   },
   list: (result) => ({
     maxWidth: "80%",
-    borderWidth: result.length === 0 ? 0 : 1,
-    borderRadius: 3,
-    borderStyle: "dashed",
     marginTop: 5,
     margin: 1,
     marginBottom: 20,
@@ -161,5 +182,28 @@ const styles = StyleSheet.create({
   },
   clearButtonText: {
     color: "blue",
+  },
+
+  politicianItem: {
+    padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  politicianItemText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  politicianItemImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25, // Zaokrąglone zdjęcie
   },
 });
