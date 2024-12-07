@@ -1,10 +1,13 @@
-import {BackHandler, Text} from "react-native";
-import {useEffect} from "react";
+import { BackHandler, Text } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
+import { GlobalContext } from "../nav/GlobalContext.jsx";
 import _Container from "../styles/Container";
 
-
-
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({ navigation }) {
+  const politicianNameData = useContext(GlobalContext).namesData;
+  const userId = useContext(GlobalContext).userId;
+  const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
@@ -17,16 +20,33 @@ export default function HomeScreen({navigation}) {
 
       return true;
     };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
     return () => backHandler.remove();
   }, []);
 
+  /**
+   * Navigation to the ProfileScreen.js after selection of politician.
+   */
+  useEffect(() => {
+    if (selectedPoliticianId > 0) {
+      navigation.navigate("Profile", {
+        selectedPoliticianId,
+      });
+      setSelectedPoliticianId(0);
+    }
+  }, [selectedPoliticianId]);
+
+  function handlePress(selected) {
+    setSelectedPoliticianId(selected);
+  }
+
+  useEffect(() => {
+    setSelectedPoliticianId(0);
+  }, []);
+
   return (
-    <_Container>
-      <Text>To jest strona główna.</Text>
+    <_Container style={{ justifyContent: "flex-start", padding: 0 }}>
+      <SearchFlatList data={politicianNameData} handleOnPress={handlePress} />
     </_Container>
   );
 }

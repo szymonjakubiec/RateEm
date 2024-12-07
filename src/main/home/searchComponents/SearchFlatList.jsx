@@ -1,39 +1,34 @@
-import {useEffect, useRef, useState} from "react";
-import {TouchableHighlight, StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard} from "react-native";
-import {TextInput} from "react-native-paper";
-import {textInputProps} from "../../styles/TextInput";
+import { useEffect, useRef, useState } from "react";
+import { TouchableHighlight, StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard } from "react-native";
+import { TextInput } from "react-native-paper";
+import { textInputProps } from "../../styles/TextInput";
 
-
-
-export default function SearchFlatList({data, handleOnPress}) {
+export default function SearchFlatList({ data, handleOnPress }) {
   const [filteredData, setFilteredData] = useState([]);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
 
   // PK: Clear button animation
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-
     // PK: Fade in
     searchText.length > 0 &&
-    Animated.timing(opacityAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-      easing: value => Easing.ease(value),
-    }).start();
+      Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+        easing: (value) => Easing.ease(value),
+      }).start();
 
     // PK: Fade out
     searchText.length === 0 &&
-    Animated.timing(opacityAnim, {
-      toValue: 0,
-      duration: 250,
-      useNativeDriver: true,
-      easing: value => Easing.ease(value),
-    }).start();
-
+      Animated.timing(opacityAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+        easing: (value) => Easing.ease(value),
+      }).start();
   }, [searchText]);
-
 
   /**
    * Filters through the array of politician names, by obtaining indexes of each occurrence of " " and "-" into array of ints.
@@ -43,15 +38,14 @@ export default function SearchFlatList({data, handleOnPress}) {
   function handleInput(input) {
     if (input.length !== 0) {
       let result = data.filter((obj) =>
-        [0, ...obj.value.matchAll(/[ -]/g)].map(x => x.index + 1 ?? 0) // creates a table of indexes of all words in name
+        [0, ...obj.value.matchAll(/[ -]/g)]
+          .map((x) => x.index + 1 ?? 0) // creates a table of indexes of all words in name
           .some(
             (ind) => obj.value.toLowerCase().startsWith(input.toLowerCase(), ind) // searches through each of these words
           )
       );
-      if (result.length !== 0)
-        setFilteredData(result);
-      else
-        setFilteredData([]);
+      if (result.length !== 0) setFilteredData(result);
+      else setFilteredData([]);
     } else {
       setFilteredData([]);
     }
@@ -61,14 +55,13 @@ export default function SearchFlatList({data, handleOnPress}) {
    * Clears the text in input box and filteredData.
    */
   function ClearTextInput() {
-    setSearchText('');
+    setSearchText("");
     setFilteredData([]);
   }
 
   return (
     <View>
       <View style={styles.searchBox}>
-
         <TextInput
           {...textInputProps}
           style={styles.searchInput}
@@ -78,53 +71,50 @@ export default function SearchFlatList({data, handleOnPress}) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
-          left={<TextInput.Icon
-            icon="magnify"
-            onPress={() => Keyboard.dismiss()}
-          />}
-          right={<TextInput.Icon
-            icon="close"
-            style={{opacity: opacityAnim}}
-            onPress={() => {
-              ClearTextInput();
-              // Keyboard.dismiss()
-            }}
-          />}
+          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()} />}
+          right={
+            <TextInput.Icon
+              icon="close"
+              style={{ opacity: opacityAnim }}
+              onPress={() => {
+                ClearTextInput();
+                // Keyboard.dismiss()
+              }}
+            />
+          }
           onChangeText={(text) => {
             setSearchText(text);
             handleInput(text.trim());
           }}
-
         />
       </View>
-      {filteredData.length !== 0
-        ? (<FlatList
+      {filteredData.length !== 0 ? (
+        <FlatList
           keyboardDismissMode={"on-drag"}
           keyboardShouldPersistTaps={"handled"}
           persistentScrollbar={true}
           style={styles.list(filteredData)}
           data={filteredData}
           keyExtractor={(item) => item.key}
-          renderItem={({item}) => (
-            <Item
-              id={item.key}
-              nameSurname={item.value}
-              handleOnPress={handleOnPress}
-              ClearTextInput={ClearTextInput}
-            />
-          )}
-        />)
-        : (<Text style={styles.noResultsText(searchText)}>Brak wyników.</Text>)}
+          renderItem={({ item }) => <Item id={item.key} nameSurname={item.value} handleOnPress={handleOnPress} ClearTextInput={ClearTextInput} />}
+        />
+      ) : (
+        <Text style={styles.noResultsText(searchText)}>Brak wyników.</Text>
+      )}
     </View>
   );
 }
 
-function Item({id, nameSurname, handleOnPress, ClearTextInput}) {
+function Item({ id, nameSurname, handleOnPress, ClearTextInput }) {
   return (
-    <TouchableHighlight underlayColor="#00000033" style={styles.item} onPress={() => {
-      handleOnPress(id);
-      ClearTextInput();
-    }}>
+    <TouchableHighlight
+      underlayColor="#00000033"
+      style={styles.item}
+      onPress={() => {
+        handleOnPress(id);
+        ClearTextInput();
+      }}
+    >
       <Text style={styles.itemText}>{nameSurname}</Text>
     </TouchableHighlight>
   );
