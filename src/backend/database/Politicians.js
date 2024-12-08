@@ -39,6 +39,8 @@ const getAllPoliticianNames = async () => {
       data.push({
         key: element.id,
         value: element.names_surname,
+        name: element.name,
+        surname: element.surname,
         picture: element.picture,
         globalRating: element.global_rating,
         ratingCount: element.rating_count,
@@ -120,6 +122,8 @@ const getTrendingPoliticians = async (days) => {
       data.push({
         key: element.id,
         value: element.names_surname,
+        name: element.name,
+        surname: element.surname,
         picture: element.picture,
         globalRating: element.global_rating,
         ratingCount: element.rating_count,

@@ -15,9 +15,10 @@ export default function SearchFlatList({ data, handleOnPress }) {
   const [numberOfDays, setNumberOfDays] = useState(1);
   const [numberOfDaysIndex, setnumberOfDaysIndex] = useState(0);
   const [numberOfDaysTable, setnumberOfDaysTable] = useState([1, 7, 30]);
-  // const [sorting, setSorting] = useState("surname");
-  // const [isNameSortingASC, setIsNameSortingASC] = useState(true);
-  // const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
+
+  const [sorting, setSorting] = useState("surname");
+  const [isNameSortingASC, setIsNameSortingASC] = useState(true);
+  const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
   // const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(true);
 
   // PK: Clear button animation
@@ -32,6 +33,10 @@ export default function SearchFlatList({ data, handleOnPress }) {
     }
 
     fetchRatings();
+
+    setSorting("surname");
+    setIsNameSortingASC(true);
+    setIsSurnameSortingASC(true);
   }, [numberOfDays]);
 
   useEffect(() => {
@@ -59,6 +64,10 @@ export default function SearchFlatList({ data, handleOnPress }) {
       isTrending ? setFilteredData(trendingPoliticians) : setFilteredData(data);
     }
     handleInput(searchText);
+
+    setSorting("surname");
+    setIsNameSortingASC(true);
+    setIsSurnameSortingASC(true);
   }, [isTrending]);
 
   /**
@@ -84,6 +93,10 @@ export default function SearchFlatList({ data, handleOnPress }) {
     } else {
       setFilteredData([]);
     }
+
+    setSorting("surname");
+    setIsNameSortingASC(true);
+    setIsSurnameSortingASC(true);
   }
 
   const handleNumberOfDaysClick = () => {
@@ -94,12 +107,23 @@ export default function SearchFlatList({ data, handleOnPress }) {
     });
   };
 
+  const handleSort = (key, isAsc) => {
+    const sortedData = [...filteredData].sort((a, b) => {
+      const comparison = a[key].toLocaleString().localeCompare(b[key].toLocaleString(), "pl");
+
+      return isAsc ? comparison : -comparison;
+    });
+
+    setFilteredData(sortedData); // Update state with the sorted array
+  };
+
   /**
    * Clears the text in input box and filteredData.
    */
   function ClearTextInput() {
     setSearchText("");
-    setFilteredData(data);
+    if (isTrending) setFilteredData(trendingPoliticians);
+    else setFilteredData(data);
   }
 
   return (
@@ -133,25 +157,50 @@ export default function SearchFlatList({ data, handleOnPress }) {
         />
       </View>
 
-      <View style={styles.filtersBox}>
+      <View style={styles.chipDiv}>
         {/* wszyscy politycy / politycy na czasie */}
         <Chip icon="account" onPress={() => setIsTrending(!isTrending)}>
           {isTrending ? "Na Czasie" : "Wszyscy politycy"}
         </Chip>
 
-        {/* ustawienia sortowania filtorwania */}
+        {/* Button do zmiany dni */}
         {isTrending ? (
           <View style={styles.chipsContainer}>
-            {/* Button do zmiany dni */}
-            <View style={styles.chipsContainer}>
-              <Text style={styles.chipLabel}>Okres czasu:</Text>
-              <Button mode="contained" onPress={handleNumberOfDaysClick}>
-                {numberOfDays}
-              </Button>
-            </View>
+            <Text style={styles.chipLabel}>Okres czasu:</Text>
+            <Button mode="contained" onPress={handleNumberOfDaysClick}>
+              {numberOfDays}
+            </Button>
           </View>
         ) : null}
       </View>
+
+      <Chip
+        style={styles.chipDiv}
+        icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+        mode={sorting === "surname" ? "flat" : "outlined"}
+        onPress={() => {
+          let reverseOrder = isSurnameSortingASC;
+          sorting === "surname" ? (reverseOrder = !isSurnameSortingASC) : null;
+          sorting === "surname" ? setIsSurnameSortingASC(reverseOrder) : setSorting("surname");
+          handleSort("surname", reverseOrder);
+        }}
+      >
+        Nazwisko
+      </Chip>
+
+      <Chip
+        style={styles.chipDiv}
+        icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+        mode={sorting === "name" ? "flat" : "outlined"}
+        onPress={() => {
+          let reverseOrder = isNameSortingASC;
+          sorting === "name" ? (reverseOrder = !isNameSortingASC) : null;
+          sorting === "name" ? setIsNameSortingASC(reverseOrder) : setSorting("name");
+          handleSort("name", reverseOrder);
+        }}
+      >
+        Imię
+      </Chip>
 
       {filteredData.length !== 0 ? (
         <FlatList
@@ -164,6 +213,8 @@ export default function SearchFlatList({ data, handleOnPress }) {
             <Item
               id={item.key}
               nameSurname={item.value}
+              name={item.name}
+              surname={item.surname}
               globalRating={item.globalRating}
               ratingCount={item.ratingCount}
               picture={item.picture}
@@ -179,7 +230,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
   );
 }
 
-function Item({ id, nameSurname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
+function Item({ id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
   return (
     <TouchableOpacity
       key={id}
@@ -200,7 +251,9 @@ function Item({ id, nameSurname, globalRating, ratingCount, picture, handleOnPre
         style={styles.politicianItemImage}
       />
       <View style={styles.politicianInfo}>
-        <Text style={styles.politicianItemText}>{nameSurname}</Text>
+        <Text style={styles.politicianItemText}>
+          {surname} {name}
+        </Text>
         <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
         <Text style={styles.politicianScore}>
           {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
@@ -228,16 +281,14 @@ const styles = StyleSheet.create({
     flexGrow: 0,
   }),
 
-  filtersBox: {
-    width: "80%",
-    marginVertical: 10,
+  chipDiv: {
+    marginVertical: 2,
   },
   chipsContainer: {
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
     padding: 0,
-    marginBottom: 10,
   },
   chipLabel: {
     fontSize: 16,

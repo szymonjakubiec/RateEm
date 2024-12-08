@@ -22,7 +22,6 @@ export default function MainNavigation({ route }) {
   async function init() {
     const data = await getAllPoliticianNames();
     setNamesData(data);
-    console.log("updated all politicians");
   }
 
   useEffect(() => {
