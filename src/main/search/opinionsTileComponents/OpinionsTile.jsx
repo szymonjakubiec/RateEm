@@ -2,44 +2,62 @@ import {FlatList, Modal, StyleSheet, Text, TextInput, TouchableHighlight, View} 
 import StarRating from "react-native-star-rating-widget";
 import {useContext, useEffect, useRef, useState} from "react";
 import {OpinionsTileContext} from "../nav/OpinionsTileContext";
+import {RatingPopupTypes, ConfirmPopupTypes} from "../../../backend/EnumTypes"; 
 
 
 
-export default function OpinionsTile({ownRating, handleFirstOwnRating}) {
-  const [starRating, setStarRating] = useState(0);
+export default function OpinionsTile({ownRating}) {
+  const [ratingType, setRatingType] = useState(RatingPopupTypes.Undefined);
 
   const [expandedRatingList, setExpandedRatingList] = useState(false);
 
-  
-  if (ownRating === 0) {
-    return displayNoOpinionComponent();
-  } else {
-    return displayYourOpinionsComponent();
-  }
+  const [ratingPopupVisible, setRatingPopupVisible] = useState(false);
 
-  function displayNoOpinionComponent() { 
+  function turnOffRatingPopup(){
+    setRatingPopupVisible(false);
+    setRatingType(RatingPopupTypes.Undefined);
+  }
+  
+  return(
+    ownRating === 0 ? <NoOpinionComponent/> : <YourOpinionsComponent/>
+  );
+  
+  
+  function NoOpinionComponent() {
+    useEffect(() => {
+      if (ratingType !== RatingPopupTypes.Undefined) {
+        setRatingPopupVisible(true);
+      }
+    }, [ratingType]);
+    
     return (
       <View style={styles.opinionsTile}>
         <Text>Brak opinii</Text>
         <Text>Masz już wyrobione zdanie o tym polityku?</Text>
         <Text>Ustaw opinię bazową</Text>
-        <StarRating
-          rating={starRating}
-          onChange={setStarRating}
-          enableHalfStar={false}
-        />
         <TouchableHighlight
           style={styles.button}
-          onPress={setBaseRate} // function to set firstRating if >= 1
-          disabled={starRating === 0}
+          onPress={() => setRatingType(RatingPopupTypes.Add)} // function to run the RatingPopup
         >
           <Text>Ustaw</Text>
         </TouchableHighlight>
+        <RatingPopup
+          popupVisible={ratingPopupVisible}
+          itemWeight={10}
+          popupType={ratingType}
+          turnOffRatingPopup={turnOffRatingPopup}
+        />
       </View>
     );
   }
 
-  function displayYourOpinionsComponent() {
+  function YourOpinionsComponent() {
+    useEffect(() => {
+      if (ratingType !== RatingPopupTypes.Undefined) {
+        setRatingPopupVisible(true);
+      }
+    }, [ratingType]);
+    
     return (
       <View style={styles.opinionsTile}>
         <View style={styles.topBar}>
@@ -63,19 +81,20 @@ export default function OpinionsTile({ownRating, handleFirstOwnRating}) {
           </TouchableHighlight>
         </View>
         <RatingsList expandedRatingList={expandedRatingList} />
-        <AddOpinion />
+        <TouchableHighlight
+          style={styles.button}
+          onPress={() => setRatingType(RatingPopupTypes.Add)}
+        >
+          <Text style={{ fontWeight: "500", fontSize: 18, alignSelf: "center" }}>Dodaj opinię</Text>
+        </TouchableHighlight>
+        <RatingPopup 
+          popupVisible={ratingPopupVisible}
+          itemWeight={1}
+          popupType={ratingType}
+          turnOffRatingPopup={turnOffRatingPopup}
+        />
       </View>
     );
-  }
-
-  /**
-   * Checks if the starRating is at least 1 and set it into firstOwnRating.
-   */
-  function setBaseRate() {
-    if (starRating >= 1) {
-      handleFirstOwnRating(starRating);
-      setStarRating(0);
-    } 
   }
 }
 
@@ -143,35 +162,20 @@ function RatingsList({expandedRatingList}) {
    * @constructor
    */
   function ItemExtension({ item, deselectItem }) {
-    /**
-     * @enum
-     * @type {Readonly<{Undefined: symbol, Deletion: symbol, Update: symbol}>}
-     */
-    const ConfirmPopupTypes = Object.freeze({
-      Undefined: Symbol("Undefined"),
-      Update: Symbol("Update"),
-      Deletion: Symbol("Deletion")
-    });
-    
     const {handleSingleRatingDeletion, handleSingleRatingUpdate} = useContext(OpinionsTileContext);
 
-    const [updateRatingPopupVisible, setUpdateRatingPopupVisible] = useState(false);    
+    const [ratingPopupVisible, setRatingPopupVisible] = useState(false);    
     
     const [confirmPopupVisible, setConfirmPopupVisible] = useState(false);
-    const [confirmType, setConfirmType] = useState(ConfirmPopupTypes.Undefined);
 
     /**
-     * Returns to the Rating FlatList and updates/deletes the selected item and deselects it.
+     * Deletes the selected item, deselects it and returns to the Rating FlatList.
      * @returns {Promise<void>}
      */
-    async function handleConfirmation(){
+    function handleConfirmation(){
       setConfirmPopupVisible(false);
       deselectItem();
-      if (confirmType === ConfirmPopupTypes.Update) {
-        await handleSingleRatingUpdate(item)
-      } else {
-        await handleSingleRatingDeletion(item.id, item.weight);
-      }
+      handleSingleRatingDeletion(item.id, item.weight);
     }
 
     /**
@@ -182,20 +186,11 @@ function RatingsList({expandedRatingList}) {
     }
 
     /**
-     * Turn off the rating update popup and nullify the data inside.
+     * Turn off the rating popup and nullify the data inside.
      */
-    async function turnOffRatingPopup(){
-      await setUpdateRatingPopupVisible(false);
+    function turnOffRatingPopup(){
+      setRatingPopupVisible(false);
     }
-
-    /**
-     * On assigning the confirmType of ConfirmationPopup turns it on.
-     */
-    useEffect(() => {
-      if (confirmType !== ConfirmPopupTypes.Undefined){
-        setConfirmPopupVisible(true);
-      }
-    }, [confirmType]);
     
     if (selectedItemId === item.id) {
       return (
@@ -204,30 +199,29 @@ function RatingsList({expandedRatingList}) {
           <View style={styles.buttonsView}>
             <TouchableHighlight
               style={styles.button}
-              onPress={() => setUpdateRatingPopupVisible(true)}
+              onPress={() => setRatingPopupVisible(true)}
             >
               <Text>Zmień</Text>
             </TouchableHighlight>
             <TouchableHighlight
               style={styles.button}
-              onPress={() => setConfirmType(ConfirmPopupTypes.Deletion)} // which triggers useEffect that turns this pop-up on
+              onPress={() => setConfirmPopupVisible(true)} // which triggers useEffect that turns this pop-up on
             >
               <Text>Usuń</Text>
             </TouchableHighlight>
           </View>
           
-          <RatingUpdatePopup
-            popupVisible={updateRatingPopupVisible}
+          <RatingPopup
+            popupVisible={ratingPopupVisible}
             itemId={item.id}
             itemWeight={item.weight}
-            ConfirmPopupTypes={ConfirmPopupTypes}
+            popupType={RatingPopupTypes.Update}
             turnOffRatingPopup={turnOffRatingPopup}
           />
           
           <ConfirmationPopup 
             popupVisible={confirmPopupVisible}
-            confirmType={confirmType}
-            ConfirmPopupTypes={ConfirmPopupTypes}
+            popupType={ConfirmPopupTypes.Deletion}
             handleConfirmation={handleConfirmation}
             handleRejection={handleRejection}
           />
@@ -238,12 +232,12 @@ function RatingsList({expandedRatingList}) {
 }
 
 
-function RatingUpdatePopup({popupVisible, itemId, itemWeight, ConfirmPopupTypes, turnOffRatingPopup}){
-  const {handleSingleRatingUpdate} = useContext(OpinionsTileContext);
+function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRatingPopup}){
+  const {handleFirstOwnRating, handleNewSingleRating, handleSingleRatingUpdate} = useContext(OpinionsTileContext);
   
-  const [titleUpdate, setTitleUpdate] = useState("");
-  const [ratingUpdate, setRatingUpdate] = useState(0);
-  const [descriptionUpdate, setDescriptionUpdate] = useState("");
+  const [title, setTitle] = useState("");
+  const [rating, setRating] = useState(0);
+  const [description, setDescription] = useState("");
 
   const [confirmPopupVisible, setConfirmPopupVisible] = useState(false);
 
@@ -251,14 +245,46 @@ function RatingUpdatePopup({popupVisible, itemId, itemWeight, ConfirmPopupTypes,
   const buttonBackground = useRef("lightgray");
   
   
-  function handleUpdatePopupClose() {
-    setTitleUpdate("");
-    setRatingUpdate(0);
-    setDescriptionUpdate("");
-    turnOffRatingPopup();
+  /**
+   * Handles set button.
+   */
+  function handleSetButton(){
+    if (popupType === RatingPopupTypes.Add){
+      setBaseRate();
+      handleRatingPopupClose();
+    }
+    else if (popupType === RatingPopupTypes.Update){
+      runConfirmPopup();
+    }
   }
 
   /**
+   * popupType -> Add
+   * Passes data to the ProfileScreen.jsx
+   */
+  function setBaseRate() {
+    if (itemWeight === 1){
+      handleNewSingleRating(title, rating, description);
+    } else {
+      handleFirstOwnRating(rating);
+    }
+  }
+
+  /**
+   * Turns off this popup and nullifies the variables.
+   */
+  function handleRatingPopupClose() {
+    if (itemWeight === 1){
+      setTitle("");
+      setDescription("");
+    }
+    setRating(0);
+    turnOffRatingPopup();
+  }
+  
+  
+  /**
+   * popupType -> Update
    * Runs ConfirmationPopup.
    */
   function runConfirmPopup() {
@@ -267,19 +293,19 @@ function RatingUpdatePopup({popupVisible, itemId, itemWeight, ConfirmPopupTypes,
 
 
   /**
-   * Confirmation from the ConfirmationPopup.
+   * popupType -> Update
+   * Confirmation to update singleRating / ownRating depending on itemWeight.
+   * Passes data to ProfileScreen.jsx and turns off this popup.
    */
   function handleConfirmation(){
     setConfirmPopupVisible(false);
-    handleSingleRatingUpdate(itemId, itemWeight, titleUpdate, ratingUpdate, descriptionUpdate);
-    setTitleUpdate("");
-    setRatingUpdate(0);
-    setDescriptionUpdate("");
-    turnOffRatingPopup();
+    handleSingleRatingUpdate(itemId, itemWeight, title, rating, description);
+    handleRatingPopupClose();
   }
   
   /**
-   * Rejection from the ConfirmationPopup.
+   * popupType -> Update
+   * Rejection from the ConfirmationPopup turning it off.
    */
   function handleRejection(){
     setConfirmPopupVisible(false);
@@ -290,58 +316,58 @@ function RatingUpdatePopup({popupVisible, itemId, itemWeight, ConfirmPopupTypes,
    * Enables/disables the button setting the rating update and changes its color. 
    */
   useEffect(() => {
-    if (itemWeight === 10 && ratingUpdate === 0){
+    if (itemWeight === 10 && rating === 0){
       buttonBackground.current = "lightgray";
       setButtonDisabled(true);
-    } else if (itemWeight === 1 && (titleUpdate === "" || ratingUpdate === 0 || descriptionUpdate === "")){
+    } else if (itemWeight === 1 && (title === "" || rating === 0 || description === "")){
       buttonBackground.current = "lightgray";
       setButtonDisabled(true);
     } else{
       buttonBackground.current = "whitesmoke";
       setButtonDisabled(false);
     }
-  }, [titleUpdate, ratingUpdate, descriptionUpdate]);
+  }, [title, rating, description]);
   
   
   return (
     <Modal
       visible={popupVisible}
       transparent={true}
-      onRequestClose={handleUpdatePopupClose}
+      onRequestClose={handleRatingPopupClose}
     >
       <View style={styles.popupWrapper}>
         <View style={styles.popupView}>
           {(itemWeight === 1) && <TextInput
             style={styles.textInput}
             placeholder="Wstaw tytuł"
-            value={titleUpdate}
-            onChangeText={(input) => setTitleUpdate(input)}
+            value={title}
+            onChangeText={(input) => setTitle(input)}
           />}
           <StarRating
-            rating={ratingUpdate}
+            rating={rating}
             onChange={rating => {
               if (rating === 0) return;
-              setRatingUpdate(rating);
+              setRating(rating);
             }}
             enableHalfStar={false}
           />
           {(itemWeight === 1) && <TextInput
             style={styles.textInput}
             placeholder="Wstaw komentarz do opinii"
-            value={descriptionUpdate}
-            onChangeText={(input) => setDescriptionUpdate(input)}
+            value={description}
+            onChangeText={(input) => setDescription(input)}
           />}
           <View style={styles.buttonsView}>
             <TouchableHighlight
               style={[styles.buttonNoBg, {backgroundColor: buttonBackground.current}]}
-              onPress={runConfirmPopup} // function to set firstRating if >= 1
+              onPress={handleSetButton} // function to set firstRating if >= 1
               disabled={buttonDisabled}
             >
               <Text>Ustaw</Text>
             </TouchableHighlight>
             <TouchableHighlight
               style={styles.button}
-              onPress={handleUpdatePopupClose}
+              onPress={handleRatingPopupClose}
             >
               <Text>Anuluj</Text>
             </TouchableHighlight>
@@ -350,8 +376,7 @@ function RatingUpdatePopup({popupVisible, itemId, itemWeight, ConfirmPopupTypes,
       </View>
       <ConfirmationPopup
         popupVisible={confirmPopupVisible}
-        confirmType={ConfirmPopupTypes.Update}
-        ConfirmPopupTypes={ConfirmPopupTypes}
+        popupType={ConfirmPopupTypes.Update}
         handleConfirmation={handleConfirmation}
         handleRejection={handleRejection}
       />
@@ -360,7 +385,7 @@ function RatingUpdatePopup({popupVisible, itemId, itemWeight, ConfirmPopupTypes,
 }
 
 
-function ConfirmationPopup({popupVisible, confirmType, ConfirmPopupTypes, handleConfirmation, handleRejection}){
+function ConfirmationPopup({popupVisible, popupType, handleConfirmation, handleRejection}){
   return(
     <Modal
       visible={popupVisible}
@@ -369,11 +394,11 @@ function ConfirmationPopup({popupVisible, confirmType, ConfirmPopupTypes, handle
     >
       <View style={styles.popupWrapper}>
         <View style={styles.popupView}>
-          {confirmType === ConfirmPopupTypes.Update ? (<Text>Czy na pewno chcesz zmienić tą ocenę?</Text>) : (<Text>Czy na pewno chcesz usunąć tą ocenę?</Text>)}
+          {popupType === ConfirmPopupTypes.Update ? (<Text>Czy na pewno chcesz zmienić tą ocenę?</Text>) : (<Text>Czy na pewno chcesz usunąć tą ocenę?</Text>)}
           
           <View style={styles.buttonsView}>
             <TouchableHighlight onPress={handleConfirmation} style={styles.deleteButton}>
-              {confirmType === ConfirmPopupTypes.Update ? (<Text>Zmień</Text>) : (<Text style={{color: "white"}}>Usuń</Text>)}
+              {popupType === ConfirmPopupTypes.Update ? (<Text>Zmień</Text>) : (<Text style={{color: "white"}}>Usuń</Text>)}
             </TouchableHighlight>
             <TouchableHighlight onPress={handleRejection} style={styles.button}>
               <Text>Anuluj</Text>
@@ -383,89 +408,6 @@ function ConfirmationPopup({popupVisible, confirmType, ConfirmPopupTypes, handle
       </View>
     </Modal>
   )
-}
-
-/**
- * Component for adding new opinions after the first opinion (base opinion) was set up.
- * @returns {JSX.Element}
- */
-function AddOpinion() {
-  const {handleNewSingleRating, handleNewTitle, handleNewDescription} = useContext(OpinionsTileContext);
-  const [expandedAddOpinion, setExpandedAddOpinion] = useState(false);
-  
-  const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  
-  const [starRating, setStarRating] = useState(0);
-  
-  if (expandedAddOpinion === false) {
-    return (
-      <TouchableHighlight
-        style={styles.ratingItemButton}
-        onPress={() => setExpandedAddOpinion(true)}
-      >
-        <Text
-          style={{ fontWeight: "500", fontSize: 18, alignSelf: "center" }}
-        >
-          Dodaj opinię
-        </Text>
-      </TouchableHighlight>
-    );
-  } else {
-    return (
-      <View style={styles.ratingItem}>
-        <TouchableHighlight onPress={() => setExpandedAddOpinion(false)}>
-          <Text
-            style={{ fontWeight: "500", fontSize: 18, alignSelf: "flex-start", }}
-          >
-            Dodaj opinię
-          </Text>
-        </TouchableHighlight>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Wstaw tytuł"
-          value={newTitle}
-          onChangeText={(input) => setNewTitle(input)}
-          onBlur={() => handleNewTitle(newTitle.trim())}
-        />
-        <StarRating
-          rating={starRating}
-          onChange={rating => {
-            if (rating === 0) return;
-            setStarRating(rating);
-          }}
-          enableHalfStar={false}
-        />
-        <TextInput
-          style={styles.textInput}
-          placeholder="Wstaw komentarz do opinii"
-          value={newDescription}
-          onChangeText={(input) => setNewDescription(input)}
-          onBlur={() => handleNewDescription(newDescription.trim())}
-        />
-        <TouchableHighlight
-          style={styles.button}
-          onPress={setSingleRate} // function to set firstRating if >= 1
-          disabled={newTitle === "" || newDescription === "" || starRating === 0}
-        >
-          <Text>Ustaw</Text>
-        </TouchableHighlight>
-      </View>
-    );
-  }
-
-  /**
-   * Sets starRating to the newSingleRating in the ProfileScreen and nullifies local variables
-   */
-  function setSingleRate() {
-    if (starRating >= 1) {
-      handleNewSingleRating(starRating);
-      setNewTitle("");
-      setNewDescription("");
-      setStarRating(0);
-      setExpandedAddOpinion(false);
-    }
-  }
 }
 
 

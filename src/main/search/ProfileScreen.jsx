@@ -145,7 +145,6 @@ export default function ProfileScreen({navigation, route}) {
 
     for (politicianOwnRating of politicianOwnRatings) {
       numerator += politicianOwnRating.value;
-      console.log("value: " + politicianOwnRating.value);
       denominator += 1;
     }
     
@@ -189,17 +188,12 @@ export default function ProfileScreen({navigation, route}) {
     setFirstOwnRating(starRating);
   }
 
-  function handleOtNewSingleRating(starRating) {
+  function handleOtNewSingleRating(newTitle, starRating, newDescription) {
     setNewSingleRating(starRating);
-  }
-
-  function handleOtNewTitle(newTitle) {
     setNewTitle(newTitle);
-  }
-
-  function handleOtNewDescription(newDescription) {
     setNewDescription(newDescription);
   }
+  
 
   /**
    * Updates specific single rating and runs loadSingleRatings which triggers setOwnRating.
@@ -367,14 +361,13 @@ export default function ProfileScreen({navigation, route}) {
         <OpinionsTileContext.Provider
           value={{
             singleRatings: singleRatings,
+            handleFirstOwnRating: handleOtFirstOwnRating,
             handleNewSingleRating: handleOtNewSingleRating,
-            handleNewTitle: handleOtNewTitle,
-            handleNewDescription: handleOtNewDescription,
             handleSingleRatingUpdate: handleOtSingleRatingUpdate,
             handleSingleRatingDeletion: handleOtSingleRatingDeletion,
           }}
         >
-          <OpinionsTile ownRating={ownRating} handleFirstOwnRating={handleOtFirstOwnRating}/>
+          <OpinionsTile ownRating={ownRating} />
         </OpinionsTileContext.Provider>
       </_Container>
     </ScrollView>
