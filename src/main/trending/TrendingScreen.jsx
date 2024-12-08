@@ -57,9 +57,9 @@ export default function TrendingScreen({navigation}) {
         source={
           item.picture && item.picture !== ""
             ? {
-                uri: `data:image/jpeg;base64,${item.picture}`,
-                cache: "force-cache",
-              }
+              uri: `data:image/jpeg;base64,${item.picture}`,
+              cache: "force-cache",
+            }
             : require("./../../../assets/noPhoto.png")
         }
         style={styles.ratingImage}
@@ -99,10 +99,13 @@ export default function TrendingScreen({navigation}) {
 
 
   const handleSort = (key, isAsc) => {
-    console.log(sorting, isAsc);
-    {
-      isAsc ? setData(data.sort((a, b) => a[key] < b[key] ? 1 : -1)) : setData(data.sort((a, b) => a[key] > b[key] ? 1 : -1));
-    }
+    // Create a copy of the array to avoid mutating the original data
+    const sortedData = [...data].sort((a, b) => {
+      const comparison = a[key].toLocaleString().localeCompare(b[key].toLocaleString(), "pl");
+      return isAsc ? comparison : -comparison;
+    });
+
+    setData(sortedData); // Update state with the sorted array
   };
 
 
@@ -131,8 +134,10 @@ export default function TrendingScreen({navigation}) {
       <Chip icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sorting === "surname" ? 'flat' : 'outlined'}
             onPress={() => {
-              sorting === "surname" ? setIsSurnameSortingASC(!isSurnameSortingASC) : setSorting('surname');
-              handleSort("surname", isSurnameSortingASC);
+              let reverseOrder = isSurnameSortingASC;
+              sorting === "surname" ? reverseOrder = !isSurnameSortingASC : null;
+              sorting === "surname" ? setIsSurnameSortingASC(reverseOrder) : setSorting('surname');
+              handleSort("surname", reverseOrder);
             }}>
         Nazwisko
       </Chip>
@@ -140,8 +145,11 @@ export default function TrendingScreen({navigation}) {
       <Chip icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sorting === "name" ? 'flat' : 'outlined'}
             onPress={() => {
-              sorting === "name" ? setIsNameSortingASC(!isNameSortingASC) : setSorting('name');
-              handleSort("name", isNameSortingASC);
+              let reverseOrder = isNameSortingASC;
+              sorting === "name" ? reverseOrder = !isNameSortingASC : null;
+              sorting === "name" ? setIsNameSortingASC(reverseOrder) : setSorting('name');
+              console.log(reverseOrder);
+              handleSort("name", reverseOrder);
             }}>
         Imię
       </Chip>
