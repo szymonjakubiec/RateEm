@@ -34,12 +34,13 @@ export default function MainNavigation({ route }) {
         backBehavior="initialRoute"
         initialRouteName="Home"
         screenOptions={{
+          tabBarShowLabel: false,
           unmountOnBlur: true,
           tabBarHideOnKeyboard: true,
           tabBarActiveBackgroundColor: "#00000012",
           tabBarInactiveBackgroundColor: "#00000002",
           tabBarStyle: {
-            height: 65,
+            height: 45,
             borderTopLeftRadius: 10,
             borderTopRightRadius: 10,
           },

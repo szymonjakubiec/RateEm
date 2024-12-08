@@ -19,7 +19,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
   const [sorting, setSorting] = useState("surname");
   const [isNameSortingASC, setIsNameSortingASC] = useState(true);
   const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
-  // const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(true);
+  const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(false);
 
   // PK: Clear button animation
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -34,9 +34,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
 
     fetchRatings();
 
-    setSorting("surname");
-    setIsNameSortingASC(true);
-    setIsSurnameSortingASC(true);
+    clearSortingButtons();
   }, [numberOfDays]);
 
   useEffect(() => {
@@ -65,9 +63,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
     }
     handleInput(searchText);
 
-    setSorting("surname");
-    setIsNameSortingASC(true);
-    setIsSurnameSortingASC(true);
+    clearSortingButtons();
   }, [isTrending]);
 
   /**
@@ -94,9 +90,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
       setFilteredData([]);
     }
 
-    setSorting("surname");
-    setIsNameSortingASC(true);
-    setIsSurnameSortingASC(true);
+    clearSortingButtons();
   }
 
   const handleNumberOfDaysClick = () => {
@@ -117,6 +111,13 @@ export default function SearchFlatList({ data, handleOnPress }) {
     setFilteredData(sortedData); // Update state with the sorted array
   };
 
+  const clearSortingButtons = () => {
+    setSorting("surname");
+    setIsNameSortingASC(true);
+    setIsSurnameSortingASC(true);
+    setIsGlobalRatingSortingASC(false);
+  };
+
   /**
    * Clears the text in input box and filteredData.
    */
@@ -124,6 +125,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
     setSearchText("");
     if (isTrending) setFilteredData(trendingPoliticians);
     else setFilteredData(data);
+    clearSortingButtons();
   }
 
   return (
@@ -157,50 +159,63 @@ export default function SearchFlatList({ data, handleOnPress }) {
         />
       </View>
 
-      <View style={styles.chipDiv}>
+      <View style={styles.chipsContainer}>
         {/* wszyscy politycy / politycy na czasie */}
-        <Chip icon="account" onPress={() => setIsTrending(!isTrending)}>
+        <Chip style={styles.chip} icon="account" onPress={() => setIsTrending(!isTrending)}>
           {isTrending ? "Na Czasie" : "Wszyscy politycy"}
         </Chip>
 
         {/* Button do zmiany dni */}
         {isTrending ? (
-          <View style={styles.chipsContainer}>
-            <Text style={styles.chipLabel}>Okres czasu:</Text>
-            <Button mode="contained" onPress={handleNumberOfDaysClick}>
-              {numberOfDays}
-            </Button>
-          </View>
+          <Chip style={styles.chip} onPress={handleNumberOfDaysClick}>
+            Okres czasu: {numberOfDays}
+          </Chip>
         ) : null}
       </View>
 
-      <Chip
-        style={styles.chipDiv}
-        icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
-        mode={sorting === "surname" ? "flat" : "outlined"}
-        onPress={() => {
-          let reverseOrder = isSurnameSortingASC;
-          sorting === "surname" ? (reverseOrder = !isSurnameSortingASC) : null;
-          sorting === "surname" ? setIsSurnameSortingASC(reverseOrder) : setSorting("surname");
-          handleSort("surname", reverseOrder);
-        }}
-      >
-        Nazwisko
-      </Chip>
+      <View style={styles.chipsContainer}>
+        <Chip
+          style={styles.chip}
+          icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+          mode={sorting === "surname" ? "flat" : "outlined"}
+          onPress={() => {
+            let reverseOrder = isSurnameSortingASC;
+            sorting === "surname" ? (reverseOrder = !isSurnameSortingASC) : null;
+            sorting === "surname" ? setIsSurnameSortingASC(reverseOrder) : setSorting("surname");
+            handleSort("surname", reverseOrder);
+          }}
+        >
+          Nazwisko
+        </Chip>
 
-      <Chip
-        style={styles.chipDiv}
-        icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
-        mode={sorting === "name" ? "flat" : "outlined"}
-        onPress={() => {
-          let reverseOrder = isNameSortingASC;
-          sorting === "name" ? (reverseOrder = !isNameSortingASC) : null;
-          sorting === "name" ? setIsNameSortingASC(reverseOrder) : setSorting("name");
-          handleSort("name", reverseOrder);
-        }}
-      >
-        Imię
-      </Chip>
+        <Chip
+          style={styles.chip}
+          icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+          mode={sorting === "name" ? "flat" : "outlined"}
+          onPress={() => {
+            let reverseOrder = isNameSortingASC;
+            sorting === "name" ? (reverseOrder = !isNameSortingASC) : null;
+            sorting === "name" ? setIsNameSortingASC(reverseOrder) : setSorting("name");
+            handleSort("name", reverseOrder);
+          }}
+        >
+          Imię
+        </Chip>
+
+        <Chip
+          style={styles.chip}
+          icon={!isGlobalRatingSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+          mode={sorting === "globalRating" ? "flat" : "outlined"}
+          onPress={() => {
+            let reverseOrder = isGlobalRatingSortingASC;
+            sorting === "globalRating" ? (reverseOrder = !isGlobalRatingSortingASC) : null;
+            sorting === "globalRating" ? setIsGlobalRatingSortingASC(reverseOrder) : setSorting("globalRating");
+            handleSort("globalRating", reverseOrder);
+          }}
+        >
+          ocena globalna
+        </Chip>
+      </View>
 
       {filteredData.length !== 0 ? (
         <FlatList
@@ -265,8 +280,8 @@ function Item({ id, nameSurname, name, surname, globalRating, ratingCount, pictu
 
 const styles = StyleSheet.create({
   searchBox: {
-    width: "80%",
-    minWidth: "80%",
+    width: "90%",
+    minWidth: "90%",
     marginVertical: 10,
     height: 50,
   },
@@ -281,14 +296,11 @@ const styles = StyleSheet.create({
     flexGrow: 0,
   }),
 
-  chipDiv: {
-    marginVertical: 2,
-  },
   chipsContainer: {
+    marginVertical: 2,
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
-    padding: 0,
   },
   chipLabel: {
     fontSize: 16,
@@ -296,8 +308,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   chip: {
-    marginRight: 8,
-    marginBottom: 8,
+    marginHorizontal: 2,
   },
 
   item: {
