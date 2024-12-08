@@ -1,14 +1,38 @@
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image } from "react-native";
-import { TextInput } from "react-native-paper";
+import { TextInput, Button, Chip } from "react-native-paper";
+import { getTrendingPoliticians } from "../../../backend/database/Politicians";
 import { textInputProps } from "../../styles/TextInput";
 
 export default function SearchFlatList({ data, handleOnPress }) {
-  const [filteredData, setFilteredData] = useState(data);
+  // data - wszyscy politycy
+  const [filteredData, setFilteredData] = useState(data); // politycy po wyszukaniu
+  const [trendingPoliticians, setTrendingPoliticians] = useState([]); // politycy na czasie
+
   const [searchText, setSearchText] = useState("");
+  const [isTrending, setIsTrending] = useState(false);
+
+  const [numberOfDays, setNumberOfDays] = useState(1);
+  const [numberOfDaysIndex, setnumberOfDaysIndex] = useState(0);
+  const [numberOfDaysTable, setnumberOfDaysTable] = useState([1, 7, 30]);
+  // const [sorting, setSorting] = useState("surname");
+  // const [isNameSortingASC, setIsNameSortingASC] = useState(true);
+  // const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
+  // const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(true);
 
   // PK: Clear button animation
   const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    async function fetchRatings() {
+      const fetchedRatings = await getTrendingPoliticians(numberOfDays);
+      setTrendingPoliticians(fetchedRatings);
+      setFilteredData(fetchedRatings);
+      handleInput(searchText);
+    }
+
+    fetchRatings();
+  }, [numberOfDays]);
 
   useEffect(() => {
     // PK: Fade in
@@ -30,13 +54,25 @@ export default function SearchFlatList({ data, handleOnPress }) {
       }).start();
   }, [searchText]);
 
+  useEffect(() => {
+    {
+      isTrending ? setFilteredData(trendingPoliticians) : setFilteredData(data);
+    }
+    handleInput(searchText);
+  }, [isTrending]);
+
   /**
    * Filters through the array of politician names, by obtaining indexes of each occurrence of " " and "-" into array of ints.
    * Then iterates through each starting position checking if any of them matches the input string.
    * @param {object} input
    */
   function handleInput(input) {
-    let result = data.filter((obj) =>
+    let sourceData = data;
+    if (isTrending) {
+      sourceData = trendingPoliticians;
+    }
+
+    let result = sourceData.filter((obj) =>
       [0, ...obj.value.matchAll(/[ -]/g)]
         .map((x) => x.index + 1 ?? 0) // creates a table of indexes of all words in name
         .some(
@@ -50,6 +86,14 @@ export default function SearchFlatList({ data, handleOnPress }) {
     }
   }
 
+  const handleNumberOfDaysClick = () => {
+    setnumberOfDaysIndex((prevIndex) => {
+      const newIndex = prevIndex < 2 ? prevIndex + 1 : 0;
+      setNumberOfDays(numberOfDaysTable[newIndex]);
+      return newIndex;
+    });
+  };
+
   /**
    * Clears the text in input box and filteredData.
    */
@@ -61,6 +105,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
   return (
     <View>
       <View style={styles.searchBox}>
+        {/* wyszukiwarka */}
         <TextInput
           {...textInputProps}
           style={styles.searchInput}
@@ -87,6 +132,27 @@ export default function SearchFlatList({ data, handleOnPress }) {
           }}
         />
       </View>
+
+      <View style={styles.filtersBox}>
+        {/* wszyscy politycy / politycy na czasie */}
+        <Chip icon="account" onPress={() => setIsTrending(!isTrending)}>
+          {isTrending ? "Na Czasie" : "Wszyscy politycy"}
+        </Chip>
+
+        {/* ustawienia sortowania filtorwania */}
+        {isTrending ? (
+          <View style={styles.chipsContainer}>
+            {/* Button do zmiany dni */}
+            <View style={styles.chipsContainer}>
+              <Text style={styles.chipLabel}>Okres czasu:</Text>
+              <Button mode="contained" onPress={handleNumberOfDaysClick}>
+                {numberOfDays}
+              </Button>
+            </View>
+          </View>
+        ) : null}
+      </View>
+
       {filteredData.length !== 0 ? (
         <FlatList
           keyboardShouldPersistTaps={"handled"}
@@ -102,6 +168,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
               ratingCount={item.ratingCount}
               picture={item.picture}
               handleOnPress={handleOnPress}
+              isTrending={isTrending}
             />
           )}
         />
@@ -112,9 +179,10 @@ export default function SearchFlatList({ data, handleOnPress }) {
   );
 }
 
-function Item({ id, nameSurname, globalRating, ratingCount, picture, handleOnPress }) {
+function Item({ id, nameSurname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
   return (
     <TouchableOpacity
+      key={id}
       style={styles.politicianItem}
       onPress={() => {
         handleOnPress(id);
@@ -134,7 +202,9 @@ function Item({ id, nameSurname, globalRating, ratingCount, picture, handleOnPre
       <View style={styles.politicianInfo}>
         <Text style={styles.politicianItemText}>{nameSurname}</Text>
         <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
-        <Text style={styles.politicianScore}>Ilość ocen: {ratingCount ? ratingCount : "—"}</Text>
+        <Text style={styles.politicianScore}>
+          {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -144,8 +214,7 @@ const styles = StyleSheet.create({
   searchBox: {
     width: "80%",
     minWidth: "80%",
-    marginTop: 30,
-    marginBottom: 10,
+    marginVertical: 10,
     height: 50,
   },
   searchInput: {
@@ -158,6 +227,28 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     flexGrow: 0,
   }),
+
+  filtersBox: {
+    width: "80%",
+    marginVertical: 10,
+  },
+  chipsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    padding: 0,
+    marginBottom: 10,
+  },
+  chipLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginRight: 8,
+  },
+  chip: {
+    marginRight: 8,
+    marginBottom: 8,
+  },
+
   item: {
     borderRadius: 7,
     paddingHorizontal: 15,

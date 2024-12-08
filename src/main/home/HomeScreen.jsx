@@ -1,7 +1,7 @@
-import { BackHandler, Text } from "react-native";
 import { useContext, useEffect, useState } from "react";
+import { StyleSheet, View, ActivityIndicator, BackHandler, Text } from "react-native";
+import { MD2Colors } from "react-native-paper";
 import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
-import { getAllPoliticianNames } from "../../backend/database/Politicians.js";
 import { GlobalContext } from "../nav/GlobalContext.jsx";
 import _Container from "../styles/Container";
 
@@ -58,7 +58,27 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <_Container style={{ justifyContent: "flex-start", padding: 0 }}>
-      {politicianNameData ? <SearchFlatList data={politicianNameData} handleOnPress={handlePress} /> : <Text>Loading</Text>}
+      {politicianNameData ? (
+        <SearchFlatList data={politicianNameData} handleOnPress={handlePress} />
+      ) : (
+        <View style={styles.loaderContainer}>
+          <Text style={styles.errorText}>Ładowanie</Text>
+          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800} />
+        </View>
+      )}
     </_Container>
   );
 }
+
+const styles = StyleSheet.create({
+  loaderContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  errorText: {
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 20,
+  },
+});

@@ -156,8 +156,8 @@ app.use(express.json());
 
   // --- select TRENDING POLITICIANS -----------------------------------------------------
   app.get("/api/trending-politicians", async (req, res) => {
-    const count = req.query.count || "5";
     const days = req.query.days || "30";
+
     let connection;
     try {
       connection = await mysql.createConnection(config);
@@ -168,17 +168,32 @@ app.use(express.json());
           WHERE date >= CURDATE() - INTERVAL ? DAY
           GROUP BY politician_id
           ORDER BY ratings_count DESC
-              LIMIT ?
       `,
-        [days, count]
+        [days]
       );
       const politicianIds = rows.map((row) => row.politician_id);
       if (politicianIds.length > 0) {
-        const [politicians] = await connection.execute(`
-            SELECT *
-            FROM politicians
-            WHERE id IN (${politicianIds.join(",")})
-        `);
+        const [politicians] = await connection.execute(
+          `
+            SELECT 
+              p.id, 
+              p.names_surname, 
+              p.name, 
+              p.surname, 
+              p.party, 
+              p.party_short, 
+              p.picture, 
+              p.global_rating, 
+              (SELECT COUNT(*) FROM ratings WHERE date >= CURDATE() - INTERVAL ? DAY AND politician_id=p.id) as rating_count, 
+              p.birth_date, 
+              p.facebook_link, 
+              p.twitter_link 
+            FROM politicians as p
+            WHERE p.id IN (${politicianIds.join(",")});
+        `,
+          [days]
+        );
+
         res.json(politicians);
       } else {
         res.json([]);
@@ -520,7 +535,8 @@ app.use(express.json());
         `SELECT 
           p.id, 
           p.names_surname, 
-          p.name, p.surname, 
+          p.name, 
+          p.surname, 
           p.party, 
           p.party_short, 
           p.picture, 

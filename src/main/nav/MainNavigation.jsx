@@ -8,7 +8,6 @@ import { getAllPoliticianNames } from "../../backend/database/Politicians.js";
 import { GlobalContext } from "./GlobalContext.jsx";
 import ExtrasNavigation from "../extras/nav/ExtrasNavigation";
 import { Icon } from "react-native-paper";
-import TrendingNavigation from "../trending/nav/TrendingNavigation";
 
 const Tab = createBottomTabNavigator();
 
@@ -77,20 +76,6 @@ export default function MainNavigation({ route }) {
             headerLeft: () => null,
             gestureEnabled: false, // wyłącza swipe back na IOS
             tabBarIcon: () => <Icon source="home" size={36} />,
-            tabBarIconStyle: { top: 1 },
-          }}
-        />
-        <Tab.Screen
-          name="Trending"
-          component={TrendingNavigation}
-          options={{
-            title: "Na czasie",
-            headerTitle: _title,
-            headerShown: false,
-            headerTitleAlign: "center",
-            headerLeft: () => null,
-            gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: () => <Icon source="trending-up" size={36} />,
             tabBarIconStyle: { top: 1 },
           }}
         />
