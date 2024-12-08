@@ -1,12 +1,10 @@
-import {createStackNavigator} from "@react-navigation/stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import TrendingScreen from "../TrendingScreen";
-import ProfileScreen from "../../search/ProfileScreen";
-
-
+import ProfileScreen from "../../home/ProfileScreen";
 
 var Stack = createStackNavigator();
 
-export default function TrendingNavigation({route}) {
+export default function TrendingNavigation({ route }) {
   const _title = route.params?._title;
 
   return (
