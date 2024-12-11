@@ -7,6 +7,7 @@ import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 import _Button from "../../styles/Button";
 import _AnimViewKeyboard from "../../styles/AnimViewKeyboard";
+import _ErrorText from "../../styles/ErrorText";
 
 
 
@@ -124,15 +125,12 @@ export default function RegisterScreen({navigation}) {
         <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
 
         <TextInput
-          {...useTextInputProps()}
+          {...useTextInputProps(wrongName)}
           label="imię"
-          outlineColor={wrongName ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongName ? "#e41c1c" : "black"}
           maxLength={22}
           autoComplete="name"
           value={name}
           onChangeText={(text) => {
-            // if (text.includes(" ")) return;
             text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "");
             text.length > 0 && (text = text[0].toUpperCase() + text.slice(1).toLowerCase());
             setName(text.trim());
@@ -146,10 +144,8 @@ export default function RegisterScreen({navigation}) {
         <_ErrorText text={wrongName}/>
 
         <TextInput
-          {...useTextInputProps()}
+          {...useTextInputProps(wrongEmail)}
           label="e-mail"
-          outlineColor={wrongEmail ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongEmail ? "#e41c1c" : "black"}
           autoComplete="email"
           textContentType="emailAddress"
           autoCapitalize="none"
@@ -169,10 +165,8 @@ export default function RegisterScreen({navigation}) {
 
 
         <TextInput
-          {...useTextInputProps()}
+          {...useTextInputProps(wrongPhone)}
           label="numer telefonu"
-          outlineColor={wrongPhone ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
           maxLength={12}
           left={<TextInput.Affix text="+48 |" textStyle={{marginRight: -10}}/>}
           autoComplete="tel"
@@ -194,10 +188,8 @@ export default function RegisterScreen({navigation}) {
 
 
         <TextInput
-          {...useTextInputProps()}
+          {...useTextInputProps(wrongPass)}
           label="hasło"
-          outlineColor={wrongPass ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
           autoCapitalize="none"
           autoComplete="new-password"
           textContentType="newPassword"
@@ -222,10 +214,8 @@ export default function RegisterScreen({navigation}) {
         <_ErrorText text={wrongPass}/>
 
         <TextInput
-          {...useTextInputProps()}
+          {...useTextInputProps(wrongPassRep)}
           label="powtórz hasło"
-          outlineColor={wrongPassRep ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}
           returnKeyType="done"
           autoCapitalize="none"
           autoComplete="current-password"

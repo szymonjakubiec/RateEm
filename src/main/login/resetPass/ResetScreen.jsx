@@ -5,6 +5,7 @@ import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
 import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
+import _ErrorText from "../../styles/ErrorText";
 
 
 
@@ -80,10 +81,8 @@ export default function ResetScreen({navigation}) {
         <>
           {/* PK: SMS */}
           <TextInput
-            {...useTextInputProps()}
+            {...useTextInputProps(wrongPhone)}
             label="numer telefonu"
-            outlineColor={wrongPhone ? "#e41c1c" : "black"}
-            activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
             maxLength={12}
             left={<TextInput.Affix text="+48 |" textStyle={{marginRight: -10}}/>}
             autoComplete="tel"
@@ -108,10 +107,8 @@ export default function ResetScreen({navigation}) {
           {/* PK: E-mail */}
           <Text style={styles.title}>Podaj e-mail do zresetowania hasła:</Text>
           <TextInput
-            {...useTextInputProps()}
+            {...useTextInputProps(wrongEmail)}
             label="e-mail"
-            outlineColor={wrongEmail ? "#e41c1c" : "black"}
-            activeOutlineColor={wrongEmail ? "#e41c1c" : "black"}
             autoComplete="email"
             textContentType="emailAddress"
             autoCapitalize="none"

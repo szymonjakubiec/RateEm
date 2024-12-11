@@ -4,6 +4,7 @@ import {TextInput} from "react-native-paper";
 import {getUserIdByEmail, updateUser} from "../../../backend/database/Users";
 import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
+import _ErrorText from "../../styles/ErrorText";
 
 
 
@@ -74,10 +75,8 @@ export default function ChangePassScreen({navigation, route}) {
       <Text style={styles.title}>Podaj nowe hasło:</Text>
 
       <TextInput
-        {...useTextInputProps()}
+        {...useTextInputProps(wrongPass)}
         label="hasło"
-        outlineColor={wrongPass ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
@@ -102,10 +101,8 @@ export default function ChangePassScreen({navigation, route}) {
       <_ErrorText text={wrongPass}/>
 
       <TextInput
-        {...useTextInputProps()}
+        {...useTextInputProps(wrongPassRep)}
         label="powtórz hasło"
-        outlineColor={wrongPassRep ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}
         returnKeyType="done"
         autoCapitalize="none"
         autoComplete="current-password"

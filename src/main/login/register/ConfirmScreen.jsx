@@ -100,10 +100,8 @@ export default function ConfirmScreen({navigation, route}) {
 
 
         <TextInput
-          {...useTextInputProps()}
+          {...useTextInputProps(wrongCode)}
           label="kod"
-          outlineColor={wrongCode ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongCode ? "#e41c1c" : "black"}
           keyboardType="numeric"
           autoComplete="one-time-code"
           textContentType="oneTimeCode"

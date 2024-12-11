@@ -9,6 +9,7 @@ import {useIsFocused} from "@react-navigation/native";
 import _Container from "../styles/Container";
 import _Button from "../styles/Button";
 import _AnimViewKeyboard from "../styles/AnimViewKeyboard";
+import _ErrorText from "../styles/ErrorText";
 
 
 
@@ -145,10 +146,8 @@ export default function LoggingScreen({navigation}) {
 
         {/* PK: Mail input */}
         <TextInput
-          {...useTextInputProps()}
+          {...useTextInputProps(wrongEmailInfo)}
           label="e-mail"
-          outlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
           autoComplete="email"
           textContentType="emailAddress"
           autoCapitalize="none"
@@ -164,10 +163,8 @@ export default function LoggingScreen({navigation}) {
 
         {/* PK: Password input */}
         <TextInput
-          {...useTextInputProps()}
+          {...useTextInputProps(wrongPasswordInfo)}
           label="hasło"
-          outlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
           returnKeyType="done"
           autoCapitalize="none"
           autoComplete="current-password"
