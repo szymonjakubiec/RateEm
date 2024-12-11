@@ -32,9 +32,9 @@ export const getAllUsers = async () => {
 };
 
 /**
- *
- * @param email
- * @returns {Promise<number|undefined>}
+ * Gets user ID by provided e-mail address.
+ * @param {string} email - email address.
+ * @returns {Promise<number>} user ID.
  */
 export const getUserIdByEmail = (email) => {
   return getAllUsers()
@@ -95,18 +95,18 @@ export const addUser = async (name, email, password, phone_number, verified, com
  * Updates a user.
  *
  * @async
- * @param {number} id - ID of the user to update
- * @param {{name, email, password, phone_number, verified, communication_method, login_method}} newData - New data for the user. Possible keys:
- * * {string} name - Name of the user
- * * {string} email - Email of the user
- * * {string} password - Password of the user
- * * {string} phone_number - Phone number of the user
- * * {number} verified - Whether the user is verified
- * * {number} communication_method - Method of communication
- * * {number} login_method - Method of logging in
+ * @param {number} id - ID of the user to update.
+ * @param {object} newData - new data object with key:value pairs to update.
+ * @param {string} [newData.name] - Name of the user
+ * @param {string} [newData.email] - Email of the user
+ * @param {string} [newData.password] - Password of the user
+ * @param {string} [newData.phone_number] - Phone number of the user
+ * @param {number} [newData.verified] - Whether the user is verified
+ * @param {number} [newData.communication_method] - Method of communication
+ * @param {number} [newData.login_method] - Method of logging in
  * @returns {Promise<object|undefined>} Updated user data object
  */
-export const updateUser = async (id, newData = {}) => {
+export const updateUser = async (id, newData) => {
   const url = `${global.SERVER_URL}/users/${id}`;
 
   try {
