@@ -195,9 +195,6 @@ function RatingsList({expandedRatingList}) {
     }
     
     if (selectedItemId === item.id) {
-      console.log(singleRatings.length > 1 && item.weight === 10);
-      console.log(singleRatings.length);
-      console.log(item.weight);
       return (
         <View style={{ backgroundColor: "gray", padding: 10 }}>
           <Text>{item.description}</Text>
