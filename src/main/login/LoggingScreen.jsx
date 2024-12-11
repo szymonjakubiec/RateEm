@@ -24,7 +24,10 @@ export default function LoggingScreen({navigation}) {
       // PK: So every time screen is focused it updates
       if (!isFocused) return;
 
-      await setCredentials();
+      setAllUsers(await getAllUsers());
+
+      // PK: Load e-mail after logging out (so that if e-mail was changed it will show here)
+      global.userEmail && setEmail(global.userEmail);
 
       // connection test
       const rootUser = (await getAllUsers())[0];
@@ -36,13 +39,13 @@ export default function LoggingScreen({navigation}) {
     })();
   }, [isFocused]);
 
-  const [userData, setUserData] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passHidden, setPassHidden] = useState(true);
 
-  // const [userId, setUserId] = useState(-1);
   const userIdRef = useRef();
+
   /**
    * Feedback values that appear when the user writes incorrect input
    */
@@ -74,11 +77,11 @@ export default function LoggingScreen({navigation}) {
   }
 
   /**
-   * Iterates through users in userData checking if email and password are correct.
+   * Iterates through users in allUsers checking if email and password are correct.
    */
   function checkCredentials() {
 
-    for (const user of userData) {
+    for (const user of allUsers) {
 
       // Current user's email is not the same as given email
       if (user.email !== email) {
@@ -109,11 +112,12 @@ export default function LoggingScreen({navigation}) {
    * Navigates to the main screen.
    */
   function navigateToMain() {
-    let userId = userIdRef.current;
+    setEmail('');
+    setWrongEmailInfo('');
+
     navigation.navigate("MainNav", {
-      // screen: "Home", // not required because of initialRouteName in MainNav
-      _title: _title,
-      userId: userId
+      _title,
+      userId: userIdRef.current
     });
   }
 
@@ -124,18 +128,6 @@ export default function LoggingScreen({navigation}) {
     if (checkCredentials()) {
       navigateToMain();
     }
-  }
-
-  /**
-   * Asynchronously gets userData from getUsers() and sets it which triggers the useEffect hook with handleLogin() function.
-   * @async
-   */
-  async function setCredentials() {
-    const data = await getAllUsers();
-    // console.log(data.map(user => {
-    //   return {email: user.email, password: user.password};
-    // }));
-    setUserData(data);
   }
 
   return (
@@ -183,10 +175,17 @@ export default function LoggingScreen({navigation}) {
         <_ErrorText text={wrongPasswordInfo}/>
 
         {/* PK: Login button */}
-        <_Button buttonText="Zaloguj" onPress={() => handleLogin()} style={{marginTop: wrongPasswordInfo ? 18 : 40}}/>
+        <_Button buttonText="Zaloguj" onPress={() => handleLogin()} style={{marginTop: 25}}/>
 
         {/* PK: Password reset button */}
-        <_Button buttonText="Zapomniałeś hasła?" onPress={() => navigation.navigate("ResetNav", {_title})}
+        <_Button buttonText="Zapomniałeś hasła?"
+                 onPress={() => {
+                   setEmail('');
+                   setWrongEmailInfo('');
+                   setPassword('');
+                   setWrongPasswordInfo('');
+                   navigation.navigate("ResetNav", {_title});
+                 }}
                  mode="onlyText" style={{marginTop: 20}}/>
 
         {/* PK: Register button */}
@@ -197,7 +196,13 @@ export default function LoggingScreen({navigation}) {
             Nie masz jeszcze konta?
           </Text>
 
-          <_Button buttonText="Zarejestruj" onPress={() => navigation.navigate("RegisterNav", {_title})}
+          <_Button buttonText="Zarejestruj" onPress={() => {
+            setEmail('');
+            setWrongEmailInfo('');
+            setPassword('');
+            setWrongPasswordInfo('');
+            navigation.navigate("RegisterNav", {_title});
+          }}
                    mode="onlyText" style={{marginLeft: 5}}/>
 
         </View>
@@ -215,33 +220,5 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 16,
     marginBottom: 50,
-  },
-  wrongInputText: (wrongEmail, wrongPass) => ({
-    display: wrongEmail || wrongPass ? "flex" : "none",
-    fontSize: 14,
-    color: "#e41c1c",
-    alignSelf: "flex-start",
-    paddingLeft: 20,
-    marginBottom: 6,
-  }),
-  buttonMain: {
-    backgroundColor: "#000",
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: "70%",
-    borderRadius: 20,
-    elevation: 5,
-  },
-  button: {
-    backgroundColor: "#4a4a4a",
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: "70%",
-    borderRadius: 20,
-  },
-  buttonText: {
-    alignSelf: "center",
-    color: "#fff",
-    fontWeight: "700",
   },
 });
