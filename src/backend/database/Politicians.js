@@ -39,6 +39,11 @@ const getAllPoliticianNames = async () => {
       data.push({
         key: element.id,
         value: element.names_surname,
+        name: element.name,
+        surname: element.surname,
+        picture: element.picture,
+        globalRating: element.global_rating,
+        ratingCount: element.rating_count,
       });
     }
     return data;
@@ -103,14 +108,28 @@ const updatePolitician = async (id, newData = {}) => {
  * @param {number} count - Amount of politicians we want to get
  * @param {number} days - Amount of days back to check
  */
-const getTrendingPoliticians = async (count, days) => {
-  const url = `${global.SERVER_URL}/trending-politicians?days=${days}&count=${count}`;
+const getTrendingPoliticians = async (days) => {
+  const url = `${global.SERVER_URL}/trending-politicians?days=${days}`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
+    const rawData = await response.json();
+
+    const data = [];
+    for await (const element of rawData) {
+      data.push({
+        key: element.id,
+        value: element.names_surname,
+        name: element.name,
+        surname: element.surname,
+        picture: element.picture,
+        globalRating: element.global_rating,
+        ratingCount: element.rating_count,
+      });
+    }
+
     return data;
   } catch (error) {
     console.error("Error fetching trending politicians:", error);
@@ -118,5 +137,4 @@ const getTrendingPoliticians = async (count, days) => {
   }
 };
 
-
-module.exports = {getAllPoliticians, getAllPoliticianNames, getPolitician, updatePolitician, getTrendingPoliticians};
+module.exports = { getAllPoliticians, getAllPoliticianNames, getPolitician, updatePolitician, getTrendingPoliticians };

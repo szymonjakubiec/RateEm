@@ -18,12 +18,12 @@ export default function OpinionsTile({ownRating}) {
     setRatingPopupVisible(false);
     setRatingType(RatingPopupTypes.Undefined);
   }
-  
+
   return(
     ownRating === 0 ? <NoOpinionComponent/> : <YourOpinionsComponent/>
   );
-  
-  
+
+
   function NoOpinionComponent() {
     useEffect(() => {
       if (ratingType !== RatingPopupTypes.Undefined) {
@@ -358,7 +358,7 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRa
               }}
               enableHalfStar={false}
             />
-            {(itemWeight === 1) && <TextInput
+          {(itemWeight === 1) && <TextInput
               style={styles.textInput}
               placeholder="Wstaw komentarz do opinii"
               value={description}
@@ -389,7 +389,6 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRa
         />
       </Modal>
     </Portal>
-    
   )
 }
 
@@ -442,12 +441,12 @@ const styles = StyleSheet.create({
     backgroundColor: "lightgray",
     padding: 20,
   },
-  topBar:{
+  topBar: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  flatList:{
+  flatList: {
     display: "flex",
     gap: 10,
   },
@@ -461,7 +460,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     // marginTop: 10,
   },
-  buttonNoBg:{
+  buttonNoBg: {
     borderColor: "#000",
     borderWidth: 1,
     paddingVertical: 5,
@@ -507,7 +506,7 @@ const styles = StyleSheet.create({
   },
   popupView:{
     margin: 25,
-    backgroundColor: 'whitesmoke',
+    backgroundColor: "whitesmoke",
     borderRadius: 20,
     padding: 30,
     borderStyle: "solid",
@@ -516,10 +515,10 @@ const styles = StyleSheet.create({
     // zIndex: 2,
     gap: 10,
   },
-  buttonsView:{
+  buttonsView: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
   deleteButton: {
     backgroundColor: "#e00733",
@@ -527,5 +526,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 15,
   },
-})
-
+});
