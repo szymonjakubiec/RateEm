@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../home/HomeScreen";
 import ElectionNavigation from "../election/nav/ElectionNavigation";
 import HomeNavigation from "../home/nav/HomeNavigation";
-import { getAllPoliticianNames } from "../../backend/database/Politicians.js";
+import { getAllPoliticians } from "../../backend/database/Politicians.js";
 import { GlobalContext } from "./GlobalContext.jsx";
 import ExtrasNavigation from "../extras/nav/ExtrasNavigation";
 import { Icon } from "react-native-paper";
@@ -20,7 +20,7 @@ export default function MainNavigation({ route }) {
    * @async
    */
   async function init() {
-    const data = await getAllPoliticianNames();
+    const data = await getAllPoliticians();
     setNamesData(data);
   }
 

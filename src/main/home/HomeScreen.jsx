@@ -38,16 +38,6 @@ export default function HomeScreen({ navigation }) {
     }
   }, [selectedPoliticianId]);
 
-  // async function init() {
-  //   const data = await getAllPoliticianNames();
-  //   setNamesData(data);
-  //   console.log("updated all politicians2");
-  // }
-
-  // useEffect(() => {
-  //   init();
-  // }, []);
-
   function handlePress(selected) {
     setSelectedPoliticianId(selected);
   }
