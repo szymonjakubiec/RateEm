@@ -6,6 +6,7 @@ import {getAllUsers} from "../../../backend/database/Users";
 import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 import _ErrorText from "../../styles/ErrorText";
+import _Button from "../../styles/Button";
 
 
 
@@ -129,13 +130,11 @@ export default function ResetScreen({navigation}) {
       )
       }
 
-
-      <TouchableHighlight
-        style={[styles.button, {marginTop: 40}, !validateFieldOnBlur() && {opacity: 0.5}]}
-        disabled={!validateFieldOnBlur()}
+      {/* PK: Reset password button */}
+      <_Button
+        buttonText="Zresetuj hasło"
         onPress={() => {
           validateFieldsOnSubmit().then((result) => {
-            console.log(result);
             if (result) {
               navigation.navigate("Confirm", {
                 email,
@@ -145,9 +144,10 @@ export default function ResetScreen({navigation}) {
             }
           });
         }}
-      >
-        <Text style={styles.buttonText}>Zresetuj hasło</Text>
-      </TouchableHighlight>
+        disabled={!validateFieldOnBlur()}
+        style={{marginTop: 40}}
+      />
+
     </_Container>
   );
 }

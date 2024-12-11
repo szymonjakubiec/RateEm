@@ -5,6 +5,7 @@ import {getUserIdByEmail, updateUser} from "../../../backend/database/Users";
 import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 import _ErrorText from "../../styles/ErrorText";
+import _Button from "../../styles/Button";
 
 
 
@@ -126,8 +127,9 @@ export default function ChangePassScreen({navigation, route}) {
       />
       <_ErrorText text={wrongPassRep}/>
 
-      <TouchableHighlight
-        style={[styles.button, {marginTop: 40}, !validateFieldsOnBlur() && {opacity: 0.5}]}
+      <_Button
+        buttonText="Zmień hasło"
+        style={{marginTop: 40}}
         disabled={!validateFieldsOnBlur()}
         onPress={() => {
           const result = validateFieldsOnSubmit();
@@ -148,9 +150,7 @@ export default function ChangePassScreen({navigation, route}) {
 
           }
         }}
-      >
-        <Text style={styles.buttonText}>Zmień hasło</Text>
-      </TouchableHighlight>
+      />
     </_Container>
   );
 }
@@ -161,27 +161,5 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginLeft: 15,
     marginBottom: 40,
-  },
-  wrongInputText: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
-    display: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "flex" : "none",
-    fontSize: 14,
-    color: "#e41c1c",
-    alignSelf: "flex-start",
-    paddingLeft: 20,
-    marginBottom: 6,
-  }),
-  button: {
-    backgroundColor: "#000",
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: "70%",
-    borderRadius: 20,
-    height: 45,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "700",
   },
 });
