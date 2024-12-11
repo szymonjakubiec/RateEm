@@ -1,8 +1,9 @@
-import {FlatList, Modal, StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
+import {FlatList, StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import {useContext, useEffect, useRef, useState} from "react";
 import {OpinionsTileContext} from "../nav/OpinionsTileContext";
 import {RatingPopupTypes, ConfirmPopupTypes} from "../../../backend/EnumTypes"; 
+import {Chip, Modal, Portal} from "react-native-paper";
 
 
 
@@ -64,21 +65,22 @@ export default function OpinionsTile({ownRating}) {
           <Text style={{fontWeight: "500", fontSize: 20}}>
             Twoje opinie
           </Text>
-          <TouchableHighlight
-            onPress={() => {
-              setExpandedRatingList(!expandedRatingList);
-            }}
-          >
-            {expandedRatingList ? (
-              <Text style={{fontWeight: "400", fontSize: 18, color: "#000"}}>
-                Zwiń
-              </Text>
-            ) : (
-              <Text style={{fontWeight: "400", fontSize: 18, color: "#000"}}>
-                Rozwiń
-              </Text>
-            )}
-          </TouchableHighlight>
+          <View style={styles.chipContainer}>
+            <Chip 
+              onPress={() => setExpandedRatingList(!expandedRatingList)}
+              style={styles.chip}
+            >
+              {expandedRatingList ? (
+                <Text style={styles.chipText}>
+                  Zwiń
+                </Text>
+              ) : (
+                <Text style={styles.chipText}>
+                  Rozwiń
+                </Text>
+              )}
+            </Chip>
+          </View>  
         </View>
         <RatingsList expandedRatingList={expandedRatingList} />
         <TouchableHighlight
@@ -162,7 +164,7 @@ function RatingsList({expandedRatingList}) {
    * @constructor
    */
   function ItemExtension({ item, deselectItem }) {
-    const {handleSingleRatingDeletion, handleSingleRatingUpdate} = useContext(OpinionsTileContext);
+    const {singleRatings, handleSingleRatingDeletion} = useContext(OpinionsTileContext);
 
     const [ratingPopupVisible, setRatingPopupVisible] = useState(false);    
     
@@ -193,13 +195,17 @@ function RatingsList({expandedRatingList}) {
     }
     
     if (selectedItemId === item.id) {
+      console.log(singleRatings.length > 1 && item.weight === 10);
+      console.log(singleRatings.length);
+      console.log(item.weight);
       return (
         <View style={{ backgroundColor: "gray", padding: 10 }}>
           <Text>{item.description}</Text>
-          <View style={styles.buttonsView}>
+          {((singleRatings.length > 1 && item.weight !== 10) || (singleRatings.length === 1)) && <View style={styles.buttonsView}>
             <TouchableHighlight
               style={styles.button}
               onPress={() => setRatingPopupVisible(true)}
+              
             >
               <Text>Zmień</Text>
             </TouchableHighlight>
@@ -209,7 +215,7 @@ function RatingsList({expandedRatingList}) {
             >
               <Text>Usuń</Text>
             </TouchableHighlight>
-          </View>
+          </View>}
           
           <RatingPopup
             popupVisible={ratingPopupVisible}
@@ -330,83 +336,88 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRa
   
   
   return (
-    <Modal
-      visible={popupVisible}
-      transparent={true}
-      onRequestClose={handleRatingPopupClose}
-    >
-      <View style={styles.popupWrapper}>
-        <View style={styles.popupView}>
-          {(itemWeight === 1) && <TextInput
-            style={styles.textInput}
-            placeholder="Wstaw tytuł"
-            value={title}
-            onChangeText={(input) => setTitle(input)}
-          />}
-          <StarRating
-            rating={rating}
-            onChange={rating => {
-              if (rating === 0) return;
-              setRating(rating);
-            }}
-            enableHalfStar={false}
-          />
-          {(itemWeight === 1) && <TextInput
-            style={styles.textInput}
-            placeholder="Wstaw komentarz do opinii"
-            value={description}
-            onChangeText={(input) => setDescription(input)}
-          />}
-          <View style={styles.buttonsView}>
-            <TouchableHighlight
-              style={[styles.buttonNoBg, {backgroundColor: buttonBackground.current}]}
-              onPress={handleSetButton} // function to set firstRating if >= 1
-              disabled={buttonDisabled}
-            >
-              <Text>Ustaw</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={styles.button}
-              onPress={handleRatingPopupClose}
-            >
-              <Text>Anuluj</Text>
-            </TouchableHighlight>
+    <Portal>
+      <Modal
+        visible={popupVisible}
+        dismissableBackButton={true}
+        onDismiss={handleRatingPopupClose}
+      >
+        <View style={styles.popupWrapper}>
+          <View style={styles.popupView}>
+            {(itemWeight === 1) && <TextInput
+              style={styles.textInput}
+              placeholder="Wstaw tytuł"
+              value={title}
+              onChangeText={(input) => setTitle(input)}
+            />}
+            <StarRating
+              rating={rating}
+              onChange={rating => {
+                if (rating === 0) return;
+                setRating(rating);
+              }}
+              enableHalfStar={false}
+            />
+            {(itemWeight === 1) && <TextInput
+              style={styles.textInput}
+              placeholder="Wstaw komentarz do opinii"
+              value={description}
+              onChangeText={(input) => setDescription(input)}
+            />}
+            <View style={styles.buttonsView}>
+              <TouchableHighlight
+                style={[styles.buttonNoBg, {backgroundColor: buttonBackground.current}]}
+                onPress={handleSetButton} // function to set firstRating if >= 1
+                disabled={buttonDisabled}
+              >
+                <Text>Ustaw</Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                style={styles.button}
+                onPress={handleRatingPopupClose}
+              >
+                <Text>Anuluj</Text>
+              </TouchableHighlight>
+            </View>
           </View>
         </View>
-      </View>
-      <ConfirmationPopup
-        popupVisible={confirmPopupVisible}
-        popupType={ConfirmPopupTypes.Update}
-        handleConfirmation={handleConfirmation}
-        handleRejection={handleRejection}
-      />
-    </Modal>
+        <ConfirmationPopup
+          popupVisible={confirmPopupVisible}
+          popupType={ConfirmPopupTypes.Update}
+          handleConfirmation={handleConfirmation}
+          handleRejection={handleRejection}
+        />
+      </Modal>
+    </Portal>
+    
   )
 }
 
 
 function ConfirmationPopup({popupVisible, popupType, handleConfirmation, handleRejection}){
   return(
-    <Modal
-      visible={popupVisible}
-      transparent={true}
-      onRequestClose={handleRejection}
-    >
-      <View style={styles.popupWrapper}>
-        <View style={styles.popupView}>
-          {popupType === ConfirmPopupTypes.Update ? (<Text>Czy na pewno chcesz zmienić tą ocenę?</Text>) : (<Text>Czy na pewno chcesz usunąć tą ocenę?</Text>)}
-          
-          <View style={styles.buttonsView}>
-            <TouchableHighlight onPress={handleConfirmation} style={styles.deleteButton}>
-              {popupType === ConfirmPopupTypes.Update ? (<Text>Zmień</Text>) : (<Text style={{color: "white"}}>Usuń</Text>)}
-            </TouchableHighlight>
-            <TouchableHighlight onPress={handleRejection} style={styles.button}>
-              <Text>Anuluj</Text>
-            </TouchableHighlight>
+    <Portal>
+      <Modal
+        visible={popupVisible}
+        dismissable={false}
+        dismissableBackButton={false}
+      >
+        <View style={styles.popupWrapper}>
+          <View style={styles.popupView}>
+            {popupType === ConfirmPopupTypes.Update ? (<Text>Czy na pewno chcesz zmienić tą ocenę?</Text>) : (<Text>Czy na pewno chcesz usunąć tą ocenę?</Text>)}
+
+            <View style={styles.buttonsView}>
+              <TouchableHighlight onPress={handleConfirmation} style={styles.deleteButton}>
+                {popupType === ConfirmPopupTypes.Update ? (<Text>Zmień</Text>) : (<Text style={{color: "white"}}>Usuń</Text>)}
+              </TouchableHighlight>
+              <TouchableHighlight onPress={handleRejection} style={styles.button}>
+                <Text>Anuluj</Text>
+              </TouchableHighlight>
+            </View>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+    </Portal>
   )
 }
 
@@ -415,6 +426,16 @@ function ConfirmationPopup({popupVisible, popupType, handleConfirmation, handleR
 
 
 const styles = StyleSheet.create({
+  chipContainer: {
+    display: "flex",
+    alignItems: "center",
+    width: "25%",
+  },
+  chip:{
+    backgroundColor: "ghostwhite",
+  },
+  chipText:{
+  },
   opinionsTile: {
     display: "flex",
     gap: 10,

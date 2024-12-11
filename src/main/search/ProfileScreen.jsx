@@ -268,8 +268,6 @@ export default function ProfileScreen({navigation, route}) {
       updateSingleRating(itemId, titleUpdate, ratingUpdate, descriptionUpdate);
     } else if (singleRatings.length === 1) {
       updateFirstOwnRating(itemId, ratingUpdate);
-    } else {
-      Alert.alert("Nie można modyfikować oceny bazowej kiedy są jeszcze inne opinie.");
     }
   }
 
@@ -278,8 +276,6 @@ export default function ProfileScreen({navigation, route}) {
       deleteSingleRating(itemId);
     } else if (singleRatings.length === 1) {
       deleteFirstOwnRating(itemId);
-    } else {
-      Alert.alert("Nie można usunąć oceny bazowej kiedy są jeszcze inne opinie.");
     }
   }
 
