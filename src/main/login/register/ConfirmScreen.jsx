@@ -111,8 +111,8 @@ export default function ConfirmScreen({navigation, route}) {
           value={code}
           onChangeText={(text) => {
             text = text.replace(/[^0-9]/g, '');
-            setCode(text.trim());
-            validateCodeOnChange(text.trim());
+            setCode(text);
+            validateCodeOnChange(text);
           }}
         />
         <_ErrorText text={wrongCode}/>

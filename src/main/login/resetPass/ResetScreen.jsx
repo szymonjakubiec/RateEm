@@ -53,7 +53,7 @@ export default function ResetScreen({navigation}) {
 
   const validateFieldOnBlur = () => {
     if (verifyType === "sms") return !(wrongPhone || !phone);
-    else return !(wrongEmail || !email || wrongPhone || !phone);
+    else return !(wrongEmail || !email);
   };
 
   const validatePhone = (phone) => {
@@ -91,14 +91,10 @@ export default function ResetScreen({navigation}) {
             value={phone}
             onChangeText={(text) => {
               text.slice(0, 3) === "+48" && (text = text.slice(3));
-              text = text.trim().replace(/[^0-9]/g, "");
+              text = text.replace(/[^0-9]/g, "");
               if (text.length > 9) return;
-              setPhone(text.trim());
-              validatePhone(text.trim());
-              validateFieldOnBlur();
-            }}
-            onBlur={() => {
-              // validatePhoneOut(phone);
+              setPhone(text);
+              validatePhone(text);
             }}
           />
           <_ErrorText text={wrongPhone}/>
@@ -117,12 +113,8 @@ export default function ResetScreen({navigation}) {
             value={email}
             onChangeText={(text) => {
               text = text.replace(/[^a-zA-Z0-9._%+@-]/g, '');
-              setEmail(text.trim());
-              validateEmail(text.trim());
-              validateFieldOnBlur();
-            }}
-            onBlur={() => {
-              // console.log("BLUR");
+              setEmail(text);
+              validateEmail(text);
             }}
           />
           <_ErrorText text={wrongEmail}/>

@@ -91,12 +91,8 @@ export default function ChangePassScreen({navigation, route}) {
         onChangeText={(text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
           repeatPassword && setRepeatPassword('');
-          setPassword(text.trim());
-          validatePass(text.trim());
-          validateFieldsOnBlur();
-        }}
-        onBlur={() => {
-          // validatePassOut(password);
+          setPassword(text);
+          validatePass(text);
         }}
       />
       <_ErrorText text={wrongPass}/>
@@ -117,12 +113,8 @@ export default function ChangePassScreen({navigation, route}) {
         value={repeatPassword}
         onChangeText={(text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
-          setRepeatPassword(text.trim());
-          validatePassRep(text.trim());
-          validateFieldsOnBlur();
-        }}
-        onBlur={() => {
-          // validatePassRep(repeatPassword.trim());
+          setRepeatPassword(text);
+          validatePassRep(text);
         }}
       />
       <_ErrorText text={wrongPassRep}/>

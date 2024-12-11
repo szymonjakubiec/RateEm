@@ -154,10 +154,9 @@ export default function LoggingScreen({navigation}) {
           value={email}
           onChangeText={(text) => {
             text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
-            setEmail(text.trim());
-            validateEmail(text.trim());
+            setEmail(text);
+            validateEmail(text);
           }}
-          onBlur={() => validateEmail(email)}
         />
         <_ErrorText text={wrongEmailInfo}/>
 
@@ -176,9 +175,9 @@ export default function LoggingScreen({navigation}) {
             forceTextInputFocus={false}/>}
           value={password}
           onChangeText={(text) => {
-            if (text.includes(" ")) return;
-            setPassword(text.trim());
-            validatePass(text.trim());
+            text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
+            setPassword(text);
+            validatePass(text);
           }}
         />
         <_ErrorText text={wrongPasswordInfo}/>

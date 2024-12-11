@@ -131,11 +131,10 @@ export default function RegisterScreen({navigation}) {
           autoComplete="name"
           value={name}
           onChangeText={(text) => {
-            text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "");
+            text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, '');
             text.length > 0 && (text = text[0].toUpperCase() + text.slice(1).toLowerCase());
-            setName(text.trim());
-            validateName(text.trim());
-            validateFieldsOnBlur();
+            setName(text);
+            validateName(text);
           }}
           onBlur={() => {
             validateName(name);
@@ -153,12 +152,8 @@ export default function RegisterScreen({navigation}) {
           onChangeText={(text) => {
             if (text.includes(" ")) return;
             text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
-            setEmail(text.trim());
-            validateEmail(text.trim());
-            validateFieldsOnBlur();
-          }}
-          onBlur={() => {
-            // console.log("BLUR");
+            setEmail(text);
+            validateEmail(text);
           }}
         />
         <_ErrorText text={wrongEmail}/>
@@ -174,14 +169,10 @@ export default function RegisterScreen({navigation}) {
           value={phone}
           onChangeText={(text) => {
             text.slice(0, 3) === "+48" && (text = text.slice(3));
-            text = text.trim().replace(/[^0-9]/g, "");
+            text = text.replace(/[^0-9]/g, "");
             if (text.length > 9) return;
-            setPhone(text.trim());
-            validatePhone(text.trim());
-            validateFieldsOnBlur();
-          }}
-          onBlur={() => {
-            // validatePhoneOut(phone);
+            setPhone(text);
+            validatePhone(text);
           }}
         />
         <_ErrorText text={wrongPhone}/>
@@ -203,12 +194,8 @@ export default function RegisterScreen({navigation}) {
           onChangeText={(text) => {
             text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
             repeatPassword && setRepeatPassword('');
-            setPassword(text.trim());
-            validatePass(text.trim());
-            validateFieldsOnBlur();
-          }}
-          onBlur={() => {
-            // validatePassOut(password);
+            setPassword(text);
+            validatePass(text);
           }}
         />
         <_ErrorText text={wrongPass}/>
@@ -228,13 +215,9 @@ export default function RegisterScreen({navigation}) {
           }
           value={repeatPassword}
           onChangeText={(text) => {
-            if (text.includes(" ")) return;
-            setRepeatPassword(text.trim());
-            validatePassRep(text.trim());
-            validateFieldsOnBlur();
-          }}
-          onBlur={() => {
-            // validatePassRep(repeatPassword.trim());
+            text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
+            setRepeatPassword(text);
+            validatePassRep(text);
           }}
         />
         <_ErrorText text={wrongPassRep}/>
