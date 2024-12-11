@@ -112,6 +112,7 @@ export default function LoggingScreen({navigation}) {
    * Navigates to the main screen.
    */
   function navigateToMain() {
+    global.userEmail = email;
     setEmail('');
     setWrongEmailInfo('');
 

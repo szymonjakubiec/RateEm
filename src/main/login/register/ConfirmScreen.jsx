@@ -1,18 +1,19 @@
 import {StyleSheet, Text, BackHandler} from "react-native";
 import {useState, useEffect, useRef} from "react";
 import {checkVerificationSMS, sendMail, sendVerificationSMS} from "../../../backend/CommonMethods";
-import {addUser} from "../../../backend/database/Users";
+import {addUser, getUserIdByEmail, updateUser} from "../../../backend/database/Users";
 import {TextInput} from "react-native-paper";
 import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 import _Button from "../../styles/Button";
 import _AnimViewKeyboard from "../../styles/AnimViewKeyboard";
+import _ErrorText from "../../styles/ErrorText";
 
 
 
 export default function ConfirmScreen({navigation, route}) {
 
-  const {name, email, phone, password} = route?.params || {};
+  const {name, email, phone, password, userId = -1} = route?.params || {};
 
   // PK: Verification type
   // const verifyType = "sms";
@@ -78,7 +79,7 @@ export default function ConfirmScreen({navigation, route}) {
   return (
     <_AnimViewKeyboard margin={70}>
       <_Container>
-        <Text style={styles.title}>Potwierdź konto</Text>
+        <Text style={styles.title}>Potwierdź {userId === -1 ? "konto" : "e-mail"}</Text>
 
         {verifyType === "sms" ? (
           <>
@@ -120,7 +121,7 @@ export default function ConfirmScreen({navigation, route}) {
         <_Button
           buttonText="Potwierdź"
           disabled={!isCodeValid()}
-          style={{marginTop: wrongCode ? 10 : 38}}
+          style={{marginTop: 35}}
           onPress={() => {
             if (verifyType === "sms") {
               // PK: SMS
@@ -137,6 +138,20 @@ export default function ConfirmScreen({navigation, route}) {
               setWrongCode("Błędny kod! Spróbuj ponownie.");
               setCode('');
               return false;
+            }
+
+            // PK: Changing e-mail from Settings
+            if (userId !== -1) {
+              updateUser(userId, {email})
+                .then((result) => {
+                  if (result) {
+                    navigation.navigate("Settings", {updatedEmail: email});
+                  }
+                })
+                .catch((err) => {
+                  console.error(err.message);
+                });
+              return;
             }
 
             addUser(name, email, password, phone, 1, 1, 1)
@@ -175,27 +190,5 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     borderTopWidth: 1,
     borderBottomWidth: 1,
-  },
-  wrongInputText: (wrongCode) => ({
-    display: wrongCode ? "flex" : "none",
-    fontSize: 14,
-    color: "#e41c1c",
-    alignSelf: "flex-start",
-    paddingLeft: 20,
-    marginTop: 2,
-    marginBottom: 6,
-  }),
-  button: {
-    backgroundColor: "#000",
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: "70%",
-    borderRadius: 20,
-    marginBottom: 70,
-  },
-  buttonText: {
-    alignSelf: "center",
-    color: "#fff",
-    fontWeight: "700",
   },
 });

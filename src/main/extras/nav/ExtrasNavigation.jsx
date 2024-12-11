@@ -3,6 +3,7 @@ import ExtrasScreen from "../ExtrasScreen";
 import GuideScreen from "../GuideScreen";
 import SettingsScreen from "../SettingsScreen";
 import SummaryScreen from "../SummaryScreen";
+import ConfirmScreen from "../../login/register/ConfirmScreen";
 
 
 
@@ -33,6 +34,15 @@ export default function ExtrasNavigation({route}) {
           headerTitleAlign: "center",
         })}
 
+      />
+      <Stack.Screen
+        name="Confirm"
+        component={ConfirmScreen}
+        options={() => ({
+          headerTitle: _title,
+          headerLeft: () => null,
+          headerTitleAlign: "center",
+        })}
       />
       <Stack.Screen
         name="Guide"
