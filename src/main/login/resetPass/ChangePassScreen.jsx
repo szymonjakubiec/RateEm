@@ -2,8 +2,10 @@ import {useState} from "react";
 import {StyleSheet, Text, TouchableHighlight} from "react-native";
 import {TextInput} from "react-native-paper";
 import {getUserIdByEmail, updateUser} from "../../../backend/database/Users";
-import {textInputProps} from "../../styles/TextInput";
+import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
+import _ErrorText from "../../styles/ErrorText";
+import _Button from "../../styles/Button";
 
 
 
@@ -74,59 +76,52 @@ export default function ChangePassScreen({navigation, route}) {
       <Text style={styles.title}>Podaj nowe hasło:</Text>
 
       <TextInput
-        {...textInputProps}
+        {...useTextInputProps(wrongPass)}
         label="hasło"
-        outlineColor={wrongPass ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
         secureTextEntry={passVisible}
-        right={<TextInput.Icon icon={passVisible ? "eye" : "eye-off"}
-                               onPress={() => setPassVisible(!passVisible)}/>
+        right={<TextInput.Icon
+          icon={passVisible ? "eye" : "eye-off"}
+          onPress={() => setPassVisible(!passVisible)}
+          forceTextInputFocus={false}/>
         }
         value={password}
         onChangeText={(text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
           repeatPassword && setRepeatPassword('');
-          setPassword(text.trim());
-          validatePass(text.trim());
-          validateFieldsOnBlur();
-        }}
-        onBlur={() => {
-          // validatePassOut(password);
+          setPassword(text);
+          validatePass(text);
         }}
       />
-      <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
+      <_ErrorText text={wrongPass}/>
 
       <TextInput
-        {...textInputProps}
+        {...useTextInputProps(wrongPassRep)}
         label="powtórz hasło"
-        outlineColor={wrongPassRep ? "#e41c1c" : "black"}
-        activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}
         returnKeyType="done"
         autoCapitalize="none"
         autoComplete="current-password"
         textContentType="currentPassword"
         secureTextEntry={repeatPassVisible}
-        right={<TextInput.Icon icon={repeatPassVisible ? "eye" : "eye-off"}
-                               onPress={() => setRepeatPassVisible(!repeatPassVisible)}/>
+        right={<TextInput.Icon
+          icon={repeatPassVisible ? "eye" : "eye-off"}
+          onPress={() => setRepeatPassVisible(!repeatPassVisible)}
+          forceTextInputFocus={false}/>
         }
         value={repeatPassword}
         onChangeText={(text) => {
           text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
-          setRepeatPassword(text.trim());
-          validatePassRep(text.trim());
-          validateFieldsOnBlur();
-        }}
-        onBlur={() => {
-          // validatePassRep(repeatPassword.trim());
+          setRepeatPassword(text);
+          validatePassRep(text);
         }}
       />
-      <Text style={styles.wrongInputText(wrongPassRep)}>{wrongPassRep}</Text>
+      <_ErrorText text={wrongPassRep}/>
 
-      <TouchableHighlight
-        style={[styles.button, {marginTop: 40}, !validateFieldsOnBlur() && {opacity: 0.5}]}
+      <_Button
+        buttonText="Zmień hasło"
+        style={{marginTop: 40}}
         disabled={!validateFieldsOnBlur()}
         onPress={() => {
           const result = validateFieldsOnSubmit();
@@ -147,9 +142,7 @@ export default function ChangePassScreen({navigation, route}) {
 
           }
         }}
-      >
-        <Text style={styles.buttonText}>Zmień hasło</Text>
-      </TouchableHighlight>
+      />
     </_Container>
   );
 }
@@ -160,27 +153,5 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginLeft: 15,
     marginBottom: 40,
-  },
-  wrongInputText: (wrongName, wrongEmail, wrongPhone, wrongPass, wrongPassRep) => ({
-    display: wrongName || wrongEmail || wrongPhone || wrongPass || wrongPassRep ? "flex" : "none",
-    fontSize: 14,
-    color: "#e41c1c",
-    alignSelf: "flex-start",
-    paddingLeft: 20,
-    marginBottom: 6,
-  }),
-  button: {
-    backgroundColor: "#000",
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: "70%",
-    borderRadius: 20,
-    height: 45,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "700",
   },
 });

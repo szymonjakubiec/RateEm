@@ -1,12 +1,13 @@
 import {useState} from "react";
-import {StyleSheet, Text, TouchableHighlight, View} from "react-native";
+import {StyleSheet, Text} from "react-native";
 import isEmail from "validator/lib/isEmail";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
-import {textInputProps} from "../../styles/TextInput";
+import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
 import _Button from "../../styles/Button";
 import _AnimViewKeyboard from "../../styles/AnimViewKeyboard";
+import _ErrorText from "../../styles/ErrorText";
 
 
 
@@ -124,32 +125,26 @@ export default function RegisterScreen({navigation}) {
         <Text style={styles.title}>Aby zarejestrować nowe konto, wypełnij poniższe pola:</Text>
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps(wrongName)}
           label="imię"
-          outlineColor={wrongName ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongName ? "#e41c1c" : "black"}
           maxLength={22}
           autoComplete="name"
           value={name}
           onChangeText={(text) => {
-            // if (text.includes(" ")) return;
-            text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, "");
+            text = text.replace(/[^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]/g, '');
             text.length > 0 && (text = text[0].toUpperCase() + text.slice(1).toLowerCase());
-            setName(text.trim());
-            validateName(text.trim());
-            validateFieldsOnBlur();
+            setName(text);
+            validateName(text);
           }}
           onBlur={() => {
             validateName(name);
           }}
         />
-        <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
+        <_ErrorText text={wrongName}/>
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps(wrongEmail)}
           label="e-mail"
-          outlineColor={wrongEmail ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongEmail ? "#e41c1c" : "black"}
           autoComplete="email"
           textContentType="emailAddress"
           autoCapitalize="none"
@@ -157,102 +152,75 @@ export default function RegisterScreen({navigation}) {
           onChangeText={(text) => {
             if (text.includes(" ")) return;
             text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
-            setEmail(text.trim());
-            validateEmail(text.trim());
-            validateFieldsOnBlur();
-          }}
-          onBlur={() => {
-            // console.log("BLUR");
+            setEmail(text);
+            validateEmail(text);
           }}
         />
-        <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
+        <_ErrorText text={wrongEmail}/>
 
-        <View style={{flexDirection: "row", justifyContent: "center"}}>
-          <TextInput
-            {...textInputProps}
-            label="numer telefonu"
-            outlineColor={wrongPhone ? "#e41c1c" : "black"}
-            activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
-            maxLength={12}
-            style={[textInputProps.style, {paddingLeft: 31}]}
-            // left={ <TextInput.Affix textStyle={ {fontSize: 16, marginLeft: 4} } text="+48 |"/> }
-            autoComplete="tel"
-            keyboardType="phone-pad"
-            value={phone}
-            onChangeText={(text) => {
-              text.slice(0, 3) === "+48" && (text = text.slice(3));
-              text = text.trim().replace(/[^0-9]/g, "");
-              if (text.length > 9) return;
-              setPhone(text.trim());
-              validatePhone(text.trim());
-              validateFieldsOnBlur();
-            }}
-            onBlur={() => {
-              // validatePhoneOut(phone);
-            }}
-          />
-          <Text style={{
-            alignSelf: "center",
-            left: 9,
-            fontSize: 16,
-            fontWeight: 300,
-            position: "absolute",
-            paddingTop: 8
-          }}>+48 | </Text>
-        </View>
-        <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps(wrongPhone)}
+          label="numer telefonu"
+          maxLength={12}
+          left={<TextInput.Affix text="+48 |" textStyle={{marginRight: -10}}/>}
+          autoComplete="tel"
+          keyboardType="phone-pad"
+          value={phone}
+          onChangeText={(text) => {
+            text.slice(0, 3) === "+48" && (text = text.slice(3));
+            text = text.replace(/[^0-9]/g, "");
+            if (text.length > 9) return;
+            setPhone(text);
+            validatePhone(text);
+          }}
+        />
+        <_ErrorText text={wrongPhone}/>
+
+
+        <TextInput
+          {...useTextInputProps(wrongPass)}
           label="hasło"
-          outlineColor={wrongPass ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongPass ? "#e41c1c" : "black"}
           autoCapitalize="none"
           autoComplete="new-password"
           textContentType="newPassword"
           secureTextEntry={passVisible}
-          right={<TextInput.Icon icon={passVisible ? "eye" : "eye-off"}
-                                 onPress={() => setPassVisible(!passVisible)}/>
+          right={<TextInput.Icon
+            icon={passVisible ? "eye" : "eye-off"}
+            onPress={() => setPassVisible(!passVisible)}
+            forceTextInputFocus={false}/>
           }
           value={password}
           onChangeText={(text) => {
             text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
             repeatPassword && setRepeatPassword('');
-            setPassword(text.trim());
-            validatePass(text.trim());
-            validateFieldsOnBlur();
-          }}
-          onBlur={() => {
-            // validatePassOut(password);
+            setPassword(text);
+            validatePass(text);
           }}
         />
-        <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
+        <_ErrorText text={wrongPass}/>
 
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps(wrongPassRep)}
           label="powtórz hasło"
-          outlineColor={wrongPassRep ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongPassRep ? "#e41c1c" : "black"}
           returnKeyType="done"
           autoCapitalize="none"
           autoComplete="current-password"
           textContentType="currentPassword"
           secureTextEntry={repeatPassVisible}
-          right={<TextInput.Icon icon={repeatPassVisible ? "eye" : "eye-off"}
-                                 onPress={() => setRepeatPassVisible(!repeatPassVisible)}/>
+          right={<TextInput.Icon
+            icon={repeatPassVisible ? "eye" : "eye-off"}
+            onPress={() => setRepeatPassVisible(!repeatPassVisible)}
+            forceTextInputFocus={false}/>
           }
           value={repeatPassword}
           onChangeText={(text) => {
-            if (text.includes(" ")) return;
-            setRepeatPassword(text.trim());
-            validatePassRep(text.trim());
-            validateFieldsOnBlur();
-          }}
-          onBlur={() => {
-            // validatePassRep(repeatPassword.trim());
+            text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
+            setRepeatPassword(text);
+            validatePassRep(text);
           }}
         />
-        <Text style={styles.wrongInputText(wrongPassRep)}>{wrongPassRep}</Text>
+        <_ErrorText text={wrongPassRep}/>
 
         {/* PK: Register button */}
         <_Button
