@@ -2,30 +2,10 @@
  * Gets all politicians.
  *
  * @async
- * @returns {Promise<object[]|undefined>} Array of politician objects
+ * @function
+ * @returns {Promise<Object[]>} Array of politician objects
  */
 const getAllPoliticians = async () => {
-  const url = `${global.SERVER_URL}/all-politicians`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    return null;
-  }
-};
-
-/**
- * Gets all politician names.
- *
- * @async
- * @function
- * @returns {Promise<Object[]>} Array of politician name objects
- */
-const getAllPoliticianNames = async () => {
   const url = `${global.SERVER_URL}/all-politicians`;
   try {
     const response = await fetch(url);
@@ -39,6 +19,11 @@ const getAllPoliticianNames = async () => {
       data.push({
         key: element.id,
         value: element.names_surname,
+        name: element.name,
+        surname: element.surname,
+        picture: element.picture,
+        globalRating: element.global_rating,
+        ratingCount: element.rating_count,
       });
     }
     return data;
@@ -95,5 +80,41 @@ const updatePolitician = async (id, newData = {}) => {
   }
 };
 
+/**
+ * Gets requested amount of trending politician information by provided number of days
+ *
+ * @async
+ * @function
+ * @param {number} count - Amount of politicians we want to get
+ * @param {number} days - Amount of days back to check
+ */
+const getTrendingPoliticians = async (days) => {
+  const url = `${global.SERVER_URL}/trending-politicians?days=${days}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const rawData = await response.json();
 
-module.exports = {getAllPoliticians, getAllPoliticianNames, getPolitician, updatePolitician};
+    const data = [];
+    for await (const element of rawData) {
+      data.push({
+        key: element.id,
+        value: element.names_surname,
+        name: element.name,
+        surname: element.surname,
+        picture: element.picture,
+        globalRating: element.global_rating,
+        ratingCount: element.rating_count,
+      });
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching trending politicians:", error);
+    return null;
+  }
+};
+
+module.exports = { getAllPoliticians, getPolitician, updatePolitician, getTrendingPoliticians };

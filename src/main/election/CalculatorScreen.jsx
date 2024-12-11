@@ -1,15 +1,13 @@
-import {useState, useEffect} from "react";
-import {StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput, LayoutAnimation} from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, Text, View, ScrollView, Image, TouchableHighlight, TextInput, LayoutAnimation } from "react-native";
 import CheckBox from "react-native-check-box";
 import _Container from "../styles/Container";
-import {tabBarAnim} from "../../backend/CommonMethods";
-
-
+import { tabBarAnim } from "../../backend/CommonMethods";
 
 const plusIcon = require("../../../assets/plus_icon.png");
 const deleteIcon = require("../../../assets/delete_icon.png");
 
-export default function CalculatorScreen({navigation}) {
+export default function CalculatorScreen({ navigation }) {
   const [parties, setParties] = useState([]);
 
   const [inputValues, setInputValues] = useState([]);
@@ -29,6 +27,7 @@ export default function CalculatorScreen({navigation}) {
     setParties([{}]);
   }, []);
 
+  // adds new party to the calculations
   function addParty() {
     if (parties.length < 9 && sum < 100) {
       setParties((prevParties) => [...prevParties, 0]);
@@ -37,6 +36,7 @@ export default function CalculatorScreen({navigation}) {
     onPersentageChange();
   }
 
+  // deletes party from further calculations
   function deleteParty(indexToDelete) {
     if (parties.length > 1) {
       setParties((parties) => parties.filter((i, index) => index != indexToDelete));
@@ -49,12 +49,26 @@ export default function CalculatorScreen({navigation}) {
     onPersentageChange();
   }
 
+  // called whenever user changes something in the inpputboxes
   function onPersentageChange() {
     let sumTemp = 0;
     for (let index = 0; index < inputValues.length; index++) {
+      inputValues[index] = inputValues[index].replace(",", ".");
+
+      // makes sure that empty persentage input is considered like as 0
+      if (inputValues[index] == "") {
+        inputValues[index] = 0;
+      } else if (inputValues[index].toString().includes(".")) {
+        const dividedByComma = inputValues[index].toString().split(".");
+        if (dividedByComma.length - 1 > 1) {
+          inputValues[index] = dividedByComma[0] + "." + dividedByComma[1];
+        }
+      }
+
       setTheRestValue("0");
       if (sumTemp < 100) {
         sumTemp += parseFloat(inputValues[index]);
+
         const shortage = 100 - sumTemp;
         if (shortage > 0) {
           setTheRestValue(shortage.toFixed(2).toString());
@@ -68,12 +82,19 @@ export default function CalculatorScreen({navigation}) {
       }
     }
 
-    setInputValues((prevInputValues) => prevInputValues.map((value, index) => value));
+    setInputValues((prevInputValues) => prevInputValues.map((value, index) => value.toString().replace(",", ".")));
     setSum(sumTemp);
 
     calculateDhondtMandates();
+
+    for (let index = 0; index < inputValues.length; index++) {
+      if (inputValues[index] == 0) {
+        inputValues[index] = "";
+      }
+    }
   }
 
+  // starts proccess of calculating mandates
   function calculateDhondtMandates() {
     const votes = [];
     let sumTemp = 100;
@@ -89,47 +110,47 @@ export default function CalculatorScreen({navigation}) {
     votes[votes.length] = sumTemp.toFixed(2) * 10000;
 
     const districts = [
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 8},
-      {votes: votes, seats: 14},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 13},
-      {votes: votes, seats: 15},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 10},
-      {votes: votes, seats: 9},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 8},
-      {votes: votes, seats: 14},
-      {votes: votes, seats: 10},
-      {votes: votes, seats: 9},
-      {votes: votes, seats: 10},
-      {votes: votes, seats: 9},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 20},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 11},
-      {votes: votes, seats: 15},
-      {votes: votes, seats: 14},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 14},
-      {votes: votes, seats: 9},
-      {votes: votes, seats: 7},
-      {votes: votes, seats: 9},
-      {votes: votes, seats: 9},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 9},
-      {votes: votes, seats: 16},
-      {votes: votes, seats: 8},
-      {votes: votes, seats: 10},
-      {votes: votes, seats: 12},
-      {votes: votes, seats: 9},
-      {votes: votes, seats: 9},
-      {votes: votes, seats: 10},
-      {votes: votes, seats: 8},
-      {votes: votes, seats: 12},
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 8 },
+      { votes: votes, seats: 14 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 13 },
+      { votes: votes, seats: 15 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 8 },
+      { votes: votes, seats: 14 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 20 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 11 },
+      { votes: votes, seats: 15 },
+      { votes: votes, seats: 14 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 14 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 7 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 16 },
+      { votes: votes, seats: 8 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 12 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 9 },
+      { votes: votes, seats: 10 },
+      { votes: votes, seats: 8 },
+      { votes: votes, seats: 12 },
     ];
 
     var results = simulateElections(districts);
@@ -145,6 +166,7 @@ export default function CalculatorScreen({navigation}) {
     setTheRestMandatesValue(results[results.length - 1].toFixed(0).toString());
   }
 
+  // applies given persentage for each district
   function simulateElections(districts) {
     const totalParties = districts[0].votes.length;
     const totalMandates = Array(totalParties).fill(0);
@@ -159,6 +181,7 @@ export default function CalculatorScreen({navigation}) {
     return totalMandates;
   }
 
+  // calculates mandates for given district
   function dHondtInDistrict(votes, seats) {
     const mandates = Array(votes.length).fill(0);
     const voteCounts = votes.map((vote) => vote);
@@ -181,15 +204,17 @@ export default function CalculatorScreen({navigation}) {
   }
 
   return (
-    <_Container style={{padding: "4%"}}>
+    <_Container style={{ padding: "4%" }}>
       <ScrollView style={styles.scrollView}>
         {parties.map((partyItem, index) => (
           <View key={index} style={styles.partyTile}>
             <View>
               <View style={styles.viweHorizontal}>
                 <Text style={styles.partyTileText}>Partia {index + 1}</Text>
+              </View>
+              <View style={styles.viweHorizontal}>
                 <TextInput
-                  style={styles.partyTileInput}
+                  style={[styles.partyTileInput, { marginTop: 10 }]}
                   value={inputValues[index]}
                   onChangeText={(newValue) => {
                     inputValues[index] = newValue;
@@ -198,8 +223,8 @@ export default function CalculatorScreen({navigation}) {
                   keyboardType="numeric"
                   maxLength={5}
                 />
-                <Text style={styles.partyTileText}>%</Text>
-                <TextInput style={styles.partyTileOutput} readOnly={true} value={outputValues[index]}/>
+                <Text style={[styles.partyTileText, { marginTop: 10 }]}>%</Text>
+                <TextInput style={[styles.partyTileOutput, { marginTop: 10 }]} readOnly={true} value={outputValues[index]} />
               </View>
               <View style={styles.viweHorizontal}>
                 <CheckBox
@@ -215,27 +240,29 @@ export default function CalculatorScreen({navigation}) {
               </View>
             </View>
             <TouchableHighlight onPress={() => deleteParty(index)}>
-              <Image source={deleteIcon} style={styles.deleteIcon}/>
+              <Image source={deleteIcon} style={styles.deleteIcon} />
             </TouchableHighlight>
           </View>
         ))}
-        <View style={styles.partyTileRest}>
-          <Text style={styles.partyTileText}>Reszta </Text>
-          <TextInput style={styles.partyTileInput} value={theRestValue} readOnly={true}/>
-          <Text style={styles.partyTileText}>%</Text>
-          <TextInput style={styles.partyTileOutput} value={theRestMandatesValue} readOnly={true}/>
+        <View style={styles.partyTile}>
+          <View>
+            <Text style={styles.partyTileText}>Reszta </Text>
+            <View style={styles.partyTileRestInner}>
+              <TextInput style={[styles.partyTileInput, { marginBottom: 10 }]} value={theRestValue} readOnly={true} />
+              <Text style={styles.partyTileText}>%</Text>
+              <TextInput style={[styles.partyTileOutput, { marginBottom: 10 }]} value={theRestMandatesValue} readOnly={true} />
+            </View>
+          </View>
         </View>
         <TouchableHighlight style={styles.addPartyTile} onPress={addParty}>
-          <Image source={plusIcon} style={styles.plusIcon}/>
+          <Image source={plusIcon} style={styles.plusIcon} />
         </TouchableHighlight>
 
         <View style={styles.calculatorDescDiv}>
           <Text style={styles.calculatorDescTitle}>Uwaga</Text>
-          <Text style={styles.calculatorDescText}>Dane wyliczone przez kalkulator są tylko szacunkiem. Nie należy się do
-            nich przywiązywać.</Text>
+          <Text style={styles.calculatorDescText}>Dane wyliczone przez kalkulator są tylko szacunkiem. Nie należy się do nich przywiązywać.</Text>
           <Text style={styles.calculatorDescText}>
-            Zalecamy uzupełnić dane w taki sposób, aby "Inni" mieli jak najmniej % głosów. W przeciwnym wypadku dostaną
-            oni nieproporcjonalnie dużo
+            Zalecamy uzupełnić dane w taki sposób, aby "Inni" mieli jak najmniej % głosów. W przeciwnym wypadku dostaną oni nieproporcjonalnie dużo
             mandatów. Wynika to z algorytmu liczenia głosów.
           </Text>
           <Text style={styles.calculatorDescText}>
@@ -269,12 +296,10 @@ const styles = StyleSheet.create({
 
   partyTile: {
     backgroundColor: "#000",
-    height: 100,
+    minHeight: 80,
     width: "96%",
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
     marginTop: 20,
     marginLeft: "2%",
     marginRight: "2%",
@@ -282,20 +307,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  partyTileRest: {
-    backgroundColor: "#000",
-    height: 80,
-    width: "96%",
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 15,
-    paddingRight: 15,
-    marginTop: 20,
-    marginLeft: "2%",
-    marginRight: "2%",
-    borderRadius: 20,
+  partyTileRestInner: {
+    marginTop: 10,
     flexDirection: "row",
-    alignItems: "center",
   },
   partyTileText: {
     color: "white",
@@ -311,7 +325,6 @@ const styles = StyleSheet.create({
   partyTileInput: {
     color: "white",
     width: 60,
-    marginLeft: 10,
     fontSize: 20,
     borderColor: "white",
     borderWidth: 1,

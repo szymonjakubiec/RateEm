@@ -1,14 +1,11 @@
-import {View, Text, StyleSheet, Modal, TouchableOpacity, Image, FlatList} from "react-native";
-import {useContext, useEffect, useState} from "react";
-import {getRatingsUserId} from "../../backend/database/Ratings";
-import {ownGoBack, tabBarAnim} from "../../backend/CommonMethods";
-import {GlobalContext} from "../nav/GlobalContext";
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Image, FlatList } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { getRatingsUserId } from "../../backend/database/Ratings";
+import { ownGoBack, tabBarAnim } from "../../backend/CommonMethods";
+import { GlobalContext } from "../nav/GlobalContext";
 import _Container from "../styles/Container";
 
-
-
-export default function SummaryScreen({navigation}) {
-
+export default function SummaryScreen({ navigation }) {
   // PK: Hide bottom TabBar
   useEffect(() => {
     return tabBarAnim(navigation);
@@ -23,12 +20,12 @@ export default function SummaryScreen({navigation}) {
   const [selectedPolitician, setSelectedPolitician] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [totalRatings, setTotalRatings] = useState(0); // Dodano stan dla łącznej liczby ocen
-  const {userId} = useContext(GlobalContext);
+  const { userId } = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchRatings = async () => {
       const fetchedRatings = await getRatingsUserId(userId);
-      setRatings(fetchedRatings.reverse());
+      setRatings(fetchedRatings.reverse().filter((rating) => rating.weight !== 10));
 
       if (fetchedRatings.length > 0) {
         const highest = Math.max(...fetchedRatings.map((rating) => rating.value));
@@ -43,7 +40,7 @@ export default function SummaryScreen({navigation}) {
     fetchRatings();
   }, []);
 
-  const renderRatingItem = ({item}) => (
+  const renderRatingItem = ({ item }) => (
     <View style={styles.ratingItemContainer}>
       <TouchableOpacity style={styles.ratingItem} onPress={() => handleratingClick(item)}>
         {item.picture ? (
@@ -55,7 +52,7 @@ export default function SummaryScreen({navigation}) {
             style={styles.ratingImage}
           />
         ) : (
-          <Image source={require("./../../../assets/noPhoto.png")} style={styles.ratingImage}/>
+          <Image source={require("./../../../assets/noPhoto.png")} style={styles.ratingImage} />
         )}
         <Text style={styles.ratingItemText}>
           {item.names_surname} {item.value}
@@ -74,7 +71,7 @@ export default function SummaryScreen({navigation}) {
   };
 
   return (
-    <_Container style={{alignItems: "stretch", padding: 20}}>
+    <_Container style={{ alignItems: "stretch", padding: 20 }}>
       <Text style={styles.title}>Wystawione oceny</Text>
       {ratings.length === 0 ? (
         <View style={styles.ratingContainer}>
@@ -165,7 +162,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
   },
@@ -183,7 +180,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
   },
@@ -203,7 +200,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
   },
@@ -224,7 +221,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     elevation: 10,
     shadowColor: "#000",
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
     maxHeight: "80%",
