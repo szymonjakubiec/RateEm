@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image } from "react-native";
-import { TextInput, Button, Chip } from "react-native-paper";
-import { getTrendingPoliticians } from "../../../backend/database/Politicians";
-import { textInputProps } from "../../styles/TextInput";
+import {useEffect, useRef, useState} from "react";
+import {StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image} from "react-native";
+import {TextInput, Button, Chip} from "react-native-paper";
+import {getTrendingPoliticians} from "../../../backend/database/Politicians";
+import {textInputProps} from "../../styles/TextInput";
 
-export default function SearchFlatList({ data, handleOnPress }) {
+
+
+export default function SearchFlatList({data, handleOnPress}) {
   // data - wszyscy politycy
   const [filteredData, setFilteredData] = useState(data); // politycy po wyszukaniu
   const [trendingPoliticians, setTrendingPoliticians] = useState([]); // politycy na czasie
@@ -29,10 +31,10 @@ export default function SearchFlatList({ data, handleOnPress }) {
       const fetchedRatings = await getTrendingPoliticians(numberOfDays);
       setTrendingPoliticians(fetchedRatings);
       setFilteredData(fetchedRatings);
-      handleInput(searchText);
     }
 
     fetchRatings();
+    handleInput(searchText);
 
     clearSortingButtons();
   }, [numberOfDays]);
@@ -40,21 +42,21 @@ export default function SearchFlatList({ data, handleOnPress }) {
   useEffect(() => {
     // PK: Fade in
     searchText.length > 0 &&
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-        easing: (value) => Easing.ease(value),
-      }).start();
+    Animated.timing(opacityAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+      easing: (value) => Easing.ease(value),
+    }).start();
 
     // PK: Fade out
     searchText.length === 0 &&
-      Animated.timing(opacityAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-        easing: (value) => Easing.ease(value),
-      }).start();
+    Animated.timing(opacityAnim, {
+      toValue: 0,
+      duration: 250,
+      useNativeDriver: true,
+      easing: (value) => Easing.ease(value),
+    }).start();
   }, [searchText]);
 
   useEffect(() => {
@@ -141,11 +143,11 @@ export default function SearchFlatList({ data, handleOnPress }) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
-          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()} />}
+          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()}/>}
           right={
             <TextInput.Icon
               icon="close"
-              style={{ opacity: opacityAnim }}
+              style={{opacity: opacityAnim}}
               onPress={() => {
                 ClearTextInput();
                 // Keyboard.dismiss()
@@ -204,7 +206,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
 
         <Chip
           style={styles.chip}
-          icon={!isGlobalRatingSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+          icon={isGlobalRatingSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
           mode={sorting === "globalRating" ? "flat" : "outlined"}
           onPress={() => {
             let reverseOrder = isGlobalRatingSortingASC;
@@ -224,7 +226,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
           style={styles.list(filteredData)}
           data={filteredData}
           keyExtractor={(item) => item.key}
-          renderItem={({ item }) => (
+          renderItem={({item}) => (
             <Item
               id={item.key}
               nameSurname={item.value}
@@ -243,40 +245,48 @@ export default function SearchFlatList({ data, handleOnPress }) {
       )}
     </View>
   );
-}
 
-function Item({ id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
-  return (
-    <TouchableOpacity
-      key={id}
-      style={styles.politicianItem}
-      onPress={() => {
-        handleOnPress(id);
-      }}
-    >
-      <Image
-        source={
-          picture && picture !== ""
-            ? {
+  function Item({id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending}) {
+    return (
+      <TouchableOpacity
+        key={id}
+        style={styles.politicianItem}
+        onPress={() => {
+          handleOnPress(id);
+        }}
+      >
+        <Image
+          source={
+            picture && picture !== ""
+              ? {
                 uri: `data:image/jpeg;base64,${picture}`,
                 cache: "force-cache",
               }
-            : require("./../../../../assets/noPhoto.png")
-        }
-        style={styles.politicianItemImage}
-      />
-      <View style={styles.politicianInfo}>
-        <Text style={styles.politicianItemText}>
-          {surname} {name}
-        </Text>
-        <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
-        <Text style={styles.politicianScore}>
-          {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+              : require("./../../../../assets/noPhoto.png")
+          }
+          style={styles.politicianItemImage}
+        />
+        <View style={styles.politicianInfo}>
+          {sorting === "name" ? (
+            <Text style={styles.politicianItemText}>
+              {name} {surname}
+            </Text>
+          ) : (
+            <Text style={styles.politicianItemText}>
+              {surname} {name}
+            </Text>
+          )
+          }
+          <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
+          <Text style={styles.politicianScore}>
+            {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
 }
+
 
 const styles = StyleSheet.create({
   searchBox: {
@@ -342,7 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 5,
     elevation: 3,
   },
