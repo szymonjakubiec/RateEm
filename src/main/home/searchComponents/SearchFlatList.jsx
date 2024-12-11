@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image } from "react-native";
-import { TextInput, Button, Chip } from "react-native-paper";
-import { getTrendingPoliticians } from "../../../backend/database/Politicians";
-import { textInputProps } from "../../styles/TextInput";
+import {useEffect, useRef, useState} from "react";
+import {StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image} from "react-native";
+import {TextInput, Button, Chip} from "react-native-paper";
+import {getTrendingPoliticians} from "../../../backend/database/Politicians";
+import {textInputProps} from "../../styles/TextInput";
 
-export default function SearchFlatList({ data, handleOnPress }) {
+
+
+export default function SearchFlatList({data, handleOnPress}) {
   // data - wszyscy politycy
   const [filteredData, setFilteredData] = useState(data); // politycy po wyszukaniu
   const [trendingPoliticians, setTrendingPoliticians] = useState([]); // politycy na czasie
@@ -15,7 +17,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
   const [numberOfDays, setNumberOfDays] = useState(1);
   const [numberOfDaysIndex, setnumberOfDaysIndex] = useState(0);
   const [numberOfDaysTable, setnumberOfDaysTable] = useState([1, 7, 30]);
-
+  const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState("surname");
   const [isNameSortingASC, setIsNameSortingASC] = useState(true);
   const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
@@ -26,11 +28,13 @@ export default function SearchFlatList({ data, handleOnPress }) {
 
   useEffect(() => {
     async function fetchRatings() {
+      setIsLoading(true);
       const fetchedRatings = await getTrendingPoliticians(numberOfDays);
       setTrendingPoliticians(fetchedRatings);
       if (isTrending) {
         setFilteredData(fetchedRatings);
       }
+      setIsLoading(false);
     }
 
     fetchRatings();
@@ -42,21 +46,21 @@ export default function SearchFlatList({ data, handleOnPress }) {
   useEffect(() => {
     // PK: Fade in
     searchText.length > 0 &&
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-        easing: (value) => Easing.ease(value),
-      }).start();
+    Animated.timing(opacityAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+      easing: (value) => Easing.ease(value),
+    }).start();
 
     // PK: Fade out
     searchText.length === 0 &&
-      Animated.timing(opacityAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-        easing: (value) => Easing.ease(value),
-      }).start();
+    Animated.timing(opacityAnim, {
+      toValue: 0,
+      duration: 250,
+      useNativeDriver: true,
+      easing: (value) => Easing.ease(value),
+    }).start();
   }, [searchText]);
 
   useEffect(() => {
@@ -143,11 +147,11 @@ export default function SearchFlatList({ data, handleOnPress }) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
-          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()} />}
+          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()}/>}
           right={
             <TextInput.Icon
               icon="close"
-              style={{ opacity: opacityAnim }}
+              style={{opacity: opacityAnim}}
               onPress={() => {
                 ClearTextInput();
                 // Keyboard.dismiss()
@@ -169,7 +173,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
 
         {/* Button do zmiany dni */}
         {isTrending ? (
-          <Chip style={styles.chip} onPress={handleNumberOfDaysClick}>
+          <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}>
             Okres czasu: {numberOfDays}
           </Chip>
         ) : null}
@@ -219,14 +223,14 @@ export default function SearchFlatList({ data, handleOnPress }) {
         </Chip>
       </View>
 
-      {filteredData.length !== 0 ? (
+      {filteredData.length !== 0 && !isLoading ? (
         <FlatList
           keyboardShouldPersistTaps={"handled"}
           persistentScrollbar={true}
           style={styles.list(filteredData)}
           data={filteredData}
           keyExtractor={(item) => item.key}
-          renderItem={({ item }) => (
+          renderItem={({item}) => (
             <Item
               id={item.key}
               nameSurname={item.value}
@@ -246,7 +250,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
     </View>
   );
 
-  function Item({ id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
+  function Item({id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending}) {
     return (
       <TouchableOpacity
         key={id}
@@ -259,9 +263,9 @@ export default function SearchFlatList({ data, handleOnPress }) {
           source={
             picture && picture !== ""
               ? {
-                  uri: `data:image/jpeg;base64,${picture}`,
-                  cache: "force-cache",
-                }
+                uri: `data:image/jpeg;base64,${picture}`,
+                cache: "force-cache",
+              }
               : require("./../../../../assets/noPhoto.png")
           }
           style={styles.politicianItemImage}
@@ -350,7 +354,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 5,
     elevation: 3,
   },
