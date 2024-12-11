@@ -160,7 +160,7 @@ export default function LoggingScreen({navigation}) {
           }}
           onBlur={() => validateEmail(email)}
         />
-        <Text style={styles.wrongInputText(wrongEmailInfo)}>{wrongEmailInfo}</Text>
+        <_ErrorText text={wrongEmailInfo}/>
 
         {/* PK: Password input */}
         <TextInput
@@ -184,7 +184,7 @@ export default function LoggingScreen({navigation}) {
             validatePass(text.trim());
           }}
         />
-        <Text style={styles.wrongInputText(wrongPasswordInfo)}>{wrongPasswordInfo}</Text>
+        <_ErrorText text={wrongPasswordInfo}/>
 
         {/* PK: Login button */}
         <_Button buttonText="Zaloguj" onPress={() => handleLogin()} style={{marginTop: wrongPasswordInfo ? 18 : 40}}/>

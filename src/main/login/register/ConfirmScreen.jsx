@@ -117,7 +117,7 @@ export default function ConfirmScreen({navigation, route}) {
             validateCodeOnChange(text.trim());
           }}
         />
-        <Text style={styles.wrongInputText(wrongCode)}>{wrongCode}</Text>
+        <_ErrorText text={wrongCode}/>
 
         <_Button
           buttonText="Potwierdź"

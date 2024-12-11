@@ -101,7 +101,7 @@ export default function ResetScreen({navigation}) {
               // validatePhoneOut(phone);
             }}
           />
-          <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
+          <_ErrorText text={wrongPhone}/>
         </>
       ) : (
         <>
@@ -127,7 +127,7 @@ export default function ResetScreen({navigation}) {
               // console.log("BLUR");
             }}
           />
-          <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
+          <_ErrorText text={wrongEmail}/>
         </>
       )
       }

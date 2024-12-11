@@ -99,7 +99,7 @@ export default function ChangePassScreen({navigation, route}) {
           // validatePassOut(password);
         }}
       />
-      <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
+      <_ErrorText text={wrongPass}/>
 
       <TextInput
         {...useTextInputProps()}
@@ -127,7 +127,7 @@ export default function ChangePassScreen({navigation, route}) {
           // validatePassRep(repeatPassword.trim());
         }}
       />
-      <Text style={styles.wrongInputText(wrongPassRep)}>{wrongPassRep}</Text>
+      <_ErrorText text={wrongPassRep}/>
 
       <TouchableHighlight
         style={[styles.button, {marginTop: 40}, !validateFieldsOnBlur() && {opacity: 0.5}]}

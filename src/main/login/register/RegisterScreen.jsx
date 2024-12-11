@@ -143,7 +143,7 @@ export default function RegisterScreen({navigation}) {
             validateName(name);
           }}
         />
-        <Text style={styles.wrongInputText(wrongName)}>{wrongName}</Text>
+        <_ErrorText text={wrongName}/>
 
         <TextInput
           {...useTextInputProps()}
@@ -165,7 +165,7 @@ export default function RegisterScreen({navigation}) {
             // console.log("BLUR");
           }}
         />
-        <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
+        <_ErrorText text={wrongEmail}/>
 
 
         <TextInput
@@ -190,7 +190,7 @@ export default function RegisterScreen({navigation}) {
             // validatePhoneOut(phone);
           }}
         />
-        <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
+        <_ErrorText text={wrongPhone}/>
 
 
         <TextInput
@@ -219,7 +219,7 @@ export default function RegisterScreen({navigation}) {
             // validatePassOut(password);
           }}
         />
-        <Text style={styles.wrongInputText(wrongPass)}>{wrongPass}</Text>
+        <_ErrorText text={wrongPass}/>
 
         <TextInput
           {...useTextInputProps()}
@@ -247,7 +247,7 @@ export default function RegisterScreen({navigation}) {
             // validatePassRep(repeatPassword.trim());
           }}
         />
-        <Text style={styles.wrongInputText(wrongPassRep)}>{wrongPassRep}</Text>
+        <_ErrorText text={wrongPassRep}/>
 
         {/* PK: Register button */}
         <_Button
