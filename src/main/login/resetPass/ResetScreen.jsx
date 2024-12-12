@@ -1,10 +1,12 @@
 import {useState} from "react";
-import {StyleSheet, Text, TouchableHighlight, SafeAreaView} from "react-native";
+import {StyleSheet, Text, TouchableHighlight} from "react-native";
 import isEmail from "validator/lib/isEmail";
 import {TextInput} from "react-native-paper";
 import {getAllUsers} from "../../../backend/database/Users";
-import {textInputProps} from "../../styles/TextInput";
+import {useTextInputProps} from "../../styles/TextInput";
 import _Container from "../../styles/Container";
+import _ErrorText from "../../styles/ErrorText";
+import _Button from "../../styles/Button";
 
 
 
@@ -51,7 +53,7 @@ export default function ResetScreen({navigation}) {
 
   const validateFieldOnBlur = () => {
     if (verifyType === "sms") return !(wrongPhone || !phone);
-    else return !(wrongEmail || !email || wrongPhone || !phone);
+    else return !(wrongEmail || !email);
   };
 
   const validatePhone = (phone) => {
@@ -79,51 +81,31 @@ export default function ResetScreen({navigation}) {
       {verifyType === "sms" ? (
         <>
           {/* PK: SMS */}
-          <Text style={styles.title}>Podaj numer telefonu do zresetowania hasła:</Text>
-          <SafeAreaView style={{flexDirection: "row", justifyContent: "center"}}>
-            <TextInput
-              {...textInputProps}
-              label="numer telefonu"
-              outlineColor={wrongPhone ? "#e41c1c" : "black"}
-              activeOutlineColor={wrongPhone ? "#e41c1c" : "black"}
-              maxLength={12}
-              style={[textInputProps.style, {paddingLeft: 31}]}
-              // left={ <TextInput.Affix textStyle={ {fontSize: 16, marginLeft: 4} } text="+48 |"/> }
-              autoComplete="tel"
-              keyboardType="phone-pad"
-              value={phone}
-              onChangeText={(text) => {
-                text.slice(0, 3) === "+48" && (text = text.slice(3));
-                text = text.trim().replace(/[^0-9]/g, "");
-                if (text.length > 9) return;
-                setPhone(text.trim());
-                validatePhone(text.trim());
-                validateFieldOnBlur();
-              }}
-              onBlur={() => {
-                // validatePhoneOut(phone);
-              }}
-            />
-            <Text style={{
-              alignSelf: "center",
-              left: 9,
-              fontSize: 16,
-              fontWeight: 300,
-              position: "absolute",
-              paddingTop: 8
-            }}>+48 | </Text>
-          </SafeAreaView>
-          <Text style={styles.wrongInputText(wrongPhone)}>{wrongPhone}</Text>
+          <TextInput
+            {...useTextInputProps(wrongPhone)}
+            label="numer telefonu"
+            maxLength={12}
+            left={<TextInput.Affix text="+48 |" textStyle={{marginRight: -10}}/>}
+            autoComplete="tel"
+            keyboardType="phone-pad"
+            value={phone}
+            onChangeText={(text) => {
+              text.slice(0, 3) === "+48" && (text = text.slice(3));
+              text = text.replace(/[^0-9]/g, "");
+              if (text.length > 9) return;
+              setPhone(text);
+              validatePhone(text);
+            }}
+          />
+          <_ErrorText text={wrongPhone}/>
         </>
       ) : (
         <>
           {/* PK: E-mail */}
           <Text style={styles.title}>Podaj e-mail do zresetowania hasła:</Text>
           <TextInput
-            {...textInputProps}
+            {...useTextInputProps(wrongEmail)}
             label="e-mail"
-            outlineColor={wrongEmail ? "#e41c1c" : "black"}
-            activeOutlineColor={wrongEmail ? "#e41c1c" : "black"}
             autoComplete="email"
             textContentType="emailAddress"
             autoCapitalize="none"
@@ -131,26 +113,20 @@ export default function ResetScreen({navigation}) {
             value={email}
             onChangeText={(text) => {
               text = text.replace(/[^a-zA-Z0-9._%+@-]/g, '');
-              setEmail(text.trim());
-              validateEmail(text.trim());
-              validateFieldOnBlur();
-            }}
-            onBlur={() => {
-              // console.log("BLUR");
+              setEmail(text);
+              validateEmail(text);
             }}
           />
-          <Text style={styles.wrongInputText(wrongEmail)}>{wrongEmail}</Text>
+          <_ErrorText text={wrongEmail}/>
         </>
       )
       }
 
-
-      <TouchableHighlight
-        style={[styles.button, {marginTop: 40}, !validateFieldOnBlur() && {opacity: 0.5}]}
-        disabled={!validateFieldOnBlur()}
+      {/* PK: Reset password button */}
+      <_Button
+        buttonText="Zresetuj hasło"
         onPress={() => {
           validateFieldsOnSubmit().then((result) => {
-            console.log(result);
             if (result) {
               navigation.navigate("Confirm", {
                 email,
@@ -160,9 +136,10 @@ export default function ResetScreen({navigation}) {
             }
           });
         }}
-      >
-        <Text style={styles.buttonText}>Zresetuj hasło</Text>
-      </TouchableHighlight>
+        disabled={!validateFieldOnBlur()}
+        style={{marginTop: 40}}
+      />
+
     </_Container>
   );
 }

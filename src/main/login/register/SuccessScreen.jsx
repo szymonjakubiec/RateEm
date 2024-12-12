@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableHighlight, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import _Container from "../../styles/Container";
 import _Button from "../../styles/Button";
 

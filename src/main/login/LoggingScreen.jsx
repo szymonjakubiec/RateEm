@@ -1,22 +1,15 @@
 import {StatusBar} from "expo-status-bar";
-import {
-  Animated,
-  Keyboard, KeyboardAvoidingView,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import isEmail from "validator/lib/isEmail";
 import {useEffect, useRef, useState} from "react";
 import {getAllUsers} from "../../backend/database/Users";
-import {TextInput, useTheme} from "react-native-paper";
-import {textInputProps} from "../styles/TextInput";
+import {TextInput} from "react-native-paper";
+import {useTextInputProps} from "../styles/TextInput";
 import {useIsFocused} from "@react-navigation/native";
 import _Container from "../styles/Container";
 import _Button from "../styles/Button";
 import _AnimViewKeyboard from "../styles/AnimViewKeyboard";
+import _ErrorText from "../styles/ErrorText";
 
 
 
@@ -31,7 +24,10 @@ export default function LoggingScreen({navigation}) {
       // PK: So every time screen is focused it updates
       if (!isFocused) return;
 
-      await setCredentials();
+      setAllUsers(await getAllUsers());
+
+      // PK: Load e-mail after logging out (so that if e-mail was changed it will show here)
+      global.userEmail && setEmail(global.userEmail);
 
       // connection test
       const rootUser = (await getAllUsers())[0];
@@ -43,13 +39,13 @@ export default function LoggingScreen({navigation}) {
     })();
   }, [isFocused]);
 
-  const [userData, setUserData] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passHidden, setPassHidden] = useState(true);
 
-  // const [userId, setUserId] = useState(-1);
   const userIdRef = useRef();
+
   /**
    * Feedback values that appear when the user writes incorrect input
    */
@@ -81,11 +77,11 @@ export default function LoggingScreen({navigation}) {
   }
 
   /**
-   * Iterates through users in userData checking if email and password are correct.
+   * Iterates through users in allUsers checking if email and password are correct.
    */
   function checkCredentials() {
 
-    for (const user of userData) {
+    for (const user of allUsers) {
 
       // Current user's email is not the same as given email
       if (user.email !== email) {
@@ -116,11 +112,13 @@ export default function LoggingScreen({navigation}) {
    * Navigates to the main screen.
    */
   function navigateToMain() {
-    let userId = userIdRef.current;
+    global.userEmail = email;
+    setEmail('');
+    setWrongEmailInfo('');
+
     navigation.navigate("MainNav", {
-      // screen: "Home", // not required because of initialRouteName in MainNav
-      _title: _title,
-      userId: userId
+      _title,
+      userId: userIdRef.current
     });
   }
 
@@ -133,19 +131,6 @@ export default function LoggingScreen({navigation}) {
     }
   }
 
-  /**
-   * Asynchronously gets userData from getUsers() and sets it which triggers the useEffect hook with handleLogin() function.
-   * @async
-   */
-  async function setCredentials() {
-    const data = await getAllUsers();
-    // console.log(data.map(user => {
-    //   return {email: user.email, password: user.password};
-    // }));
-    setUserData(data);
-  }
-
-
   return (
     <_AnimViewKeyboard>
       <_Container>
@@ -154,49 +139,54 @@ export default function LoggingScreen({navigation}) {
 
         {/* PK: Mail input */}
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps(wrongEmailInfo)}
           label="e-mail"
-          outlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongEmailInfo ? "#e41c1c" : "black"}
           autoComplete="email"
           textContentType="emailAddress"
           autoCapitalize="none"
           value={email}
           onChangeText={(text) => {
             text = text.replace(/[^a-zA-Z0-9._%+@-]/g, "");
-            setEmail(text.trim());
-            validateEmail(text.trim());
+            setEmail(text);
+            validateEmail(text);
           }}
-          onBlur={() => validateEmail(email)}
         />
-        <Text style={styles.wrongInputText(wrongEmailInfo)}>{wrongEmailInfo}</Text>
+        <_ErrorText text={wrongEmailInfo}/>
 
         {/* PK: Password input */}
         <TextInput
-          {...textInputProps}
+          {...useTextInputProps(wrongPasswordInfo)}
           label="hasło"
-          outlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
-          activeOutlineColor={wrongPasswordInfo ? "#e41c1c" : "black"}
           returnKeyType="done"
           autoCapitalize="none"
           autoComplete="current-password"
           textContentType="currentPassword"
           secureTextEntry={passHidden}
-          right={<TextInput.Icon icon={passHidden ? "eye" : "eye-off"} onPress={() => setPassHidden(!passHidden)}/>}
+          right={<TextInput.Icon
+            icon={passHidden ? "eye" : "eye-off"}
+            onPress={() => setPassHidden(!passHidden)}
+            forceTextInputFocus={false}/>}
           value={password}
           onChangeText={(text) => {
-            if (text.includes(" ")) return;
-            setPassword(text.trim());
-            validatePass(text.trim());
+            text = text.replace(/[^a-zA-Z0-9!#$@._-]/g, "");
+            setPassword(text);
+            validatePass(text);
           }}
         />
-        <Text style={styles.wrongInputText(wrongPasswordInfo)}>{wrongPasswordInfo}</Text>
+        <_ErrorText text={wrongPasswordInfo}/>
 
         {/* PK: Login button */}
-        <_Button buttonText="Zaloguj" onPress={() => handleLogin()} style={{marginTop: wrongPasswordInfo ? 18 : 40}}/>
+        <_Button buttonText="Zaloguj" onPress={() => handleLogin()} style={{marginTop: 25}}/>
 
         {/* PK: Password reset button */}
-        <_Button buttonText="Zapomniałeś hasła?" onPress={() => navigation.navigate("ResetNav", {_title})}
+        <_Button buttonText="Zapomniałeś hasła?"
+                 onPress={() => {
+                   setEmail('');
+                   setWrongEmailInfo('');
+                   setPassword('');
+                   setWrongPasswordInfo('');
+                   navigation.navigate("ResetNav", {_title});
+                 }}
                  mode="onlyText" style={{marginTop: 20}}/>
 
         {/* PK: Register button */}
@@ -207,7 +197,13 @@ export default function LoggingScreen({navigation}) {
             Nie masz jeszcze konta?
           </Text>
 
-          <_Button buttonText="Zarejestruj" onPress={() => navigation.navigate("RegisterNav", {_title})}
+          <_Button buttonText="Zarejestruj" onPress={() => {
+            setEmail('');
+            setWrongEmailInfo('');
+            setPassword('');
+            setWrongPasswordInfo('');
+            navigation.navigate("RegisterNav", {_title});
+          }}
                    mode="onlyText" style={{marginLeft: 5}}/>
 
         </View>
@@ -225,33 +221,5 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 16,
     marginBottom: 50,
-  },
-  wrongInputText: (wrongEmail, wrongPass) => ({
-    display: wrongEmail || wrongPass ? "flex" : "none",
-    fontSize: 14,
-    color: "#e41c1c",
-    alignSelf: "flex-start",
-    paddingLeft: 20,
-    marginBottom: 6,
-  }),
-  buttonMain: {
-    backgroundColor: "#000",
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: "70%",
-    borderRadius: 20,
-    elevation: 5,
-  },
-  button: {
-    backgroundColor: "#4a4a4a",
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: "70%",
-    borderRadius: 20,
-  },
-  buttonText: {
-    alignSelf: "center",
-    color: "#fff",
-    fontWeight: "700",
   },
 });

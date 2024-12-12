@@ -1,6 +1,7 @@
 import {BackHandler, StyleSheet, Text, TouchableHighlight} from "react-native";
 import {useEffect} from "react";
 import _Container from "../../styles/Container";
+import _Button from "../../styles/Button";
 
 
 
@@ -18,17 +19,10 @@ export default function ResetSuccessScreen({navigation}) {
       <Text style={styles.title}>Sukces!</Text>
       <Text style={styles.subTitle}>Hasło zostało zmienione.</Text>
 
-      <TouchableHighlight
-        style={styles.button}
-
-        // PK: Goes to logging screen with clearing the navigation stack
-        onPress={() => {
-          navigation.popToTop();
-          navigation.goBack();
-        }}
-      >
-        <Text style={styles.buttonText}>Powrót do menu</Text>
-      </TouchableHighlight>
+      <_Button buttonText="Powrót do menu" onPress={() => {
+        navigation.popToTop();
+        navigation.goBack();
+      }}/>
 
     </_Container>
   );
