@@ -1,7 +1,5 @@
-import { useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../home/HomeScreen";
 import ElectionNavigation from "../election/nav/ElectionNavigation";
 import HomeNavigation from "../home/nav/HomeNavigation";
 import { getAllPoliticians } from "../../backend/database/Politicians.js";
@@ -73,7 +71,7 @@ export default function MainNavigation({ route }) {
             title: "Strona główna",
             headerTitle: _title,
             headerTitleAlign: "center",
-            headerLeft: () => null,
+            headerShown: false,
             gestureEnabled: false, // wyłącza swipe back na IOS
             tabBarIcon: () => <Icon source="home" size={36} />,
             tabBarIconStyle: { top: 1 },
