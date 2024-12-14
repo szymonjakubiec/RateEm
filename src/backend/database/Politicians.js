@@ -5,8 +5,9 @@
  * @function
  * @returns {Promise<Object[]>} Array of politician objects
  */
-const getAllPoliticians = async () => {
-  const url = `${global.SERVER_URL}/all-politicians`;
+const getAllPoliticians = async (order, reverseOrder) => {
+  const reverse = reverseOrder ? "DESC" : "ASC";
+  const url = `${global.SERVER_URL}/all-politicians?order=${order}&reverseOrder=${reverse}`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -26,6 +27,7 @@ const getAllPoliticians = async () => {
         ratingCount: element.rating_count,
       });
     }
+
     return data;
   } catch (error) {
     return null;
@@ -88,8 +90,9 @@ const updatePolitician = async (id, newData = {}) => {
  * @param {number} count - Amount of politicians we want to get
  * @param {number} days - Amount of days back to check
  */
-const getTrendingPoliticians = async (days) => {
-  const url = `${global.SERVER_URL}/trending-politicians?days=${days}`;
+const getTrendingPoliticians = async (days, order, reverseOrder) => {
+  const reverse = reverseOrder ? "DESC" : "ASC";
+  const url = `${global.SERVER_URL}/trending-politicians?days=${days}&order=${order}&reverseOrder=${reverse}`;
   try {
     const response = await fetch(url);
     if (!response.ok) {

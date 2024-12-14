@@ -157,6 +157,8 @@ app.use(express.json());
   // --- select TRENDING POLITICIANS -----------------------------------------------------
   app.get("/api/trending-politicians", async (req, res) => {
     const days = req.query.days || "30";
+    let order = req.query.order || "surname";
+    const reverseOrder = req.query.reverseOrder || "ASC";
 
     let connection;
     try {
@@ -189,7 +191,8 @@ app.use(express.json());
               p.facebook_link, 
               p.twitter_link 
             FROM politicians as p
-            WHERE p.id IN (${politicianIds.join(",")});
+            WHERE p.id IN (${politicianIds.join(",")})
+            ORDER BY ${order} ${reverseOrder};
         `,
           [days]
         );
@@ -528,6 +531,9 @@ app.use(express.json());
 {
   // --- select ---------------------------------------------------------------------------
   app.get("/api/all-politicians", async (req, res) => {
+    let order = req.query.order || "surname";
+    const reverseOrder = req.query.reverseOrder || "ASC";
+
     let connection;
     try {
       connection = await mysql.createConnection(config);
@@ -545,7 +551,8 @@ app.use(express.json());
           p.birth_date, 
           p.facebook_link, 
           p.twitter_link 
-        FROM politicians as p;`
+        FROM politicians as p
+        ORDER BY ${order} ${reverseOrder};`
       );
 
       res.json(rows);

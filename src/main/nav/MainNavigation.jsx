@@ -19,7 +19,7 @@ export default function MainNavigation({ route }) {
    * @async
    */
   async function init() {
-    const data = await getAllPoliticians();
+    const data = await getAllPoliticians("surname", false);
     setNamesData(data);
   }
 

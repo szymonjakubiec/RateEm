@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useContext } from "react";
-import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image } from "react-native";
-import { TextInput, Chip } from "react-native-paper";
+import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { TextInput, Chip, MD2Colors } from "react-native-paper";
 import { getAllPoliticians } from "../../../backend/database/Politicians.js";
 import { GlobalContext } from "../../nav/GlobalContext.jsx";
 import { getTrendingPoliticians } from "../../../backend/database/Politicians";
@@ -8,42 +8,22 @@ import { textInputProps } from "../../styles/TextInput";
 
 export default function SearchFlatList({ data, handleOnPress }) {
   const updateDataTrigger = useContext(GlobalContext).updateDataTrigger; // triggered when user goes back from profile screen
-
   const [initialData, setInitialData] = useState(data); // all politicians
   const [filteredData, setFilteredData] = useState(data); // politicians after search
   const [trendingPoliticians, setTrendingPoliticians] = useState([]); // trending politicians
-
   const [searchText, setSearchText] = useState("");
   const [isTrending, setIsTrending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
   const [numberOfDays, setNumberOfDays] = useState(1);
   const [numberOfDaysIndex, setnumberOfDaysIndex] = useState(0);
   const [numberOfDaysTable, setnumberOfDaysTable] = useState([1, 7, 30]);
-  const [sorting, setSorting] = useState("surname");
-  const [isNameSortingASC, setIsNameSortingASC] = useState(true);
+  const [sortOrder, setsortOrder] = useState("surname");
   const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
+  const [isNameSortingASC, setIsNameSortingASC] = useState(true);
   const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(false);
 
   // PK: Clear button animation
   const opacityAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    async function fetchRatings() {
-      setIsLoading(true);
-      const fetchedRatings = await getTrendingPoliticians(numberOfDays);
-      setTrendingPoliticians(fetchedRatings);
-      if (isTrending) {
-        setFilteredData(fetchedRatings);
-      }
-      setIsLoading(false);
-    }
-
-    fetchRatings();
-    handleInput(searchText);
-
-    clearSortingButtons();
-  }, [numberOfDays]);
 
   useEffect(() => {
     // PK: Fade in
@@ -66,29 +46,28 @@ export default function SearchFlatList({ data, handleOnPress }) {
   }, [searchText]);
 
   /**
-   * Transition between 'wzyscy politycy' and 'na czasie'.
-   */
-  useEffect(() => {
-    {
-      isTrending ? setFilteredData(trendingPoliticians) : setFilteredData(initialData);
-    }
-    handleInput(searchText);
-
-    clearSortingButtons();
-  }, [isTrending]);
-
-  /**
-   * Sets new data.
+   * Sets new data. Trigtered after going back from politicians profile.
    */
   useEffect(() => {
     async function getPoliticiansData() {
-      const data = await getAllPoliticians();
+      setIsLoading(true);
+      let reverseOrder = "surname";
+      if (sortOrder === "surname") reverseOrder = isSurnameSortingASC;
+      else if (sortOrder === "name") reverseOrder = isNameSortingASC;
+      else if (sortOrder === "global_rating") reverseOrder = isGlobalRatingSortingASC;
+
+      const data = isTrending
+        ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
+        : await getAllPoliticians(sortOrder, !reverseOrder);
+
       setInitialData(data);
       setFilteredData(data);
+      setIsLoading(false);
     }
 
+    ClearTextInput();
     getPoliticiansData();
-  }, [updateDataTrigger]);
+  }, [updateDataTrigger, sortOrder, isSurnameSortingASC, isNameSortingASC, isGlobalRatingSortingASC, isTrending, numberOfDays]);
 
   /**
    * Filters through the array of politician names, by obtaining indexes of each occurrence of " " and "-" into array of ints.
@@ -114,7 +93,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
       setFilteredData([]);
     }
 
-    clearSortingButtons();
+    // clearSortingButtons();
   }
 
   /**
@@ -129,35 +108,13 @@ export default function SearchFlatList({ data, handleOnPress }) {
   };
 
   /**
-   * Sorts datas by chosen parameter.
-   */
-  const handleSort = (key, isAsc) => {
-    const sortedData = [...filteredData].sort((a, b) => {
-      const comparison = a[key].toLocaleString().localeCompare(b[key].toLocaleString(), "pl");
-      return isAsc ? comparison : -comparison;
-    });
-
-    setFilteredData(sortedData); // Update state with the sorted array
-  };
-
-  /**
-   * Sets sorting buttons to default values.
-   */
-  const clearSortingButtons = () => {
-    setSorting("surname");
-    setIsNameSortingASC(true);
-    setIsSurnameSortingASC(true);
-    setIsGlobalRatingSortingASC(false);
-  };
-
-  /**
    * Clears the text in input box and filteredData.
    */
   function ClearTextInput() {
     setSearchText("");
     if (isTrending) setFilteredData(trendingPoliticians);
     else setFilteredData(initialData);
-    clearSortingButtons();
+    // clearSortingButtons();
   }
 
   return (
@@ -193,7 +150,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
 
       <View style={styles.chipsContainer}>
         {/* wszyscy politycy / politycy na czasie */}
-        <Chip style={styles.chip} icon="account" onPress={() => setIsTrending(!isTrending)}>
+        <Chip style={styles.chip} icon="account" disabled={isLoading} onPress={() => setIsTrending(!isTrending)}>
           {isTrending ? "Na Czasie" : "Wszyscy politycy"}
         </Chip>
 
@@ -208,13 +165,13 @@ export default function SearchFlatList({ data, handleOnPress }) {
       <View style={styles.chipsContainer}>
         <Chip
           style={styles.chip}
+          disabled={isLoading}
           icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
-          mode={sorting === "surname" ? "flat" : "outlined"}
+          mode={sortOrder === "surname" ? "flat" : "outlined"}
           onPress={() => {
-            let reverseOrder = isSurnameSortingASC;
-            sorting === "surname" ? (reverseOrder = !isSurnameSortingASC) : null;
-            sorting === "surname" ? setIsSurnameSortingASC(reverseOrder) : setSorting("surname");
-            handleSort("surname", reverseOrder);
+            let reverseOrder = sortOrder == "surname" ? !isSurnameSortingASC : isSurnameSortingASC;
+            setIsSurnameSortingASC(reverseOrder);
+            setsortOrder("surname");
           }}
         >
           Nazwisko
@@ -222,13 +179,13 @@ export default function SearchFlatList({ data, handleOnPress }) {
 
         <Chip
           style={styles.chip}
+          disabled={isLoading}
           icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
-          mode={sorting === "name" ? "flat" : "outlined"}
+          mode={sortOrder === "name" ? "flat" : "outlined"}
           onPress={() => {
-            let reverseOrder = isNameSortingASC;
-            sorting === "name" ? (reverseOrder = !isNameSortingASC) : null;
-            sorting === "name" ? setIsNameSortingASC(reverseOrder) : setSorting("name");
-            handleSort("name", reverseOrder);
+            let reverseOrder = sortOrder == "name" ? !isNameSortingASC : isNameSortingASC;
+            setIsNameSortingASC(reverseOrder);
+            setsortOrder("name");
           }}
         >
           Imię
@@ -236,20 +193,25 @@ export default function SearchFlatList({ data, handleOnPress }) {
 
         <Chip
           style={styles.chip}
+          disabled={isLoading}
           icon={isGlobalRatingSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
-          mode={sorting === "globalRating" ? "flat" : "outlined"}
+          mode={sortOrder === "global_rating" ? "flat" : "outlined"}
           onPress={() => {
-            let reverseOrder = isGlobalRatingSortingASC;
-            sorting === "globalRating" ? (reverseOrder = !isGlobalRatingSortingASC) : null;
-            sorting === "globalRating" ? setIsGlobalRatingSortingASC(reverseOrder) : setSorting("globalRating");
-            handleSort("globalRating", reverseOrder);
+            let reverseOrder = sortOrder == "global_rating" ? !isGlobalRatingSortingASC : isGlobalRatingSortingASC;
+            setIsGlobalRatingSortingASC(reverseOrder);
+            setsortOrder("global_rating");
           }}
         >
           ocena globalna
         </Chip>
       </View>
 
-      {filteredData.length !== 0 && !isLoading ? (
+      {isLoading ? (
+        <View style={styles.loaderContainer}>
+          <Text style={styles.errorText}>Ładowanie</Text>
+          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800} />
+        </View>
+      ) : filteredData.length !== 0 && !isLoading ? (
         <FlatList
           keyboardShouldPersistTaps={"handled"}
           persistentScrollbar={true}
@@ -298,7 +260,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
           style={styles.politicianItemImage}
         />
         <View style={styles.politicianInfo}>
-          {sorting === "name" ? (
+          {sortOrder === "name" ? (
             <Text style={styles.politicianItemText}>
               {name} {surname}
             </Text>
@@ -401,5 +363,16 @@ const styles = StyleSheet.create({
   },
   politicianInfo: {
     flex: 1,
+  },
+
+  loaderContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  errorText: {
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 20,
   },
 });

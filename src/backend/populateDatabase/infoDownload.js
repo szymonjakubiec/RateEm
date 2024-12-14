@@ -25,9 +25,9 @@ class InfoDownload {
   }
 
   async getData() {
-    // await this.sejmKadencja();
-    // await this.prezydentKadencja();
-    // await this.euKadencja();
+    await this.sejmKadencja();
+    await this.prezydentKadencja();
+    await this.euKadencja();
     await this.sejmPolitycy();
     await this.euPolitycy();
     this.sortPolitycy();
@@ -518,13 +518,14 @@ class InfoDownload {
       await conn.connect();
       return new Promise((resolve, reject) => {
         conn.execute(
-          "INSERT INTO politicians SET names_surname=?, name=?, surname=?, party_short=?, party=?, birth_date=?, picture=?, facebook_link=?, twitter_link=?;",
+          "INSERT INTO politicians SET names_surname=?, name=?, surname=?, party_short=?, party=?, global_rating=?, birth_date=?, picture=?, facebook_link=?, twitter_link=?;",
           [
             polityk.fullName,
             polityk.firstName,
             polityk.lastName,
             polityk.partiaSkrot,
             polityk.partia,
+            0.0,
             polityk.dataUrodzenia,
             polityk.zdjecie,
             polityk.linkFacebook,
@@ -553,12 +554,13 @@ class InfoDownload {
       await conn.connect();
       return new Promise((resolve, reject) => {
         conn.execute(
-          "UPDATE politicians SET name=?, surname=?, party_short=?, party=?, birth_date=?, picture=?, facebook_link=?, twitter_link=? WHERE names_surname=?;",
+          "UPDATE politicians SET name=?, surname=?, party_short=?, party=?, global_rating=?, birth_date=?, picture=?, facebook_link=?, twitter_link=? WHERE names_surname=?;",
           [
             polityk.firstName,
             polityk.lastName,
             polityk.partiaSkrot,
             polityk.partia,
+            0.0,
             polityk.dataUrodzenia,
             polityk.zdjecie,
             polityk.linkFacebook,
