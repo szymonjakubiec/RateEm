@@ -215,7 +215,13 @@ function tabBarAnim(navigation) {
   navigation.getParent().setOptions({tabBarStyle: {height: 0}});
   return () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-    navigation.getParent().setOptions({tabBarStyle: {height: 65, borderTopLeftRadius: 10, borderTopRightRadius: 10}});
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        height: "5.5%",
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
+      }
+    });
   };
 }
 

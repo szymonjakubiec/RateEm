@@ -1,24 +1,32 @@
-import { useContext, useEffect, useState } from "react";
-import { StyleSheet, View, ActivityIndicator, BackHandler, Text } from "react-native";
-import { MD2Colors } from "react-native-paper";
+import {useContext, useEffect, useState} from "react";
+import {StyleSheet, View, ActivityIndicator, BackHandler, Text} from "react-native";
+import {MD2Colors} from "react-native-paper";
 import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
-import { GlobalContext } from "../nav/GlobalContext.jsx";
+import {GlobalContext} from "../nav/GlobalContext.jsx";
 import _Container from "../styles/Container";
 
-export default function HomeScreen({ navigation }) {
+
+
+export default function HomeScreen({navigation}) {
   const politicianNameData = useContext(GlobalContext).namesData;
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
+
     const backAction = () => {
-      if (navigation.getState().index === 2) {
+
+      // When on Home Screen and not on Profile Screen
+      if (navigation.getState().routes.length === 1) {
+
+        // todo: ZAPYTANIE CZY NA PEWNO WYJŚĆ
         BackHandler.exitApp();
         return true;
       }
-      navigation.goBack();
 
+      navigation.goBack();
       return true;
+
     };
     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
     return () => backHandler.remove();
@@ -45,13 +53,13 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   return (
-    <_Container style={{ justifyContent: "flex-start", padding: 0 }}>
+    <_Container style={{justifyContent: "flex-start", padding: 0}}>
       {politicianNameData ? (
-        <SearchFlatList data={politicianNameData} handleOnPress={handlePress} />
+        <SearchFlatList data={politicianNameData} handleOnPress={handlePress}/>
       ) : (
         <View style={styles.loaderContainer}>
           <Text style={styles.errorText}>Ładowanie</Text>
-          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800} />
+          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800}/>
         </View>
       )}
     </_Container>
