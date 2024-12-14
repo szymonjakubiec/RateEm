@@ -1,12 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Linking, Dimensions, SafeAreaView, TextInput, FlatList, Image, LayoutAnimation, BackHandler,
-} from "react-native";
+import {BackHandler, Dimensions, ScrollView, StyleSheet, Text, View,} from "react-native";
 import {tabBarAnim} from "../../backend/CommonMethods";
 import {StatusBar} from "expo-status-bar";
 import _Container from "../styles/Container";
@@ -109,7 +102,6 @@ export default function GuideScreen({navigation}) {
 
           {/* List of functionalities */}
           <View style={[styles.guideList, {alignSelf: 'center', paddingHorizontal: 15}]}>
-            <Text style={styles.guideItem}>• wyszukiwarka</Text>
             <Text style={styles.guideItem}>• wybory</Text>
             <Text style={styles.guideItem}>• ekran główny</Text>
             <Text style={styles.guideItem}>• więcej</Text>
@@ -131,36 +123,51 @@ export default function GuideScreen({navigation}) {
             </Text>
           </View>
         </View>
-        {/* Search screen guide*/}
-        <View style={{width, height, padding: 16, backgroundColor: '#f9f9f9'}}>
+
+        <View style={{width, height}}>
+          <Text style={styles.sectionTitle}>🏛️ Strona Główna</Text>
+          <Text style={styles.sectionDescription}>
+            Na ekranie głównym możesz przeglądać polityków, sortować ich według różnych kryteriów, wyszukiwać konkretną
+            osobę oraz sprawdzić, kto jest na czasie.
+            {"\n"}
+            Znajdziesz tutaj również ich globalne oceny oraz możliwość przejścia do szczegółowych profili, aby poznać
+            więcej informacji, takich jak przynależność partyjna.
+          </Text>
+
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>🔍 Wyszukiwarka Polityków</Text>
-            <Text style={{...styles.sectionDescription, marginBottom: 30}}>
-              Znajdź polityków, przeglądaj ich profile i dowiedz się podstawowych informacji, takich jak przynależność
-              partyjna i globalna ocena.
+            <Text style={styles.subsectionTitle}>🔥 Na Czasie</Text>
+            <Text style={styles.subsectionDescription}>
+              Sprawdź, którzy politycy są obecnie najczęściej oceniani przez naszych użytkowników. Możesz szybko
+              przejrzeć ich oceny lub zobaczyć szczegóły, klikając na ich profil.
             </Text>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>⭐ Ocena Polityków</Text>
-            <Text style={{...styles.sectionDescription, marginBottom: 30}}>
+            <Text style={styles.subsectionTitle}>🔍 Wyszukiwarka Polityków</Text>
+            <Text style={{...styles.subsectionDescription, marginBottom: 15}}>
+              Znajdź konkretnego polityka, korzystając z wyszukiwarki. Przeglądaj profile polityków, aby poznać ich
+              szczegóły, takie jak przynależność partyjna i średnia ocena.
+            </Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.subsectionTitle}>⭐ Ocena Polityków</Text>
+            <Text style={{...styles.subsectionDescription, marginBottom: 15}}>
               Oceń polityków, wyrażając swoje emocje na temat ich działań. Wybierz od 1 do 5 gwiazdek i dodaj komentarz,
               jeśli chcesz.
             </Text>
-            <View style={styles.ratingContainer}>
-            </View>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>📋 Twoje Oceny</Text>
-            <Text style={styles.sectionDescription}>
+            <Text style={styles.subsectionTitle}>📋 Twoje Oceny</Text>
+            <Text style={styles.subsectionDescription}>
               Przeglądaj oceny, które wystawiłeś wcześniej. Śledź, jak zmieniały się Twoje opinie w czasie.
             </Text>
           </View>
         </View>
 
         {/* Election screen guide*/}
-        <ScrollView style={{width, height}}>
+        <View style={{width, height}}>
           <Text style={styles.sectionTitle}>📄 Wyborcze ABC</Text>
           <Text style={styles.sectionDescription}>
             Kompleksowy przewodnik po wyborach. Znajdziesz tu wyjaśnienia dotyczące różnych typów wyborów, informacji o
@@ -197,51 +204,8 @@ export default function GuideScreen({navigation}) {
               metody d'Hondta.
             </Text>
           </View>
-        </ScrollView>
-
-        {/* Trending Screen guide*/}
-        <View style={{width, height}}>
-          <Text style={styles.sectionTitle}>🔥 Na Czasie</Text>
-          <Text style={styles.sectionDescription}>
-            Na ekranie "Na czasie" znajdziesz polityków, którzy w ostatnim czasie byli najczęściej oceniani przez
-            naszych użytkowników.
-          </Text>
-          <Text style={styles.sectionDescription}>
-            Możesz sprawdzić ich globalną ocenę oraz kliknąć, aby zobaczyć szczegóły na ich profilu.
-          </Text>
-
-          <View style={styles.panel}>
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} nestedScrollEnabled={true}
-                        snapToInterval={width}
-                        snapToAlignment="center"
-                        bounces={false}
-                        pagingEnabled={true}
-                        overScrollMode="never"
-                        onScroll={setPoliticiansSliderPage}
-                        decelerationRate="fast">
-              {politicians.map((item, index) => (
-                <View key={index} style={[styles.politicianPanel, {alignItems: 'center'}]}>
-                  <Image source={images[item.name]} style={styles.politicianImage}/>
-                  <Text style={styles.name}>{item.name}</Text>
-                  <Text style={styles.rating}>
-                    Ocena: {item.global_rating ? item.global_rating.toFixed(2) : '—'}
-                  </Text>
-                </View>
-              ))}
-            </ScrollView>
-            <View style={[styles.paginationWrapper, {position: 'relative', marginTop: '7%'}]}>
-              {Array.from(Array(2).keys()).map((key, index) => (
-                <View
-                  style={[
-                    styles.paginationDots,
-                    {opacity: politicianSliderState.currentPage === index ? 1 : 0.2},
-                  ]}
-                  key={index}
-                />
-              ))}
-            </View>
-          </View>
         </View>
+
 
         {/* Extras screen guide*/}
         <View style={{width, height}}>
@@ -261,7 +225,7 @@ export default function GuideScreen({navigation}) {
 
       {/* Pagination dots*/}
       <View style={styles.paginationWrapper}>
-        {Array.from(Array(5).keys()).map((key, index) => (
+        {Array.from(Array(4).keys()).map((key, index) => (
           <View
             style={[
               styles.paginationDots,
