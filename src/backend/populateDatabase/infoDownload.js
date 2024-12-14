@@ -25,9 +25,9 @@ class InfoDownload {
   }
 
   async getData() {
-    await this.sejmKadencja();
-    await this.prezydentKadencja();
-    await this.euKadencja();
+    // await this.sejmKadencja();
+    // await this.prezydentKadencja();
+    // await this.euKadencja();
     await this.sejmPolitycy();
     await this.euPolitycy();
     this.sortPolitycy();
@@ -258,71 +258,72 @@ class InfoDownload {
             var euKadencjaPolitycy = await response.json();
 
             for (const osoba of euKadencjaPolitycy.data) {
-              // przed dodaniem do listy waliduje czy taka osoba już w niej nie jest
-              if (!this.politycy.some((e) => e.fullName.toLowerCase() == osoba.givenName.toLowerCase() + " " + osoba.familyName.toLowerCase())) {
-                // pobiera szczegółowe info o eu parlamentarzystach
-                const url = `https://data.europarl.europa.eu/api/v2/meps/${osoba.identifier}?format=application%2Fld%2Bjson`;
-                const response = await fetch(url);
-                if (!response.ok) {
-                } else {
-                  var politykSzczegoly = await response.json();
+              // pobiera szczegółowe info o eu parlamentarzystach
+              const url = `https://data.europarl.europa.eu/api/v2/meps/${osoba.identifier}?format=application%2Fld%2Bjson`;
+              const response = await fetch(url);
+              if (!response.ok) {
+              } else {
+                var politykSzczegoly = (await response.json()).data[0];
 
-                  var osobaTemp = {};
-                  osobaTemp.fullName = osoba.givenName + " " + osoba.familyName;
-                  osobaTemp.firstName = osoba.givenName;
-                  osobaTemp.lastName = osoba.familyName;
-                  osobaTemp.partiaSkrot = "";
-                  osobaTemp.partia = "";
-                  osobaTemp.dataUrodzenia = politykSzczegoly.data[0].bday;
-
-                  try {
-                    const photoResponse = await axios.get(politykSzczegoly.data[0].img, {
-                      responseType: "arraybuffer",
-                    });
-                    const base64Photo = Buffer.from(photoResponse.data, "binary").toString("base64");
-                    osobaTemp.zdjecie = base64Photo;
-                  } catch (error) {
-                    osobaTemp.zdjecie = "";
-                  }
-
-                  if (politykSzczegoly.data[0].hasGender.includes("FEMALE")) {
-                    osobaTemp.gender = "female";
-                  } else if (politykSzczegoly.data[0].hasGender.includes("MALE")) {
-                    osobaTemp.gender = "male";
-                  } else {
-                    osobaTemp.gender = "pokemon";
-                  }
-
-                  for (const membership of politykSzczegoly.data[0].hasMembership) {
-                    if (membership.membershipClassification == "def/ep-entities/NATIONAL_CHAMBER") {
-                      let clubInfo = await this.getEuClubName(membership.organization, osobaTemp.gender);
-                      if (clubInfo) {
-                        osobaTemp.partiaSkrot = clubInfo.partyShort;
-                        osobaTemp.partia = clubInfo.party;
+                try {
+                  // przed dodaniem do listy waliduje czy taka osoba już w niej nie jest
+                  if (this.isPoliticianInData(politykSzczegoly)) {
+                    var osobaTemp = {};
+                    osobaTemp.fullName = osoba.givenName + " " + osoba.familyName;
+                    osobaTemp.firstName = osoba.givenName;
+                    osobaTemp.lastName = osoba.familyName;
+                    osobaTemp.partiaSkrot = "";
+                    osobaTemp.partia = "";
+                    osobaTemp.dataUrodzenia = politykSzczegoly.bday;
+                    try {
+                      const photoResponse = await axios.get(politykSzczegoly.img, {
+                        responseType: "arraybuffer",
+                      });
+                      const base64Photo = Buffer.from(photoResponse.data, "binary").toString("base64");
+                      osobaTemp.zdjecie = base64Photo;
+                    } catch (error) {
+                      osobaTemp.zdjecie = "";
+                    }
+                    if (politykSzczegoly.hasGender.includes("FEMALE")) {
+                      osobaTemp.gender = "female";
+                    } else if (politykSzczegoly.hasGender.includes("MALE")) {
+                      osobaTemp.gender = "male";
+                    } else {
+                      osobaTemp.gender = "pokemon";
+                    }
+                    for (const membership of politykSzczegoly.hasMembership) {
+                      if (membership.membershipClassification == "def/ep-entities/NATIONAL_CHAMBER") {
+                        let clubInfo = await this.getEuClubName(membership.organization, osobaTemp.gender);
+                        if (clubInfo) {
+                          osobaTemp.partiaSkrot = clubInfo.partyShort;
+                          osobaTemp.partia = clubInfo.party;
+                        }
                       }
                     }
-                  }
-
-                  if (politykSzczegoly.data[0].account !== undefined) {
-                    for (const link in politykSzczegoly.data[0].account) {
-                      if (politykSzczegoly.data[0].account[link].id.includes("facebook")) {
-                        osobaTemp.linkFacebook = politykSzczegoly.data[0].account[link].id;
-                      } else {
-                        osobaTemp.linkFacebook = "";
+                    if (politykSzczegoly.account !== undefined) {
+                      for (const link in politykSzczegoly.account) {
+                        if (politykSzczegoly.account[link].id.includes("facebook")) {
+                          osobaTemp.linkFacebook = politykSzczegoly.account[link].id;
+                        } else {
+                          osobaTemp.linkFacebook = "";
+                        }
+                        if (politykSzczegoly.account[link].id.includes("twitter")) {
+                          osobaTemp.linkTweeter = politykSzczegoly.account[link].id;
+                        } else {
+                          osobaTemp.linkTweeter = "";
+                        }
                       }
-                      if (politykSzczegoly.data[0].account[link].id.includes("twitter")) {
-                        osobaTemp.linkTweeter = politykSzczegoly.data[0].account[link].id;
-                      } else {
-                        osobaTemp.linkTweeter = "";
-                      }
+                    } else {
+                      osobaTemp.linkFacebook = "";
+                      osobaTemp.linkTweeter = "";
                     }
-                  } else {
-                    osobaTemp.linkFacebook = "";
-                    osobaTemp.linkTweeter = "";
+
+                    this.politycy.push(osobaTemp);
+                    // console.log(this.politycy.length);
                   }
+                } catch (error) {
+                  console.log("error");
                 }
-
-                this.politycy.push(osobaTemp);
               }
             }
           }
@@ -331,6 +332,27 @@ class InfoDownload {
     } catch (error) {
       return null;
     }
+  }
+
+  isPoliticianInData(osoba) {
+    const fullName = osoba.familyName.toLowerCase();
+    const bday = osoba.bday;
+
+    // if (fullName == "hoffmann") {4
+    // console.log("\n\n\n", politician.lastName.toLowerCase(), fullName, " || ", politician.dataUrodzenia, bday, "\n\n\n");
+    // }
+
+    for (const politician of this.politycy) {
+      if (politician.lastName.toLowerCase() == fullName && politician.dataUrodzenia == bday) {
+        // console.log(politician.lastName);
+
+        return false;
+      }
+    }
+
+    // console.log(politician.dataUrodzenia, " || ", bDay);
+
+    return true;
   }
 
   // pobiera pełne nazwy klubów parlamentarnych
@@ -455,10 +477,12 @@ class InfoDownload {
       if (resultLength === 0) {
         try {
           await this.insertNewPolitician(polityk);
+          console.log("inserted ", polityk.fullName);
         } catch (err) {}
       } else {
         try {
           await this.updatePolitician(polityk);
+          console.log("updated ", polityk.fullName);
         } catch (err) {}
       }
     }

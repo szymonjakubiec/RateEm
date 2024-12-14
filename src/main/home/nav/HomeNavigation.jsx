@@ -1,30 +1,23 @@
 import { useEffect, useContext } from "react";
 import { BackHandler } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import { GlobalContext } from "../../nav/GlobalContext.jsx";
-import { getAllPoliticians } from "../../../backend/database/Politicians.js";
-import SearchScreen from "../HomeScreen";
+import HomeScreen from "../HomeScreen";
 import ProfileScreen from "../ProfileScreen";
 
 var Stack = createStackNavigator();
 
 export default function HomeNavigation({ route }) {
-  const politicianData = useContext(GlobalContext).namesData;
-  const { setNamesData } = useContext(GlobalContext);
+  const updateDataTrigger = useContext(GlobalContext).updateDataTrigger;
+  const { setUpdateDataTrigger } = useContext(GlobalContext);
 
   const navigation = useNavigation();
   const _title = route.params?._title;
 
-  async function getPoliticiansData() {
-    const data = await getAllPoliticians();
-    setNamesData(data);
-  }
-
-  const goToSearch = () => {
-    getPoliticiansData();
-
+  const goToBackToSearch = async () => {
+    setUpdateDataTrigger(!updateDataTrigger);
     navigation.navigate("Search");
   };
 
@@ -41,7 +34,7 @@ export default function HomeNavigation({ route }) {
     <Stack.Navigator>
       <Stack.Screen
         name="Search"
-        component={SearchScreen}
+        component={HomeScreen}
         options={() => ({
           title: "Rate'Em",
           headerTitle: _title,
@@ -57,7 +50,7 @@ export default function HomeNavigation({ route }) {
           title: "Rate'Em",
           headerTitle: _title,
           headerTitleAlign: "center",
-          headerLeft: () => <HeaderBackButton onPress={() => goToSearch()} title="Info" color="#fff" />,
+          headerLeft: () => <HeaderBackButton onPress={() => goToBackToSearch()} title="Info" color="#fff" />,
         })}
       />
     </Stack.Navigator>

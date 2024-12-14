@@ -7,8 +7,6 @@ import _Container from "../styles/Container";
 
 export default function HomeScreen({ navigation }) {
   const politicianNameData = useContext(GlobalContext).namesData;
-  const userId = useContext(GlobalContext).userId;
-  const { setNamesData } = useContext(GlobalContext);
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
 
   // Pk: Exiting app from HomeScreen

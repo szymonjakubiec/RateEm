@@ -12,6 +12,7 @@ const Tab = createBottomTabNavigator();
 export default function MainNavigation({ route }) {
   const { _title, userId } = route.params;
   const [namesData, setNamesData] = useState();
+  const [updateDataTrigger, setUpdateDataTrigger] = useState(true);
 
   /**
    * Asynchronously gets names of all politicians and passes it to the namesData.
@@ -27,7 +28,7 @@ export default function MainNavigation({ route }) {
   }, []);
 
   return (
-    <GlobalContext.Provider value={{ namesData, setNamesData, userId }}>
+    <GlobalContext.Provider value={{ namesData, setNamesData, userId, updateDataTrigger, setUpdateDataTrigger }}>
       <Tab.Navigator
         backBehavior="initialRoute"
         initialRouteName="Home"

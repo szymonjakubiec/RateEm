@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image } from "react-native";
-import { TextInput, Button, Chip } from "react-native-paper";
+import { TextInput, Chip } from "react-native-paper";
 import { getAllPoliticians } from "../../../backend/database/Politicians.js";
+import { GlobalContext } from "../../nav/GlobalContext.jsx";
 import { getTrendingPoliticians } from "../../../backend/database/Politicians";
 import { textInputProps } from "../../styles/TextInput";
 
 export default function SearchFlatList({ data, handleOnPress }) {
-  const [initialData, setInitialData] = useState(data); // wszyscy politycy
-  const [filteredData, setFilteredData] = useState(data); // politycy po wyszukaniu
-  const [trendingPoliticians, setTrendingPoliticians] = useState([]); // politycy na czasie
+  const updateDataTrigger = useContext(GlobalContext).updateDataTrigger; // triggered when user goes back from profile screen
+
+  const [initialData, setInitialData] = useState(data); // all politicians
+  const [filteredData, setFilteredData] = useState(data); // politicians after search
+  const [trendingPoliticians, setTrendingPoliticians] = useState([]); // trending politicians
 
   const [searchText, setSearchText] = useState("");
   const [isTrending, setIsTrending] = useState(false);
@@ -62,6 +65,9 @@ export default function SearchFlatList({ data, handleOnPress }) {
       }).start();
   }, [searchText]);
 
+  /**
+   * Transition between 'wzyscy politycy' and 'na czasie'.
+   */
   useEffect(() => {
     {
       isTrending ? setFilteredData(trendingPoliticians) : setFilteredData(initialData);
@@ -71,6 +77,9 @@ export default function SearchFlatList({ data, handleOnPress }) {
     clearSortingButtons();
   }, [isTrending]);
 
+  /**
+   * Sets new data.
+   */
   useEffect(() => {
     async function getPoliticiansData() {
       const data = await getAllPoliticians();
@@ -79,7 +88,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
     }
 
     getPoliticiansData();
-  }, [data]);
+  }, [updateDataTrigger]);
 
   /**
    * Filters through the array of politician names, by obtaining indexes of each occurrence of " " and "-" into array of ints.
@@ -108,6 +117,9 @@ export default function SearchFlatList({ data, handleOnPress }) {
     clearSortingButtons();
   }
 
+  /**
+   * Changes number of days from which we take the trending politicians.
+   */
   const handleNumberOfDaysClick = () => {
     setnumberOfDaysIndex((prevIndex) => {
       const newIndex = prevIndex < 2 ? prevIndex + 1 : 0;
@@ -116,16 +128,21 @@ export default function SearchFlatList({ data, handleOnPress }) {
     });
   };
 
+  /**
+   * Sorts datas by chosen parameter.
+   */
   const handleSort = (key, isAsc) => {
     const sortedData = [...filteredData].sort((a, b) => {
       const comparison = a[key].toLocaleString().localeCompare(b[key].toLocaleString(), "pl");
-
       return isAsc ? comparison : -comparison;
     });
 
     setFilteredData(sortedData); // Update state with the sorted array
   };
 
+  /**
+   * Sets sorting buttons to default values.
+   */
   const clearSortingButtons = () => {
     setSorting("surname");
     setIsNameSortingASC(true);
