@@ -11,7 +11,6 @@ const Stack = createStackNavigator();
 
 export default function ExtrasNavigation({route}) {
 
-
   const _title = route.params?._title;
   return (
     <Stack.Navigator>
@@ -19,10 +18,13 @@ export default function ExtrasNavigation({route}) {
         name="Extras"
         component={ExtrasScreen}
         options={() => ({
-          // headerTitle: "Więcej",
-          // headerTitleAlign: "center",
-          headerShown: false,
-          // headerLeft: () => null,
+          title: "Więcej",
+          // headerShown: false,
+          headerTitleStyle: {
+            fontSize: 24
+          },
+          headerTitleAlign: "center",
+          headerLeft: () => null,
           gestureEnabled: false,
         })}
       />

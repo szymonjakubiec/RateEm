@@ -11,10 +11,9 @@ import DhondtExplanationScreen from "../DhondtExplanationScreen.jsx";
 
 
 
-var Stack = createStackNavigator();
+const Stack = createStackNavigator();
 
 export default function ElectionNavigation({route}) {
-  const _title = route.params?._title;
 
   return (
     <Stack.Navigator>
@@ -22,7 +21,11 @@ export default function ElectionNavigation({route}) {
         name="Main"
         component={ElectionScreen}
         options={() => ({
-          headerTitle: "Wybory",
+          title: "Wybory",
+          // headerShown: false,
+          headerTitleStyle: {
+            fontSize: 24
+          },
           headerTitleAlign: "center",
           headerLeft: () => null,
           gestureEnabled: false, // wyłącza swipe back na IOS

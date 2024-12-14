@@ -1,19 +1,27 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { useContext, useEffect, useRef, useState } from "react";
-import { Image } from "react-native";
-import { getOwnRating, addOwnRating, updateOwnRating, deleteOwnRating, getAllPoliticianOwnRatings } from "../../backend/database/OwnRatings";
-import { getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating } from "../../backend/database/Ratings";
-import { getPolitician, updatePolitician } from "../../backend/database/Politicians";
+import {ScrollView, StyleSheet, Text, View} from "react-native";
+import {useContext, useEffect, useRef, useState} from "react";
+import {Image} from "react-native";
+import {
+  getOwnRating,
+  addOwnRating,
+  updateOwnRating,
+  deleteOwnRating,
+  getAllPoliticianOwnRatings
+} from "../../backend/database/OwnRatings";
+import {getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating} from "../../backend/database/Ratings";
+import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
 import OpinionsTile from "../home/opinionsTileComponents/OpinionsTile";
-import { useTheme } from "react-native-paper";
-import { GlobalContext } from "../nav/GlobalContext";
-import { OpinionsTileContext } from "../home/nav/OpinionsTileContext";
+import {useTheme} from "react-native-paper";
+import {GlobalContext} from "../nav/GlobalContext";
+import {OpinionsTileContext} from "../home/nav/OpinionsTileContext";
 import _Container from "../styles/Container";
-import { tabBarAnim } from "../../backend/CommonMethods";
+import {ownGoBack, tabBarAnim} from "../../backend/CommonMethods";
 
-export default function ProfileScreen({ navigation, route }) {
-  const { selectedPoliticianId } = route.params;
-  const { userId } = useContext(GlobalContext);
+
+
+export default function ProfileScreen({navigation, route}) {
+  const {selectedPoliticianId} = route.params;
+  const {userId} = useContext(GlobalContext);
 
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
@@ -36,10 +44,10 @@ export default function ProfileScreen({ navigation, route }) {
   const [newDescription, setNewDescription] = useState("");
 
   /**
-   * Variable preventing using useEffect from ownRating right after it is initialized. 
+   * Variable preventing using useEffect from ownRating right after it is initialized.
    */
   const useEffectFirstTime = useRef(true);
-  
+
 
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
 
@@ -55,8 +63,8 @@ export default function ProfileScreen({ navigation, route }) {
 
   async function init() {
     loadPoliticianData();
-    if (await loadSingleRatings() === false){
-      countGlobalRating()
+    if (await loadSingleRatings() === false) {
+      countGlobalRating();
     }
   }
 
@@ -122,7 +130,7 @@ export default function ProfileScreen({ navigation, route }) {
 
     console.log("Srednia ważona wychodzi: " + weightedAverage);
     await updateOwnRating(selectedPoliticianId, userId, weightedAverage);
-    
+
     setOwnRating(weightedAverage);
   }
 
@@ -141,11 +149,11 @@ export default function ProfileScreen({ navigation, route }) {
       numerator += politicianOwnRating.value;
       denominator += 1;
     }
-    
+
     if (denominator > 0) {
       average = Math.round((numerator * 100) / denominator) / 100;
     }
-    
+
     console.log("Średnia globalna wynosi: " + average);
 
     setGlobalRating(average);
@@ -187,7 +195,7 @@ export default function ProfileScreen({ navigation, route }) {
     setNewTitle(newTitle);
     setNewDescription(newDescription);
   }
-  
+
 
   /**
    * Updates specific single rating and runs loadSingleRatings which triggers setOwnRating.
@@ -290,13 +298,12 @@ export default function ProfileScreen({ navigation, route }) {
       countOwnRating();
     }
   }, [singleRatings]);
-  
+
 
   useEffect(() => {
     if (useEffectFirstTime.current === false) {
       countGlobalRating();
-    }
-    else {
+    } else {
       useEffectFirstTime.current = false;
     }
   }, [ownRating]);
@@ -331,14 +338,16 @@ export default function ProfileScreen({ navigation, route }) {
             <View style={styles.ratingRow}>
               <Text style={styles.rating}>Globalna ocena:</Text>
               <View>
-                {globalRating > 0 ? <Text style={styles.rating}>{globalRating.toFixed(2)}</Text> : <Text style={styles.rating}>Brak</Text>}
+                {globalRating > 0 ? <Text style={styles.rating}>{globalRating.toFixed(2)}</Text> :
+                  <Text style={styles.rating}>Brak</Text>}
                 {/* <Image>star</Image> */}
               </View>
             </View>
             <View style={styles.ratingRow}>
               <Text style={styles.rating}>Twoja ocena:</Text>
               <View>
-                {ownRating > 0 ? <Text style={styles.rating}>{ownRating.toFixed(2)}</Text> : <Text style={styles.rating}>Brak</Text>}
+                {ownRating > 0 ? <Text style={styles.rating}>{ownRating.toFixed(2)}</Text> :
+                  <Text style={styles.rating}>Brak</Text>}
                 {/* <Image>star</Image> */}
               </View>
             </View>
@@ -357,7 +366,7 @@ export default function ProfileScreen({ navigation, route }) {
             handleSingleRatingDeletion: handleOtSingleRatingDeletion,
           }}
         >
-          <OpinionsTile ownRating={ownRating} />
+          <OpinionsTile ownRating={ownRating}/>
         </OpinionsTileContext.Provider>
       </_Container>
     </ScrollView>

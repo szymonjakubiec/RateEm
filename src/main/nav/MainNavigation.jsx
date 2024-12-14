@@ -33,7 +33,7 @@ export default function MainNavigation({route}) {
     <GlobalContext.Provider value={{namesData, setNamesData, userId, updateDataTrigger, setUpdateDataTrigger}}>
       <Tab.Navigator
         backBehavior="initialRoute"
-        initialRouteName="Home"
+        initialRouteName="HomeNav"
         activeColor="red"
         screenOptions={{
           tabBarShowLabel: false,
@@ -58,28 +58,25 @@ export default function MainNavigation({route}) {
 
       >
         <Tab.Screen
-          name="Election"
+          name="ElectionNav"
           component={ElectionNavigation}
           options={{
-            title: "Wybory",
             headerShown: false,
-            headerTitleAlign: "center",
+            // title: "Wybory",
+            // headerTitleAlign: "center",
             gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: ({color}) => (
-              // <Icon source="draw" size={36}/>
-              <Icon color={color} source="email-newsletter" size={32}/>
-            ),
+            tabBarIcon: ({color}) => (<Icon color={color} source="email-newsletter" size={32}/>),
             tabBarIconStyle: {top: 4},
           }}
         />
         <Tab.Screen
-          name="Home"
+          name="HomeNav"
           component={HomeNavigation}
+          initialParams={{_title}}
           options={{
-            title: "Strona główna",
-            headerTitle: _title,
-            headerTitleAlign: "center",
             headerShown: false,
+            // title: "Strona główna",
+            // headerTitleAlign: "center",
             gestureEnabled: false, // wyłącza swipe back na IOS
             tabBarIcon: ({color}) => <Icon color={color} source="home" size={36}/>,
             tabBarIconStyle: {top: 1},
@@ -89,10 +86,9 @@ export default function MainNavigation({route}) {
           name="ExtrasNav"
           component={ExtrasNavigation}
           options={{
-            title: "Więcej",
-            headerTitle: _title,
-            headerTitleAlign: "center",
-            headerLeft: () => null,
+            headerShown: false,
+            // title: "Więcej",
+            // headerTitleAlign: "center",
             gestureEnabled: false, // wyłącza swipe back na IOS
             tabBarIcon: ({color}) => <Icon color={color} source="menu" size={36}/>,
             tabBarIconStyle: {top: 2},
