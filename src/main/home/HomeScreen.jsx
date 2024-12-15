@@ -1,6 +1,6 @@
 import {useContext, useEffect, useState} from "react";
-import {StyleSheet, View, ActivityIndicator, BackHandler, Text} from "react-native";
-import {MD2Colors} from "react-native-paper";
+import {ActivityIndicator, BackHandler, StyleSheet, Text, View} from "react-native";
+import {Button, Dialog, MD2Colors, Portal} from "react-native-paper";
 import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
 import {GlobalContext} from "../nav/GlobalContext.jsx";
 import _Container from "../styles/Container";
@@ -10,7 +10,9 @@ import _Container from "../styles/Container";
 export default function HomeScreen({navigation}) {
   const politicianNameData = useContext(GlobalContext).namesData;
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
-
+  const [exitDialog, setExitDialog] = useState(false);
+  const showDialog = () => setExitDialog(true);
+  const hideDialog = () => setExitDialog(false);
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
 
@@ -20,7 +22,9 @@ export default function HomeScreen({navigation}) {
       if (navigation.getState().routes.length === 1) {
 
         // todo: ZAPYTANIE CZY NA PEWNO WYJŚĆ
-        BackHandler.exitApp();
+        // BackHandler.exitApp();
+        showDialog();
+        console.log(exitDialog);
         return true;
       }
 
@@ -53,16 +57,38 @@ export default function HomeScreen({navigation}) {
   }, []);
 
   return (
-    <_Container style={{justifyContent: "flex-start", padding: 0}}>
-      {politicianNameData ? (
-        <SearchFlatList data={politicianNameData} handleOnPress={handlePress}/>
-      ) : (
-        <View style={styles.loaderContainer}>
-          <Text style={styles.errorText}>Ładowanie</Text>
-          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800}/>
-        </View>
-      )}
-    </_Container>
+    <View>
+      {exitDialog ? (
+          <View>
+            <Portal>
+              <Dialog visible={exitDialog} onDismiss={hideDialog}>
+                <Dialog.Title>Uwaga</Dialog.Title>
+                <Dialog.Content>
+                  <Text variant="bodyMedium">Czy na pewno chcesz wyjść z aplikacji?</Text>
+                </Dialog.Content>
+                <Dialog.Actions>
+                  <Button onPress={() => hideDialog()}>Anuluj</Button>
+                  <Button onPress={() => {
+                    hideDialog();
+                    BackHandler.exitApp();
+                  }}>Wyjdź</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+          </View>
+        )
+        : null}
+      <_Container style={{justifyContent: "flex-start", padding: 0}}>
+        {politicianNameData ? (
+          <SearchFlatList data={politicianNameData} handleOnPress={handlePress}/>
+        ) : (
+          <View style={styles.loaderContainer}>
+            <Text style={styles.errorText}>Ładowanie</Text>
+            <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800}/>
+          </View>
+        )}
+      </_Container>
+    </View>
   );
 }
 
