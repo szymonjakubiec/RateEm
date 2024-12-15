@@ -98,17 +98,11 @@ export default function SearchFlatList({ data, handleOnPress }) {
           (ind) => obj.value.toLowerCase().startsWith(input.toLowerCase(), ind) // searches through each of these words
         )
     );
-    if (result) {
-      if (result.length !== 0) {
-        setFilteredData(result);
-      } else {
-        setFilteredData([]);
-      }
+    if (result.length !== 0) {
+      setFilteredData(result);
     } else {
       setFilteredData([]);
     }
-
-    // clearSortingButtons();
   }
 
   /**
@@ -129,7 +123,6 @@ export default function SearchFlatList({ data, handleOnPress }) {
     setSearchText("");
     if (isTrending) setFilteredData(trendingPoliticians);
     else setFilteredData(initialData);
-    // clearSortingButtons();
   }
 
   return (
@@ -173,23 +166,11 @@ export default function SearchFlatList({ data, handleOnPress }) {
       >
         <View style={styles.chipsContainer}>
           {/* wszyscy politycy / politycy na czasie */}
-          <Chip
-            style={styles.chip}
-            icon="account"
-            mode={!isTrending ? "flat" : "outlined"}
-            disabled={isLoading}
-            onPress={() => setIsTrending(!isTrending)}
-          >
+          <Chip style={styles.chip} icon="account" mode={!isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(false)}>
             Wszyscy politycy
           </Chip>
 
-          <Chip
-            style={styles.chip}
-            icon="account"
-            mode={isTrending ? "flat" : "outlined"}
-            disabled={isLoading}
-            onPress={() => setIsTrending(!isTrending)}
-          >
+          <Chip style={styles.chip} icon="account" mode={isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(true)}>
             Na Czasie
           </Chip>
 
@@ -274,7 +255,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
           <Text style={styles.errorText}>Ładowanie</Text>
           <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800} />
         </View>
-      ) : filteredData.length !== 0 && !isLoading ? (
+      ) : filteredData.length !== 0 ? (
         <FlatList
           keyboardShouldPersistTaps={"handled"}
           persistentScrollbar={true}
@@ -362,7 +343,9 @@ const styles = StyleSheet.create({
   filtersScrollView: {
     maxWidth: "90%",
     marginTop: 4,
-    height: 45,
+    minHeight: 40,
+    maxHeight: 40,
+    paddingBottom: 4,
     alignContent: "center",
     flexGrow: 0,
   },
