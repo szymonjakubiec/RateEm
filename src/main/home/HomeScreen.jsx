@@ -57,38 +57,31 @@ export default function HomeScreen({navigation}) {
   }, []);
 
   return (
-    <View>
-      {exitDialog ? (
-          <View>
-            <Portal>
-              <Dialog visible={exitDialog} onDismiss={hideDialog}>
-                <Dialog.Title>Uwaga</Dialog.Title>
-                <Dialog.Content>
-                  <Text variant="bodyMedium">Czy na pewno chcesz wyjść z aplikacji?</Text>
-                </Dialog.Content>
-                <Dialog.Actions>
-                  <Button onPress={() => hideDialog()}>Anuluj</Button>
-                  <Button onPress={() => {
-                    hideDialog();
-                    BackHandler.exitApp();
-                  }}>Wyjdź</Button>
-                </Dialog.Actions>
-              </Dialog>
-            </Portal>
-          </View>
-        )
-        : null}
-      <_Container style={{justifyContent: "flex-start", padding: 0}}>
-        {politicianNameData ? (
-          <SearchFlatList data={politicianNameData} handleOnPress={handlePress}/>
-        ) : (
-          <View style={styles.loaderContainer}>
-            <Text style={styles.errorText}>Ładowanie</Text>
-            <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800}/>
-          </View>
-        )}
-      </_Container>
-    </View>
+    <_Container style={{justifyContent: "flex-start", padding: 0}}>
+      {politicianNameData ? (
+        <SearchFlatList data={politicianNameData} handleOnPress={handlePress}/>
+      ) : (
+        <View style={styles.loaderContainer}>
+          <Text style={styles.errorText}>Ładowanie</Text>
+          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800}/>
+        </View>
+      )}
+      <Portal>
+        <Dialog visible={exitDialog} onDismiss={hideDialog}>
+          <Dialog.Title>Uwaga</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">Czy na pewno chcesz wyjść z aplikacji?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => hideDialog()}>Anuluj</Button>
+            <Button onPress={() => {
+              hideDialog();
+              BackHandler.exitApp();
+            }}>Wyjdź</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </_Container>
   );
 }
 
