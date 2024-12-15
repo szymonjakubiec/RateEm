@@ -80,6 +80,24 @@ export default function SearchFlatList({ data, handleOnPress }) {
     numberOfDays,
   ]);
 
+  async function onRefresh() {
+    setIsLoading(true);
+    let reverseOrder = "surname";
+    if (sortOrder === "surname") reverseOrder = isSurnameSortingASC;
+    else if (sortOrder === "name") reverseOrder = isNameSortingASC;
+    else if (sortOrder === "global_rating") reverseOrder = isGlobalRatingSortingASC;
+    else if (sortOrder === "rating_count") reverseOrder = isRatingCountSortingASC;
+
+    const data = isTrending
+      ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
+      : await getAllPoliticians(sortOrder, !reverseOrder);
+
+    setInitialData(data);
+    setFilteredData(data);
+    ClearTextInput();
+    setIsLoading(false);
+  }
+
   /**
    * Filters through the array of politician names, by obtaining indexes of each occurrence of " " and "-" into array of ints.
    * Then iterates through each starting position checking if any of them matches the input string.
@@ -262,6 +280,8 @@ export default function SearchFlatList({ data, handleOnPress }) {
           style={styles.list(filteredData)}
           data={filteredData}
           extraData={initialData}
+          onRefresh={onRefresh}
+          refreshing={isLoading}
           keyExtractor={(item) => item.key}
           renderItem={({ item }) => (
             <Item
