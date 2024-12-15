@@ -1,7 +1,9 @@
 import {useEffect} from "react";
-import {StyleSheet, Text, View, TouchableHighlight, LayoutAnimation} from "react-native";
+import {StyleSheet, Text, View, TouchableHighlight} from "react-native";
 import _Container from "../styles/Container";
 import {tabBarAnim} from "../../backend/CommonMethods";
+import _Button from "../styles/Button";
+import {TextInput, useTheme} from "react-native-paper";
 
 
 
@@ -14,52 +16,28 @@ export default function ElectionExplanation({navigation}) {
 
   return (
     <_Container>
-      <TouchableHighlight
-        style={styles.electionButton}
-        onPress={() => {
-          navigation.navigate("SejmExplanation");
-        }}
-      >
-        <View style={styles.colorsMeaningDiv}>
-          <View style={styles.circleSejm}/>
-          <Text style={styles.electionButtonText}>wybory do Sejmu</Text>
-        </View>
-      </TouchableHighlight>
 
-      <TouchableHighlight
-        style={styles.electionButton}
-        onPress={() => {
-          navigation.navigate("PrezydentExplanation");
-        }}
-      >
-        <View style={styles.colorsMeaningDiv}>
-          <View style={styles.circlePrezydent}/>
-          <Text style={styles.electionButtonText}>wybory Prezydenta RP</Text>
-        </View>
-      </TouchableHighlight>
+      <_Button text="Wybory do Sejmu" mode="tile"
+               iconLeft={{icon: "circle-slice-8", color: useTheme().colors.sejm}}
+               style={{alignItems: "flex-start"}}
+               onPress={() => navigation.navigate("SejmExplanation")}/>
 
-      <TouchableHighlight
-        style={styles.electionButton}
-        onPress={() => {
-          navigation.navigate("EuExplanation");
-        }}
-      >
-        <View style={styles.colorsMeaningDiv}>
-          <View style={styles.circleEu}/>
-          <Text style={styles.electionButtonText}>wybory do Parlamentu Europejskiego</Text>
-        </View>
-      </TouchableHighlight>
+      <_Button text="Wybory Prezydenta RP" mode="tile"
+               iconLeft={{icon: "circle-slice-8", color: useTheme().colors.prezydent}}
+               style={{alignItems: "flex-start"}}
+               onPress={() => navigation.navigate("PrezydentExplanation")}/>
 
-      <TouchableHighlight
-        style={styles.electionButton}
-        onPress={() => {
-          navigation.navigate("DhondtExplanation");
-        }}
-      >
-        <View style={styles.colorsMeaningDiv}>
-          <Text style={styles.electionButtonTextDhondt}>metoda d'Hondta</Text>
-        </View>
-      </TouchableHighlight>
+      <_Button text="Wybory do Parlamentu Europejskiego" mode="tile"
+               multiline
+               iconLeft={{icon: "circle-slice-8", color: useTheme().colors.parlament}}
+               style={{alignItems: "flex-start"}}
+               onPress={() => navigation.navigate("EuExplanation")}/>
+
+      <_Button text="Metoda d'Hondta" mode="tile"
+               iconLeft={{icon: "circle-slice-8", color: "black"}}
+               style={{alignItems: "flex-start"}}
+               onPress={() => navigation.navigate("DhondtExplanation")}/>
+
     </_Container>
   );
 }

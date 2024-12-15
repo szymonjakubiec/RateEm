@@ -8,11 +8,9 @@ export default function DhondtExplanationScreen({navigation}) {
 
   return (
     <_Container style={{padding: "4%"}}>
-      <View style={styles.titleDiv}>
-        <Text style={styles.title}>metoda d'Hondta</Text>
-      </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.scrollViewDiv}>
+          <Text style={styles.scrollViewTitle}>Opis</Text>
           <Text style={styles.scrollViewText}>
             W wyborach do Sejmu obowiązuje liczenie głosów metodą d'Hondta. Proces ten można podzielić na kilka kroków:
           </Text>
@@ -151,6 +149,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   scrollViewDiv: {
+    marginTop: 10,
     marginBottom: 15,
   },
   scrollViewTitle: {
@@ -176,25 +175,5 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     backgroundColor: "#DCDCDC",
-  },
-
-  titleDiv: {
-    alignSelf: "left",
-    flexDirection: "row",
-    marginBottom: 5,
-  },
-  title: {
-    color: "black",
-    fontSize: 20,
-    fontWeight: "700",
-    marginLeft: 10,
-  },
-  circleSejm: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 10,
-    marginVertical: 7,
-    backgroundColor: "#12cdd4",
   },
 });
