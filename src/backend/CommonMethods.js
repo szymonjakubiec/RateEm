@@ -214,7 +214,7 @@ function tabBarAnim(navigation) {
   LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   navigation.getParent().setOptions({tabBarStyle: {height: 0}});
   return () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     navigation.getParent().setOptions({
       tabBarStyle: {
         height: "5.5%",
