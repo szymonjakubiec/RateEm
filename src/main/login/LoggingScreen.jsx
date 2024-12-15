@@ -176,10 +176,10 @@ export default function LoggingScreen({navigation}) {
         <_ErrorText text={wrongPasswordInfo}/>
 
         {/* PK: Login button */}
-        <_Button buttonText="Zaloguj" onPress={() => handleLogin()} style={{marginTop: 25}}/>
+        <_Button text="Zaloguj" onPress={() => handleLogin()} style={{marginTop: 25}}/>
 
         {/* PK: Password reset button */}
-        <_Button buttonText="Zapomniałeś hasła?"
+        <_Button text="Zapomniałeś hasła?"
                  onPress={() => {
                    setEmail('');
                    setWrongEmailInfo('');
@@ -197,7 +197,7 @@ export default function LoggingScreen({navigation}) {
             Nie masz jeszcze konta?
           </Text>
 
-          <_Button buttonText="Zarejestruj" onPress={() => {
+          <_Button text="Zarejestruj" onPress={() => {
             setEmail('');
             setWrongEmailInfo('');
             setPassword('');

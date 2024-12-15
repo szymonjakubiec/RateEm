@@ -16,7 +16,7 @@ export default function SuccessScreen({navigation, route}) {
       </View>
 
       <_Button
-        buttonText="Wyświetl tutorial"
+        text="Wyświetl tutorial"
         // PK: Goes to logging screen with clearing the navigation stack
         onPress={() => {
           navigation.navigate("MainNav", {

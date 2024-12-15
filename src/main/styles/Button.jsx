@@ -5,7 +5,7 @@ import {useTheme} from "react-native-paper";
 
 /**
  * Creates a button.
- * @param {string} buttonText - text for button.
+ * @param {string} text - text for button.
  * @param {function()} onPress - what happens on press.
  * @param {StyleProp<TextStyle>} [textStyle] - additional text styles.
  * @param {'standard'|'onlyText'|'tile'} [mode='standard'] - button's mode.
@@ -15,7 +15,7 @@ import {useTheme} from "react-native-paper";
  * @returns {JSX.Element}
  */
 export default function _Button({
-                                  buttonText,
+                                  text,
                                   onPress,
                                   textStyle,
                                   mode = "standard",
@@ -70,7 +70,7 @@ export default function _Button({
         style={[styles.button, styles.disabled, style]}
         onPress={onPress}
         {...props}>
-        <Text numberOfLines={1} adjustsFontSizeToFit={true} style={[styles.buttonText, textStyle]}> {buttonText} </Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit={true} style={[styles.buttonText, textStyle]}> {text} </Text>
       </TouchableOpacity>
       : mode === "onlyText" ?
         <TouchableOpacity
@@ -79,7 +79,7 @@ export default function _Button({
           style={[styles.disabled, style]}
           onPress={onPress}
           {...props}>
-          <Text style={[styles.buttonText, styles.onlyText, textStyle]}> {buttonText} </Text>
+          <Text style={[styles.buttonText, styles.onlyText, textStyle]}> {text} </Text>
         </TouchableOpacity>
         : <Text style={{color: "red"}}>Invalid button mode!</Text>
   );

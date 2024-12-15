@@ -11,19 +11,19 @@ export default function ElectionScreen({navigation}) {
   return (
     <_Container>
 
-      <_Button buttonText="Wytłumaczenie wyborów"
+      <_Button text="Wytłumaczenie wyborów"
                mode="tile"
                onPress={() => navigation.navigate("ElectionExplanation")}/>
 
-      <_Button buttonText="Mapa okręgów wyborczych"
+      <_Button text="Mapa okręgów wyborczych"
                mode="tile"
                onPress={() => navigation.navigate("ElectoralDistricts")}/>
 
-      <_Button buttonText="Kalendarz wyborczy"
+      <_Button text="Kalendarz wyborczy"
                mode="tile"
                onPress={() => navigation.navigate("Calendar")}/>
 
-      <_Button buttonText="Kalkulator mandatów"
+      <_Button text="Kalkulator mandatów"
                mode="tile"
                onPress={() => navigation.navigate("Calculator")}/>
 
