@@ -34,20 +34,21 @@ export default function MainNavigation({route}) {
       <Tab.Navigator
         backBehavior="initialRoute"
         initialRouteName="HomeNav"
-        activeColor="red"
         screenOptions={{
           tabBarShowLabel: false,
           unmountOnBlur: true,
           tabBarHideOnKeyboard: true,
           tabBarActiveTintColor: theme.colors.primary,
-          // tabBarActiveBackgroundColor: theme.colors.primaryContainer,
-          tabBarActiveBackgroundColor: "#00000016",
+          tabBarActiveBackgroundColor: theme.colors.secondaryContainer,
+          // tabBarActiveBackgroundColor: "#00000010",
           tabBarInactiveTintColor: theme.colors.secondary,
           tabBarInactiveBackgroundColor: theme.colors.background,
           tabBarStyle: {
             height: "5.5%",
             borderTopLeftRadius: 10,
             borderTopRightRadius: 10,
+            position: "absolute",
+            // zIndex: 1,
           },
           tabBarItemStyle: {
             borderRadius: 8,

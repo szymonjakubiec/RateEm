@@ -219,7 +219,8 @@ function tabBarAnim(navigation) {
       tabBarStyle: {
         height: "5.5%",
         borderTopLeftRadius: 10,
-        borderTopRightRadius: 10
+        borderTopRightRadius: 10,
+        position: "absolute",
       }
     });
   };
