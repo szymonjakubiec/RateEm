@@ -5,16 +5,19 @@ import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
 import {getUserAddress, tabBarAnim} from "../../backend/CommonMethods";
 import {getSejmDistrict, getEuDistrict} from "../../backend/database/Districts";
 import _Container from "../styles/Container";
+import {Surface, useTheme} from "react-native-paper";
 
 
 
 export default function ElectoralDistricts({navigation}) {
-  const [addressCurrent, setAddressCurrent] = useState(null);
+  const [addressCurrent, setAddressCurrent] = useState('');
   const [sejmDistrictCurrent, setSejmDistrictCurrent] = useState("");
   const [euDistrictCurrent, setEuDistrictCurrent] = useState("");
-  const [locationMap, setLocationMap] = useState(null);
+  const [locationMap, setLocationMap] = useState();
 
-  const [mapComponent, setMapComponent] = useState(null);
+  const [mapComponent, setMapComponent] = useState();
+
+  const theme = useTheme();
 
   // PK: Hide bottom TabBar
   useEffect(() => {
@@ -28,16 +31,12 @@ export default function ElectoralDistricts({navigation}) {
   const requestLocationPermission = async () => {
     const {status} = await Location.requestForegroundPermissionsAsync();
 
-    if (status == "granted") {
-      return true;
-    } else {
-      return false;
-    }
+    return status === "granted";
   };
 
   const handleGettingDistrict = async () => {
-    var permissionResponse = await requestLocationPermission();
-    var locationTemp;
+    const permissionResponse = await requestLocationPermission();
+    let locationTemp;
 
     if (permissionResponse) {
       locationTemp = await Location.getCurrentPositionAsync({});
@@ -77,9 +76,9 @@ export default function ElectoralDistricts({navigation}) {
 
   async function onLocationMapChange(location) {
     try {
-      setAddressCurrent("Ładowanie");
-      setSejmDistrictCurrent("Ładowanie");
-      setEuDistrictCurrent("Ładowanie");
+      setAddressCurrent("Ładowanie...");
+      setSejmDistrictCurrent("Ładowanie...");
+      setEuDistrictCurrent("Ładowanie...");
 
       const result = await getAddress(parseFloat(location.latitude.toFixed(5)), parseFloat(location.longitude.toFixed(5)));
 
@@ -88,23 +87,23 @@ export default function ElectoralDistricts({navigation}) {
       setEuDistrictCurrent(result.euDistrict);
     } catch (error) {
       setAddressCurrent("błąd");
-      setSejmDistrictCurrent(0);
-      setEuDistrictCurrent(0);
+      setSejmDistrictCurrent("");
+      setEuDistrictCurrent("");
     }
   }
 
   async function getAddress(latitude, longitude) {
     try {
-      const adderssData = await getUserAddress(latitude, longitude);
-      var countyName = getCountryName(adderssData);
-      var powiatName = getPowiatName(adderssData);
+      const addressData = await getUserAddress(latitude, longitude);
+      const countyName = getCountryName(addressData);
+      let powiatName = getPowiatName(addressData);
 
-      if (countyName == "PL") {
-        if (powiatName != "") {
+      if (countyName === "PL") {
+        if (powiatName !== "") {
           const sejmDistrictData = (await getSejmDistrict(powiatName))[0];
           const euDistrictData = (await getEuDistrict(powiatName))[0];
 
-          if (sejmDistrictData.powiat_name == "Zagranica" || euDistrictData.powiat_name == "Zagranica") {
+          if (sejmDistrictData.powiat_name === "Zagranica" || euDistrictData.powiat_name === "Zagranica") {
             powiatName = "Zagranica";
           }
           return {
@@ -115,21 +114,21 @@ export default function ElectoralDistricts({navigation}) {
         } else {
           return {address: "błąd", sejmDistrict: 0, euDistrict: 0};
         }
-      } else if (countyName == "") {
-        return {address: "Morze", sejmDistrict: 19, euDistrict: 4};
+      } else if (countyName === "") {
+        return {address: "Teren morski", sejmDistrict: 19, euDistrict: 4};
       } else {
-        return {address: "Zagranica", sejmDistrict: 19, euDistrict: 4};
+        return {address: "Za granicą", sejmDistrict: 19, euDistrict: 4};
       }
     } catch (error) {
       return {address: "błąd", sejmDistrict: 0, euDistrict: 0};
     }
   }
 
-  const getCountryName = (adderssData) => {
-    var returnValue = "";
-    adderssData.results.map((oneAdderss) => {
-      oneAdderss.address_components.map((element) => {
-        if (element.types[0] == "country") {
+  const getCountryName = (addressData) => {
+    let returnValue = "";
+    addressData.results.map((oneAddress) => {
+      oneAddress.address_components.map((element) => {
+        if (element.types[0] === "country") {
           returnValue = element.short_name;
         }
       });
@@ -137,11 +136,11 @@ export default function ElectoralDistricts({navigation}) {
     return returnValue;
   };
 
-  const getPowiatName = (adderssData) => {
-    var returnValue = "";
-    adderssData.results.map((oneAdderss) => {
-      oneAdderss.address_components.map((element) => {
-        if (element.types[0] == "administrative_area_level_2") {
+  const getPowiatName = (addressData) => {
+    let returnValue = "";
+    addressData.results.map((oneAddress) => {
+      oneAddress.address_components.map((element) => {
+        if (element.types[0] === "administrative_area_level_2") {
           if (element.long_name.toString().includes("Powiat")) {
             element.long_name = element.long_name.toString().replace("Powiat ", "");
             returnValue = element.long_name;
@@ -153,7 +152,7 @@ export default function ElectoralDistricts({navigation}) {
   };
 
   async function createMap() {
-    var locationMap = await handleGettingDistrict();
+    const locationMap = await handleGettingDistrict();
 
     if (locationMap != null) {
       return (
@@ -169,6 +168,7 @@ export default function ElectoralDistricts({navigation}) {
           }, 500)}
           showsMyLocationButton={true}
           showsUserLocation={true}
+
           initialRegion={{
             latitude: locationMap.latitude,
             longitude: locationMap.longitude,
@@ -202,61 +202,78 @@ export default function ElectoralDistricts({navigation}) {
     }
   }
 
+  const styles = StyleSheet.create({
+    container: {
+      paddingHorizontal: "4%",
+      paddingTop: "15%",
+      justifyContent: "flex-start",
+    },
+    tile: {
+      backgroundColor: theme.colors.primary,
+      width: "95%",
+      minHeight: 300,
+      padding: 25,
+      borderRadius: 15,
+      justifyContent: "center",
+      elevation: 10,
+      shadowColor: theme.colors.shadow,
+      shadowOffset: {width: 2, height: 2},
+      shadowOpacity: 0.1,
+      shadowRadius: 10,
+    },
+    text: {
+      color: theme.colors.onPrimary,
+      fontSize: 24,
+    },
+    powiat: {
+      fontSize: 22,
+      marginBottom: 10,
+    },
+    sejmEURow: {
+      flexDirection: "row",
+      alignItems: "baseline",
+    },
+    sejmEU: {
+      width: "23%",
+      fontSize: 18,
+    },
+    textBlock: {
+      marginTop: 20,
+      backgroundColor: theme.colors.onSurfaceVariant,
+      padding: 15,
+      borderBottomLeftRadius: 10,
+      borderBottomRightRadius: 10,
+    },
+    map: {
+      width: "100%",
+      height: 300,
+    },
+  });
+
   return (
-    <_Container style={{padding: "4%"}}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.districtElementMap}>
-          <View>{mapComponent}</View>
-          <View>
-            <Text style={styles.districtElementText}>Powiat: {addressCurrent}</Text>
-            <Text style={styles.districtElementText}>Okręg wyborczy - SEJM: {sejmDistrictCurrent}</Text>
-            <Text style={styles.districtElementText}>Okręg wyborczy - EU: {euDistrictCurrent}</Text>
+    <_Container style={styles.container}>
+      <View style={styles.tile}>
+        <View>{mapComponent}</View>
+        <View style={styles.textBlock}>
+          <Text
+            style={[styles.text, styles.powiat]}>{
+            addressCurrent !== "Za granicą" && addressCurrent !== "Teren morski" && addressCurrent !== "Ładowanie..."
+              ? `Powiat ${addressCurrent}` : addressCurrent}</Text>
+          <View style={styles.sejmEURow}>
+            <Text style={[styles.text, styles.sejmEU]}>SEJM:</Text>
+            <Text style={styles.text}>{sejmDistrictCurrent}</Text>
+          </View>
+          <View style={styles.sejmEURow}>
+            <Text style={[styles.text, styles.sejmEU]}>EU:</Text>
+            <Text style={styles.text}>{euDistrictCurrent}</Text>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </_Container>
   );
+
+
 }
 
-const styles = StyleSheet.create({
-  scrollView: {
-    width: "100%",
-    minHeight: 400,
-    height: "100%",
-    marginHorizontal: 20,
-  },
 
-  districtElement: {
-    backgroundColor: "#000",
-    width: "100%",
-    padding: 15,
-    marginTop: 20,
-    borderRadius: 20,
-    justifyContent: "center",
-  },
 
-  districtElementMap: {
-    backgroundColor: "#000",
-    width: "100%",
-    minHeight: 300,
-    padding: 15,
-    marginTop: 20,
-    borderRadius: 20,
-    justifyContent: "center",
-  },
-
-  districtElementText: {
-    color: "#ffffff",
-  },
-
-  map: {
-    width: "100%",
-    height: 300,
-  },
-
-  applyButton: {
-    backgroundColor: "#ffffff",
-    padding: 10,
-    alignItems: "center",
-  },
-});
