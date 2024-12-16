@@ -1,9 +1,8 @@
 import {useEffect} from "react";
-import {StyleSheet, Text, View, TouchableHighlight} from "react-native";
 import _Container from "../styles/Container";
 import {tabBarAnim} from "../../backend/CommonMethods";
 import _Button from "../styles/Button";
-import {TextInput, useTheme} from "react-native-paper";
+import {useTheme} from "react-native-paper";
 
 
 
@@ -41,59 +40,3 @@ export default function ElectionExplanation({navigation}) {
     </_Container>
   );
 }
-
-const styles = StyleSheet.create({
-  colorsMeaningDiv: {
-    alignSelf: "left",
-    flexDirection: "row",
-  },
-  electionButton: {
-    backgroundColor: "#000",
-    height: 70,
-    width: "96%",
-    paddingTop: 8,
-    paddingBottom: 8,
-    marginTop: 20,
-    marginLeft: "2%",
-    marginRight: "2%",
-    borderRadius: 20,
-    justifyContent: "center",
-  },
-  electionButtonText: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "700",
-    marginLeft: 7,
-  },
-  electionButtonTextDhondt: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "700",
-    marginLeft: 34,
-  },
-
-  circleSejm: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 7,
-    marginVertical: 7,
-    backgroundColor: "#12cdd4",
-  },
-  circlePrezydent: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 7,
-    marginVertical: 7,
-    backgroundColor: "#f24726",
-  },
-  circleEu: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 7,
-    marginVertical: 7,
-    backgroundColor: "#8fd14f",
-  },
-});

@@ -37,7 +37,7 @@ export default function ElectionNavigation({route}) {
         name="Calendar"
         component={CalendarScreen}
         options={() => ({
-          headerTitle: "Kalendarz",
+          headerTitle: "Kalendarz wyborczy",
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
@@ -55,7 +55,7 @@ export default function ElectionNavigation({route}) {
         name="ElectoralDistricts"
         component={ElectoralDistrictsScreen}
         options={() => ({
-          headerTitle: "Okręgi wyborcze",
+          headerTitle: "Mapa okręgów wyborczych",
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
@@ -104,7 +104,7 @@ export default function ElectionNavigation({route}) {
           headerTitle: () => (
             <View style={{flexDirection: "row", alignItems: "center"}}>
               <Icon color={useTheme().colors.parlament} size={22} source="circle-slice-8"/>
-              <Text style={{fontSize: 20, fontWeight: 500, paddingLeft: 5}}>Wybory do Parlamentu Europejskiego</Text>
+              <Text style={{fontSize: 20, fontWeight: 500, paddingLeft: 5}}>Wybory do Parlamentu</Text>
             </View>
           ),
           headerTitleAlign: "center",
