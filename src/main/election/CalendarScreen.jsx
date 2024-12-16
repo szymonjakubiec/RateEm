@@ -5,12 +5,16 @@ import {getAllPresidentElections} from "../../backend/database/PresidentElection
 import {getAllEuElections} from "../../backend/database/EuElections";
 import _Container from "../styles/Container";
 import {tabBarAnim} from "../../backend/CommonMethods";
+import _Button from "../styles/Button";
+import {Icon, useTheme} from "react-native-paper";
 
 
 
 export default function CalendarScreen({navigation}) {
   const [years, setYears] = useState([]);
   const [yearData, setYearData] = useState([]);
+
+  const theme = useTheme();
 
   // PK: Hide bottom TabBar
   useEffect(() => {
@@ -27,31 +31,41 @@ export default function CalendarScreen({navigation}) {
     var yearDataTemp = [];
     const data = await getWybory();
 
-    for (let year = currentYear + 5; year >= 2010; year--) {
+    for (let year = currentYear + 5; year >= 2000; year--) {
       var yearDataTempTemp = [];
       yearsTemp.push(
-        <View>
-          <View style={styles.yearDiv}>
-            <Text style={styles.yearTileText}>{year}</Text>
-            {data.sejm.map((oneYear) => {
-              if (year == new Date(oneYear.date).getFullYear()) {
-                yearDataTempTemp.push({date: oneYear.date, name: oneYear.name});
-                return <View key={oneYear.name} style={styles.circleSejm}/>;
-              }
-            })}
-            {data.prezydent.map((oneYear) => {
-              if (year == new Date(oneYear.date).getFullYear()) {
-                yearDataTempTemp.push({date: oneYear.date, name: oneYear.name});
-                return <View key={oneYear.name} style={styles.circlePrezydent}/>;
-              }
-            })}
-            {data.eu.map((oneYear) => {
-              if (year == new Date(oneYear.date).getFullYear()) {
-                yearDataTempTemp.push({date: oneYear.date, name: oneYear.name});
-                return <View key={oneYear.name} style={styles.circleEu}/>;
-              }
-            })}
-          </View>
+        <View style={styles.yearDiv}>
+          <Text style={styles.yearTileText}>{year}</Text>
+          {data.sejm.map((oneYear) => {
+            if (year === new Date(oneYear.date).getFullYear()) {
+              yearDataTempTemp.push({date: oneYear.date, name: oneYear.name});
+              return (
+                <View key={oneYear.name} style={styles.circle}>
+                  <Icon color={theme.colors.sejm} size={24} source="circle-slice-8"/>
+                </View>
+              );
+            }
+          })}
+          {data.prezydent.map((oneYear) => {
+            if (year === new Date(oneYear.date).getFullYear()) {
+              yearDataTempTemp.push({date: oneYear.date, name: oneYear.name});
+              return (
+                <View key={oneYear.name} style={styles.circle}>
+                  <Icon color={theme.colors.prezydent} size={24} source="circle-slice-8"/>
+                </View>
+              );
+            }
+          })}
+          {data.eu.map((oneYear) => {
+            if (year === new Date(oneYear.date).getFullYear()) {
+              yearDataTempTemp.push({date: oneYear.date, name: oneYear.name});
+              return (
+                <View key={oneYear.name} style={styles.circle}>
+                  <Icon color={theme.colors.parlament} size={24} source="circle-slice-8"/>
+                </View>
+              );
+            }
+          })}
         </View>
       );
       yearDataTemp.push(yearDataTempTemp);
@@ -75,7 +89,7 @@ export default function CalendarScreen({navigation}) {
   const showYearPrompt = (allData) => {
     if (allData.length > 0) {
       var message = "";
-      var inteager = 0;
+      var integer = 0;
 
       for (data of allData) {
         const electionType = data.name.split("_")[0];
@@ -117,8 +131,8 @@ export default function CalendarScreen({navigation}) {
             " roku";
         }
 
-        inteager++;
-        if (allData.length > 1 && inteager !== allData.length) {
+        integer++;
+        if (allData.length > 1 && integer !== allData.length) {
           message += "\n\n";
         }
       }
@@ -156,7 +170,7 @@ export default function CalendarScreen({navigation}) {
     } else if (index === 5) {
       return "w czerwcu";
     } else if (index === 6) {
-      return "w lipicu";
+      return "w lipcu";
     } else if (index === 7) {
       return "w sierpniu";
     } else if (index === 8) {
@@ -174,31 +188,25 @@ export default function CalendarScreen({navigation}) {
 
   return (
     <_Container style={{padding: "4%"}}>
-      <View style={{width: "100%", paddingBottom: 10, borderBottomWidth: 3}}>
+      <View style={{width: "100%", paddingBottom: 15, borderBottomWidth: 3}}>
         <View style={styles.colorsMeaningDiv}>
-          <View style={styles.circleSejm}/>
+          <Icon color={theme.colors.sejm} size={24} source="circle-slice-8"/>
           <Text style={styles.colorsMeaningText}>wybory do sejmu i senatu</Text>
         </View>
         <View style={styles.colorsMeaningDiv}>
-          <View style={styles.circlePrezydent}/>
+          <Icon color={theme.colors.prezydent} size={24} source="circle-slice-8"/>
           <Text style={styles.colorsMeaningText}>wybory prezydenckie</Text>
         </View>
         <View style={styles.colorsMeaningDiv}>
-          <View style={styles.circleEu}/>
+          <Icon color={theme.colors.parlament} size={24} source="circle-slice-8"/>
           <Text style={styles.colorsMeaningText}>wybory do parlamentu europejskiego</Text>
         </View>
       </View>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
         {years.map((yearItem, index) => (
-          <View key={index}>
-            <TouchableHighlight
-              style={styles.yearTile}
-              onPress={() => {
-                showYearPrompt(yearData[index]);
-              }}
-            >
-              {yearItem}
-            </TouchableHighlight>
+          <View key={index} style={{flexBasis: "50%", paddingTop: 10}}>
+            <_Button style={styles.button} disabled={yearData[index]?.length === 0} mode="tile"
+                     text={yearItem} onPress={() => showYearPrompt(yearData[index])}/>
           </View>
         ))}
       </ScrollView>
@@ -207,16 +215,11 @@ export default function CalendarScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    padding: "4%",
-  },
-
   colorsMeaningDiv: {
-    alignSelf: "left",
+    alignItems: "flex-end",
+    justifyContent: "flex-start",
     flexDirection: "row",
+    height: 35,
   },
   colorsMeaningText: {
     color: "black",
@@ -227,59 +230,32 @@ const styles = StyleSheet.create({
 
   scrollView: {
     width: "100%",
-    marginHorizontal: 20,
   },
 
-  yearTile: {
-    backgroundColor: "#000",
-    height: 70,
-    width: "96%",
-    paddingTop: 8,
-    paddingBottom: 8,
-    marginTop: 20,
-    marginLeft: "2%",
-    marginRight: "2%",
-    borderRadius: 20,
-    justifyContent: "center",
+  scrollViewContent: {
+    flexDirection: 'row-reverse',
+    flexWrap: 'wrap',
+    paddingBottom: 10,
+  },
+
+  button: {
+    alignSelf: "center",
+    maxWidth: "90%",
+    // height: "35%",
   },
 
   yearDiv: {
-    marginLeft: "40%",
     flexDirection: "row",
+    alignItems: "center",
   },
 
   yearTileText: {
     color: "#fff",
-    fontSize: 25,
+    fontSize: 26,
     fontWeight: "700",
   },
 
-  circleSejm: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 10,
-    marginVertical: 7,
-    backgroundColor: "#12cdd4",
-  },
-  circlePrezydent: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 10,
-    marginVertical: 7,
-    backgroundColor: "#f24726",
-  },
-  circleEu: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 10,
-    marginVertical: 7,
-    backgroundColor: "#8fd14f",
-  },
-
-  electionAlert: {
-    fontSize: 20,
+  circle: {
+    marginLeft: 5,
   },
 });
