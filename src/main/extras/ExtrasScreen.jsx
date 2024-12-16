@@ -8,7 +8,7 @@ import {useTheme} from "react-native-paper";
 
 export default function ExtrasScreen({navigation}) {
   return (
-    <_Container>
+    <_Container style={{paddingBottom: "22.5%"}}>
       <_Button text="Ustawienia konta"
                mode="tile"
                onPress={() => navigation.navigate("Settings")}/>

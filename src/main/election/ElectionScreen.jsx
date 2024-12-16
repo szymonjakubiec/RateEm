@@ -9,7 +9,7 @@ export default function ElectionScreen({navigation}) {
   //ownGoBack(navigation);
 
   return (
-    <_Container>
+    <_Container style={{paddingBottom: "22.5%"}}>
 
       <_Button text="Wytłumaczenie wyborów"
                mode="tile"

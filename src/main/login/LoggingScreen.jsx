@@ -133,7 +133,7 @@ export default function LoggingScreen({navigation}) {
 
   return (
     <_AnimViewKeyboard>
-      <_Container>
+      <_Container style={{paddingTop: 20}}>
         <Text style={styles.title}>{_title}</Text>
         <Text style={styles.subTitle}>Twój polityczny niezbędnik</Text>
 
