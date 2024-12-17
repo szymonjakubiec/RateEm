@@ -18,6 +18,8 @@ export default function CalculatorScreen({ navigation }) {
   const [theRestValue, setTheRestValue] = useState("100");
   const [theRestMandatesValue, setTheRestMandatesValue] = useState(0);
 
+  const [triggerUpdate, setTriggerUpdate] = useState(true);
+
   // PK: Hide bottom TabBar
   useEffect(() => {
     return tabBarAnim(navigation);
@@ -32,8 +34,6 @@ export default function CalculatorScreen({ navigation }) {
     if (parties.length < 9 && sum < 100) {
       setParties((prevParties) => [...prevParties, 0]);
     }
-    onPersentageChange();
-    onPersentageChange();
   }
 
   // deletes party from further calculations
@@ -45,14 +45,13 @@ export default function CalculatorScreen({ navigation }) {
       inputValues[indexToDelete] = 0;
       outputValues[indexToDelete] = 0;
     }
-    onPersentageChange();
-    onPersentageChange();
   }
 
   // called whenever user changes something in the inpputboxes
-  function onPersentageChange() {
+  useEffect(() => {
     let sumTemp = 0;
     for (let index = 0; index < inputValues.length; index++) {
+      // if (index < inputValues.length - 1) inputValues[index] = inputValues[index].replace(",", ".");
       inputValues[index] = inputValues[index].replace(",", ".");
 
       // makes sure that empty persentage input is considered like as 0
@@ -92,7 +91,7 @@ export default function CalculatorScreen({ navigation }) {
         inputValues[index] = "";
       }
     }
-  }
+  }, [parties, triggerUpdate]);
 
   // starts proccess of calculating mandates
   function calculateDhondtMandates() {
@@ -218,7 +217,8 @@ export default function CalculatorScreen({ navigation }) {
                   value={inputValues[index]}
                   onChangeText={(newValue) => {
                     inputValues[index] = newValue;
-                    onPersentageChange();
+                    // onPersentageChange();
+                    setTriggerUpdate(!triggerUpdate);
                   }}
                   keyboardType="numeric"
                   maxLength={5}
@@ -232,7 +232,8 @@ export default function CalculatorScreen({ navigation }) {
                   checkBoxColor="white"
                   onClick={() => {
                     overThreshold[index] = !overThreshold[index];
-                    onPersentageChange();
+                    // onPersentageChange();
+                    setTriggerUpdate(!triggerUpdate);
                   }}
                   isChecked={overThreshold[index]}
                 />
