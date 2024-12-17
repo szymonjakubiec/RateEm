@@ -1,26 +1,20 @@
-import {useContext, useEffect, useState} from "react";
-import {ActivityIndicator, BackHandler, StyleSheet, Text, View} from "react-native";
-import {Button, Dialog, MD2Colors, Portal} from "react-native-paper";
+import { useContext, useEffect, useState } from "react";
+import { ActivityIndicator, BackHandler, StyleSheet, Text, View } from "react-native";
+import { Button, Dialog, MD2Colors, Portal } from "react-native-paper";
 import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
-import {GlobalContext} from "../nav/GlobalContext.jsx";
 import _Container from "../styles/Container";
 
-
-
-export default function HomeScreen({navigation}) {
-  const politicianNameData = useContext(GlobalContext).namesData;
+export default function HomeScreen({ navigation }) {
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
   const [exitDialog, setExitDialog] = useState(false);
   const showDialog = () => setExitDialog(true);
   const hideDialog = () => setExitDialog(false);
+
   // Pk: Exiting app from HomeScreen
   useEffect(() => {
-
     const backAction = () => {
-
       // When on Home Screen and not on Profile Screen
       if (navigation.getState().routes.length === 1) {
-
         // todo: ZAPYTANIE CZY NA PEWNO WYJŚĆ
         // BackHandler.exitApp();
         showDialog();
@@ -30,7 +24,6 @@ export default function HomeScreen({navigation}) {
 
       navigation.goBack();
       return true;
-
     };
     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
     return () => backHandler.remove();
@@ -57,15 +50,8 @@ export default function HomeScreen({navigation}) {
   }, []);
 
   return (
-    <_Container style={{justifyContent: "flex-start", padding: 0}}>
-      {politicianNameData ? (
-        <SearchFlatList data={politicianNameData} handleOnPress={handlePress}/>
-      ) : (
-        <View style={styles.loaderContainer}>
-          <Text style={styles.errorText}>Ładowanie</Text>
-          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800}/>
-        </View>
-      )}
+    <_Container style={{ justifyContent: "flex-start", padding: 0 }}>
+      <SearchFlatList handleOnPress={handlePress} />
       <Portal>
         <Dialog visible={exitDialog} onDismiss={hideDialog}>
           <Dialog.Title>Uwaga</Dialog.Title>
@@ -74,10 +60,14 @@ export default function HomeScreen({navigation}) {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => hideDialog()}>Anuluj</Button>
-            <Button onPress={() => {
-              hideDialog();
-              BackHandler.exitApp();
-            }}>Wyjdź</Button>
+            <Button
+              onPress={() => {
+                hideDialog();
+                BackHandler.exitApp();
+              }}
+            >
+              Wyjdź
+            </Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>

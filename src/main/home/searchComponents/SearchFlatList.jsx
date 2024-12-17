@@ -2,14 +2,12 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image, ActivityIndicator, ScrollView } from "react-native";
 import { TextInput, Chip, MD2Colors } from "react-native-paper";
 import { getAllPoliticians } from "../../../backend/database/Politicians.js";
-import { GlobalContext } from "../../nav/GlobalContext.jsx";
 import { getTrendingPoliticians } from "../../../backend/database/Politicians";
 import { useTextInputProps } from "../../styles/TextInput";
 
-export default function SearchFlatList({ data, handleOnPress }) {
-  const updateDataTrigger = useContext(GlobalContext).updateDataTrigger; // triggered when user goes back from profile screen
-  const [initialData, setInitialData] = useState(data); // all politicians
-  const [filteredData, setFilteredData] = useState(data); // politicians after search
+export default function SearchFlatList({ handleOnPress }) {
+  const [initialData, setInitialData] = useState([]); // all politicians
+  const [filteredData, setFilteredData] = useState([]); // politicians after search
   const [trendingPoliticians, setTrendingPoliticians] = useState([]); // trending politicians
   const [searchText, setSearchText] = useState("");
   const [isTrending, setIsTrending] = useState(false);
@@ -69,16 +67,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
 
     ClearTextInput();
     getPoliticiansData();
-  }, [
-    updateDataTrigger,
-    sortOrder,
-    isSurnameSortingASC,
-    isNameSortingASC,
-    isGlobalRatingSortingASC,
-    isRatingCountSortingASC,
-    isTrending,
-    numberOfDays,
-  ]);
+  }, [sortOrder, isSurnameSortingASC, isNameSortingASC, isGlobalRatingSortingASC, isRatingCountSortingASC, isTrending, numberOfDays]);
 
   async function onRefresh() {
     setIsLoading(true);

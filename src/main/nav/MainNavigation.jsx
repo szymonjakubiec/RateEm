@@ -1,36 +1,21 @@
-import {useEffect, useState} from "react";
-import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import { useEffect, useState } from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ElectionNavigation from "../election/nav/ElectionNavigation";
 import HomeNavigation from "../home/nav/HomeNavigation";
-import {getAllPoliticians} from "../../backend/database/Politicians.js";
-import {GlobalContext} from "./GlobalContext.jsx";
+import { getAllPoliticians } from "../../backend/database/Politicians.js";
+import { GlobalContext } from "./GlobalContext.jsx";
 import ExtrasNavigation from "../extras/nav/ExtrasNavigation";
-import {Icon, useTheme} from "react-native-paper";
-
-
+import { Icon, useTheme } from "react-native-paper";
 
 const Tab = createBottomTabNavigator();
 
-export default function MainNavigation({route}) {
-  const {_title, userId} = route.params;
-  const [namesData, setNamesData] = useState([]);
-  const [updateDataTrigger, setUpdateDataTrigger] = useState(true);
-
-  /**
-   * Initialization - Asynchronously gets names of all politicians and passes it to the namesData.
-   * @async
-   */
-  useEffect(() => {
-    (async () => {
-      const data = await getAllPoliticians("surname", false);
-      setNamesData(data);
-    })();
-  }, []);
+export default function MainNavigation({ route }) {
+  const { _title, userId } = route.params;
 
   const theme = useTheme();
 
   return (
-    <GlobalContext.Provider value={{namesData, setNamesData, userId, updateDataTrigger, setUpdateDataTrigger}}>
+    <GlobalContext.Provider value={{ userId }}>
       <Tab.Navigator
         backBehavior="initialRoute"
         initialRouteName="HomeNav"
@@ -55,7 +40,6 @@ export default function MainNavigation({route}) {
             paddingBottom: 10,
           },
         }}
-
       >
         <Tab.Screen
           name="ElectionNav"
@@ -65,21 +49,21 @@ export default function MainNavigation({route}) {
             // title: "Wybory",
             // headerTitleAlign: "center",
             gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: ({color}) => (<Icon color={color} source="email-newsletter" size={32}/>),
-            tabBarIconStyle: {top: 4},
+            tabBarIcon: ({ color }) => <Icon color={color} source="email-newsletter" size={32} />,
+            tabBarIconStyle: { top: 4 },
           }}
         />
         <Tab.Screen
           name="HomeNav"
           component={HomeNavigation}
-          initialParams={{_title}}
+          initialParams={{ _title }}
           options={{
             headerShown: false,
             // title: "Strona główna",
             // headerTitleAlign: "center",
             gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: ({color}) => <Icon color={color} source="home" size={36}/>,
-            tabBarIconStyle: {top: 1},
+            tabBarIcon: ({ color }) => <Icon color={color} source="home" size={36} />,
+            tabBarIconStyle: { top: 1 },
           }}
         />
         <Tab.Screen
@@ -90,8 +74,8 @@ export default function MainNavigation({route}) {
             // title: "Więcej",
             // headerTitleAlign: "center",
             gestureEnabled: false, // wyłącza swipe back na IOS
-            tabBarIcon: ({color}) => <Icon color={color} source="menu" size={36}/>,
-            tabBarIconStyle: {top: 2},
+            tabBarIcon: ({ color }) => <Icon color={color} source="menu" size={36} />,
+            tabBarIconStyle: { top: 2 },
           }}
         />
       </Tab.Navigator>
