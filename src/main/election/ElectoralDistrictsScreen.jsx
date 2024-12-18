@@ -1,11 +1,11 @@
 import {useState, useEffect} from "react";
-import {StyleSheet, Text, View, ScrollView, Linking, Alert, AppState, LayoutAnimation} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import * as Location from "expo-location";
 import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
 import {getUserAddress, tabBarAnim} from "../../backend/CommonMethods";
 import {getSejmDistrict, getEuDistrict} from "../../backend/database/Districts";
 import _Container from "../styles/Container";
-import {Surface, useTheme} from "react-native-paper";
+import {ActivityIndicator, useTheme} from "react-native-paper";
 
 
 
@@ -13,7 +13,6 @@ export default function ElectoralDistricts({navigation}) {
   const [addressCurrent, setAddressCurrent] = useState('');
   const [sejmDistrictCurrent, setSejmDistrictCurrent] = useState("");
   const [euDistrictCurrent, setEuDistrictCurrent] = useState("");
-  const [locationMap, setLocationMap] = useState();
 
   const [mapComponent, setMapComponent] = useState();
 
@@ -25,7 +24,9 @@ export default function ElectoralDistricts({navigation}) {
   }, []);
 
   useEffect(() => {
-    setMapComponent(createMap());
+    (async () => {
+      setMapComponent(await createMap());
+    })();
   }, []);
 
   const requestLocationPermission = async () => {
@@ -54,17 +55,6 @@ export default function ElectoralDistricts({navigation}) {
       longitude: parseFloat(locationTemp.coords.longitude.toFixed(5)),
     };
   };
-
-  function setMapLocation(location) {
-    try {
-      setLocationMap({
-        latitude: parseFloat(location.latitude.toFixed(5)),
-        longitude: parseFloat(location.longitude.toFixed(5)),
-      });
-    } catch (error) {
-      setLocationMap({latitude: 50.25962, longitude: 19.021725});
-    }
-  }
 
   function debounce(func, delay) {
     let timeout;
@@ -160,7 +150,6 @@ export default function ElectoralDistricts({navigation}) {
           provider={PROVIDER_GOOGLE}
           region={locationMap}
           showsCompass={true}
-          onRegionChange={setMapLocation}
           onRegionChangeComplete={debounce((region, gesture) => {
             if (gesture.isGesture) {
               onLocationMapChange(region);
@@ -184,7 +173,6 @@ export default function ElectoralDistricts({navigation}) {
           provider={PROVIDER_GOOGLE}
           region={locationMap}
           showsCompass={true}
-          onRegionChange={setMapLocation}
           onRegionChangeComplete={debounce((region, gesture) => {
             if (gesture.isGesture) {
               onLocationMapChange(region);
@@ -254,20 +242,24 @@ export default function ElectoralDistricts({navigation}) {
     <_Container style={styles.container}>
       <View style={styles.tile}>
         <View>{mapComponent}</View>
-        <View style={styles.textBlock}>
-          <Text
-            style={[styles.text, styles.powiat]}>{
-            addressCurrent !== "Za granicą" && addressCurrent !== "Teren morski" && addressCurrent !== "Ładowanie..."
-              ? `Powiat ${addressCurrent}` : addressCurrent}</Text>
-          <View style={styles.sejmEURow}>
-            <Text style={[styles.text, styles.sejmEU]}>SEJM:</Text>
-            <Text style={styles.text}>{sejmDistrictCurrent}</Text>
+        {mapComponent ? (<>
+          <View style={styles.textBlock}>
+            <Text
+              style={[styles.text, styles.powiat]}>{
+              addressCurrent !== "Za granicą" && addressCurrent !== "Teren morski" && addressCurrent !== "Ładowanie..."
+                ? `Powiat ${addressCurrent}` : addressCurrent}</Text>
+            <View style={styles.sejmEURow}>
+              <Text style={[styles.text, styles.sejmEU]}>SEJM:</Text>
+              <Text style={styles.text}>{sejmDistrictCurrent}</Text>
+            </View>
+            <View style={styles.sejmEURow}>
+              <Text style={[styles.text, styles.sejmEU]}>EU:</Text>
+              <Text style={styles.text}>{euDistrictCurrent}</Text>
+            </View>
           </View>
-          <View style={styles.sejmEURow}>
-            <Text style={[styles.text, styles.sejmEU]}>EU:</Text>
-            <Text style={styles.text}>{euDistrictCurrent}</Text>
-          </View>
-        </View>
+        </>) : (
+          <ActivityIndicator animating={true} color={theme.colors.onPrimary} size={45}/>
+        )}
       </View>
     </_Container>
   );
