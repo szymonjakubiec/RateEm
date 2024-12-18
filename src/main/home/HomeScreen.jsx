@@ -1,10 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import { ActivityIndicator, BackHandler, StyleSheet, Text, View } from "react-native";
-import { Button, Dialog, MD2Colors, Portal } from "react-native-paper";
+import {useEffect, useState} from "react";
+import {BackHandler, StyleSheet, Text} from "react-native";
+import {Button, Dialog, Portal} from "react-native-paper";
 import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
 import _Container from "../styles/Container";
 
-export default function HomeScreen({ navigation }) {
+
+
+export default function HomeScreen({navigation}) {
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
   const [exitDialog, setExitDialog] = useState(false);
   const showDialog = () => setExitDialog(true);
@@ -50,8 +52,11 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   return (
-    <_Container style={{ justifyContent: "flex-start", padding: 0 }}>
-      <SearchFlatList handleOnPress={handlePress} />
+    <_Container
+      style={styles.container}>
+      <SearchFlatList handleOnPress={handlePress}/>
+
+      {/* Exit alert when leaving app */}
       <Portal>
         <Dialog visible={exitDialog} onDismiss={hideDialog}>
           <Dialog.Title>Uwaga</Dialog.Title>
@@ -71,19 +76,16 @@ export default function HomeScreen({ navigation }) {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
     </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  loaderContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-  errorText: {
-    fontSize: 18,
-    textAlign: "center",
-    marginTop: 20,
+  container: {
+    padding: 0,
+    paddingBottom: "15%",
+    margin: 0,
+    justifyContent: "flex-start"
   },
 });

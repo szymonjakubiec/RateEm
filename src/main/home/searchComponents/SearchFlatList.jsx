@@ -1,11 +1,16 @@
-import { useEffect, useRef, useState, useContext } from "react";
-import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image, ActivityIndicator, ScrollView } from "react-native";
-import { TextInput, Chip, MD2Colors } from "react-native-paper";
-import { getAllPoliticians } from "../../../backend/database/Politicians.js";
-import { getTrendingPoliticians } from "../../../backend/database/Politicians";
-import { useTextInputProps } from "../../styles/TextInput";
+import {useEffect, useRef, useState} from "react";
+import {
+  StyleSheet, Text, FlatList, View, Animated,
+  Easing, Keyboard, ActivityIndicator, ScrollView
+} from "react-native";
+import {TextInput, Chip, useTheme} from "react-native-paper";
+import {getAllPoliticians} from "../../../backend/database/Politicians.js";
+import {getTrendingPoliticians} from "../../../backend/database/Politicians";
+import {useTextInputProps} from "../../styles/TextInput";
 
-export default function SearchFlatList({ handleOnPress }) {
+
+
+export default function SearchFlatList({handleOnPress}) {
   const [initialData, setInitialData] = useState([]); // all politicians
   const [filteredData, setFilteredData] = useState([]); // politicians after search
   const [trendingPoliticians, setTrendingPoliticians] = useState([]); // trending politicians
@@ -13,9 +18,9 @@ export default function SearchFlatList({ handleOnPress }) {
   const [isTrending, setIsTrending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [numberOfDays, setNumberOfDays] = useState(1);
-  const [numberOfDaysIndex, setnumberOfDaysIndex] = useState(0);
-  const [numberOfDaysTable, setnumberOfDaysTable] = useState([1, 7, 30]);
-  const [sortOrder, setsortOrder] = useState("surname");
+  const [numberOfDaysIndex, setNumberOfDaysIndex] = useState(0);
+  const [numberOfDaysTable, setNumberOfDaysTable] = useState([1, 7, 30]);
+  const [sortOrder, setSortOrder] = useState("surname");
   const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
   const [isNameSortingASC, setIsNameSortingASC] = useState(true);
   const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(false);
@@ -27,21 +32,21 @@ export default function SearchFlatList({ handleOnPress }) {
   useEffect(() => {
     // PK: Fade in
     searchText.length > 0 &&
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-        easing: (value) => Easing.ease(value),
-      }).start();
+    Animated.timing(opacityAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+      easing: (value) => Easing.ease(value),
+    }).start();
 
     // PK: Fade out
     searchText.length === 0 &&
-      Animated.timing(opacityAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-        easing: (value) => Easing.ease(value),
-      }).start();
+    Animated.timing(opacityAnim, {
+      toValue: 0,
+      duration: 250,
+      useNativeDriver: true,
+      easing: (value) => Easing.ease(value),
+    }).start();
   }, [searchText]);
 
   /**
@@ -116,7 +121,7 @@ export default function SearchFlatList({ handleOnPress }) {
    * Changes number of days from which we take the trending politicians.
    */
   const handleNumberOfDaysClick = () => {
-    setnumberOfDaysIndex((prevIndex) => {
+    setNumberOfDaysIndex((prevIndex) => {
       const newIndex = prevIndex < 2 ? prevIndex + 1 : 0;
       setNumberOfDays(numberOfDaysTable[newIndex]);
       return newIndex;
@@ -132,9 +137,95 @@ export default function SearchFlatList({ handleOnPress }) {
     else setFilteredData(initialData);
   }
 
+  /**
+   * Handler for ScrollView's onMomentum event to remove padding bug when scrolling too fast to left.
+   * @param event
+   */
+  const onMomentumHandler = (event) => {
+    const {contentOffset, contentSize, layoutMeasurement} = event.nativeEvent;
+    const maxOffset = contentSize.width - layoutMeasurement.width;
+    if (contentOffset.x < 25) {
+      event.currentTarget.scrollTo({x: 0, animated: true});
+    } else if (contentOffset.x > maxOffset - 25) {
+      event.currentTarget.scrollTo({x: maxOffset, animated: true});
+    }
+  };
+
+
+  const theme = useTheme();
+
+
+  const styles = StyleSheet.create({
+
+    searchFlatList: {
+      flex: 1,
+      // width: "100%",
+      // alignItems: "center",
+    },
+
+    searchBox: {
+      width: "90%",
+      minWidth: "90%",
+      marginVertical: 20,
+      height: 50,
+    },
+    searchInput: {
+      flexGrow: 1,
+    },
+    list: {
+      marginVertical: 5,
+      flexGrow: 0,
+      paddingHorizontal: 10,
+    },
+
+    filtersScrollView: {
+      maxWidth: "90%",
+      alignSelf: "center",
+      minHeight: 40,
+      alignContent: "center",
+      flexGrow: 0,
+      marginVertical: 3,
+    },
+    chipsContainer: {
+      paddingTop: 4,
+      paddingBottom: 6,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    chip: {
+      justifyContent: "center",
+      marginHorizontal: 2,
+      minHeight: 38,
+      marginVertical: 5,
+    },
+    chipLabel: {
+      fontSize: 16,
+      marginRight: 10,
+    },
+
+    noResultsText: (text) => ({
+      opacity: text ? 0.8 : 0,
+      paddingLeft: "7%",
+      paddingTop: "5%",
+      fontSize: 20,
+    }),
+
+    loaderContainer: {
+      alignItems: "center",
+      marginTop: "15%"
+    },
+    errorText: {
+      fontSize: 18,
+      textAlign: "center",
+      marginTop: 5,
+    },
+  });
+
+
   return (
-    <View>
+    <View style={styles.searchFlatList}>
       <View style={styles.searchBox}>
+
         {/* wyszukiwarka */}
         <TextInput
           {...useTextInputProps()}
@@ -145,11 +236,11 @@ export default function SearchFlatList({ handleOnPress }) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
-          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()} />}
+          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()}/>}
           right={
             <TextInput.Icon
               icon="close"
-              style={{ opacity: opacityAnim }}
+              style={{opacity: opacityAnim}}
               onPress={() => {
                 ClearTextInput();
                 // Keyboard.dismiss()
@@ -173,17 +264,20 @@ export default function SearchFlatList({ handleOnPress }) {
       >
         <View style={styles.chipsContainer}>
           {/* wszyscy politycy / politycy na czasie */}
-          <Chip style={styles.chip} icon="account" mode={!isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(false)}>
+          <Chip style={styles.chip} icon="account" mode={!isTrending ? "flat" : "outlined"} disabled={isLoading}
+                onPress={() => setIsTrending(false)} textStyle={styles.chipLabel}>
             Wszyscy politycy
           </Chip>
 
-          <Chip style={styles.chip} icon="account" mode={isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(true)}>
+          <Chip style={styles.chip} icon="account" mode={isTrending ? "flat" : "outlined"} disabled={isLoading}
+                onPress={() => setIsTrending(true)} textStyle={styles.chipLabel}>
             Na Czasie
           </Chip>
 
           {/* Button do zmiany dni */}
           {isTrending ? (
-            <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}>
+            <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}
+                  textStyle={styles.chipLabel}>
               Okres czasu: {numberOfDays}
             </Chip>
           ) : null}
@@ -201,13 +295,14 @@ export default function SearchFlatList({ handleOnPress }) {
         <View style={styles.chipsContainer}>
           <Chip
             style={styles.chip}
+            textStyle={styles.chipLabel}
             disabled={isLoading}
             icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sortOrder === "surname" ? "flat" : "outlined"}
             onPress={() => {
-              let reverseOrder = sortOrder == "surname" ? !isSurnameSortingASC : isSurnameSortingASC;
+              let reverseOrder = sortOrder === "surname" ? !isSurnameSortingASC : isSurnameSortingASC;
               setIsSurnameSortingASC(reverseOrder);
-              setsortOrder("surname");
+              setSortOrder("surname");
             }}
           >
             Nazwisko
@@ -215,13 +310,14 @@ export default function SearchFlatList({ handleOnPress }) {
 
           <Chip
             style={styles.chip}
+            textStyle={styles.chipLabel}
             disabled={isLoading}
             icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sortOrder === "name" ? "flat" : "outlined"}
             onPress={() => {
-              let reverseOrder = sortOrder == "name" ? !isNameSortingASC : isNameSortingASC;
+              let reverseOrder = sortOrder === "name" ? !isNameSortingASC : isNameSortingASC;
               setIsNameSortingASC(reverseOrder);
-              setsortOrder("name");
+              setSortOrder("name");
             }}
           >
             Imię
@@ -229,50 +325,53 @@ export default function SearchFlatList({ handleOnPress }) {
 
           <Chip
             style={styles.chip}
+            textStyle={styles.chipLabel}
             disabled={isLoading}
             icon={isGlobalRatingSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sortOrder === "global_rating" ? "flat" : "outlined"}
             onPress={() => {
-              let reverseOrder = sortOrder == "global_rating" ? !isGlobalRatingSortingASC : isGlobalRatingSortingASC;
+              let reverseOrder = sortOrder === "global_rating" ? !isGlobalRatingSortingASC : isGlobalRatingSortingASC;
               setIsGlobalRatingSortingASC(reverseOrder);
-              setsortOrder("global_rating");
+              setSortOrder("global_rating");
             }}
           >
-            ocena globalna
+            Ocena globalna
           </Chip>
 
           <Chip
             style={styles.chip}
+            textStyle={styles.chipLabel}
             disabled={isLoading}
             icon={isRatingCountSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sortOrder === "rating_count" ? "flat" : "outlined"}
             onPress={() => {
-              let reverseOrder = sortOrder == "rating_count" ? !isRatingCountSortingASC : isRatingCountSortingASC;
+              let reverseOrder = sortOrder === "rating_count" ? !isRatingCountSortingASC : isRatingCountSortingASC;
               setIsRatingCountSortingASC(reverseOrder);
-              setsortOrder("rating_count");
+              setSortOrder("rating_count");
             }}
           >
-            liczba ocen
+            Liczba ocen
           </Chip>
         </View>
       </ScrollView>
 
       {isLoading ? (
         <View style={styles.loaderContainer}>
-          <Text style={styles.errorText}>Ładowanie</Text>
-          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800} />
+          <ActivityIndicator size={45} animating={true} color={theme.colors.primary}/>
+          <Text style={styles.errorText}>Ładowanie...</Text>
         </View>
       ) : filteredData.length !== 0 ? (
         <FlatList
           keyboardShouldPersistTaps={"handled"}
           persistentScrollbar={true}
-          style={styles.list(filteredData)}
+          style={styles.list}
+          contentContainerStyle={{paddingHorizontal: 5, paddingBottom: 5}}
           data={filteredData}
           extraData={initialData}
           onRefresh={onRefresh}
           refreshing={isLoading}
           keyExtractor={(item) => item.key}
-          renderItem={({ item }) => (
+          renderItem={({item}) => (
             <Item
               id={item.key}
               nameSurname={item.value}
@@ -283,6 +382,7 @@ export default function SearchFlatList({ handleOnPress }) {
               picture={item.picture}
               handleOnPress={handleOnPress}
               isTrending={isTrending}
+              sortOrder={sortOrder}
             />
           )}
         />
@@ -332,109 +432,4 @@ export default function SearchFlatList({ handleOnPress }) {
   }
 }
 
-const styles = StyleSheet.create({
-  searchBox: {
-    width: "90%",
-    minWidth: "90%",
-    marginVertical: 10,
-    height: 50,
-  },
-  searchInput: {
-    flexGrow: 1,
-  },
-  list: (result) => ({
-    maxWidth: "90%",
-    marginTop: 5,
-    margin: 1,
-    marginBottom: 5,
-    flexGrow: 0,
-  }),
-  filtersScrollView: {
-    maxWidth: "90%",
-    marginTop: 4,
-    minHeight: 40,
-    maxHeight: 40,
-    paddingBottom: 4,
-    alignContent: "center",
-    flexGrow: 0,
-  },
 
-  chipsContainer: {
-    marginVertical: 2,
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-  },
-  chipLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginRight: 8,
-  },
-  chip: {
-    marginHorizontal: 2,
-  },
-
-  item: {
-    borderRadius: 7,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-  },
-  itemText: {
-    fontSize: 18,
-  },
-  noResultsText: (text) => ({
-    opacity: text ? 0.7 : 0,
-    paddingLeft: 10,
-    paddingTop: 5,
-    fontSize: 17,
-  }),
-  clearButton: {
-    alignSelf: "center",
-    padding: 5,
-  },
-  clearButtonText: {
-    color: "blue",
-  },
-
-  politicianItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#FFF",
-    marginVertical: 5,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  politicianItemText: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  politicianScore: {
-    fontSize: 14,
-    color: "#555",
-  },
-  politicianItemImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 10,
-  },
-  politicianInfo: {
-    flex: 1,
-  },
-
-  loaderContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-  errorText: {
-    fontSize: 18,
-    textAlign: "center",
-    marginTop: 20,
-  },
-});
