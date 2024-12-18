@@ -1,5 +1,4 @@
 import React from "react";
-import {Text, TouchableHighlight, StyleSheet} from "react-native";
 import _Container from "../styles/Container";
 import _Button from "../styles/Button";
 import {useTheme} from "react-native-paper";
