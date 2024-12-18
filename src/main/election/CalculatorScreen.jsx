@@ -26,6 +26,8 @@ export default function CalculatorScreen({navigation}) {
   const [theRestMandatesValue, setTheRestMandatesValue] = useState("460");
 
 
+  const [triggerUpdate, setTriggerUpdate] = useState(true);
+
   // PK: Hide bottom TabBar
   useEffect(() => {
     return tabBarAnim(navigation);
@@ -40,8 +42,6 @@ export default function CalculatorScreen({navigation}) {
     if (parties.length < 9 && sum < 100) {
       setParties((prevParties) => [...prevParties, 0]);
     }
-    onPercentageChange();
-    onPercentageChange();
   }
 
   // deletes party from further calculations
@@ -53,12 +53,10 @@ export default function CalculatorScreen({navigation}) {
       inputValues[indexToDelete] = 0;
       outputValues[indexToDelete] = 0;
     }
-    onPercentageChange();
-    onPercentageChange();
   }
 
   // called whenever user changes something in the inputBoxes
-  function onPercentageChange() {
+  useEffect(() => {
     let sumTemp = 0;
     for (let index = 0; index < inputValues.length; index++) {
       inputValues[index] = inputValues[index].replace(",", ".");
@@ -102,7 +100,7 @@ export default function CalculatorScreen({navigation}) {
         inputValues[index] = "";
       }
     }
-  }
+  }, [parties, triggerUpdate]);
 
   // starts process of calculating mandates
   function calculateDhondtMandates() {
@@ -351,7 +349,8 @@ export default function CalculatorScreen({navigation}) {
                   value={inputValues[index]}
                   onChangeText={(newValue) => {
                     inputValues[index] = newValue;
-                    onPercentageChange();
+                    // onPercentageChange();
+                    setTriggerUpdate(!triggerUpdate);
                   }}
                   keyboardType="numeric"
                   maxLength={inputValues[index] === "100" ? 3 : 5}
@@ -374,7 +373,8 @@ export default function CalculatorScreen({navigation}) {
                 disabled={!inputValues[index]}
                 onClick={() => {
                   overThreshold[index] = !overThreshold[index];
-                  onPercentageChange();
+                    // onPercentageChange();
+                    setTriggerUpdate(!triggerUpdate);
                 }}
                 rightText="Nie przekroczono progu wyborczego"
                 rightTextStyle={styles.checkBoxText}

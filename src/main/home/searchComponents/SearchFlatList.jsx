@@ -1,28 +1,13 @@
-import {useEffect, useRef, useState, useContext} from "react";
-import {
-  StyleSheet,
-  Text,
-  FlatList,
-  View,
-  Animated,
-  Easing,
-  Keyboard,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator
-} from "react-native";
-import {TextInput, Chip, MD2Colors} from "react-native-paper";
-import {getAllPoliticians} from "../../../backend/database/Politicians.js";
-import {GlobalContext} from "../../nav/GlobalContext.jsx";
-import {getTrendingPoliticians} from "../../../backend/database/Politicians";
-import {useTextInputProps} from "../../styles/TextInput";
+import { useEffect, useRef, useState, useContext } from "react";
+import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image, ActivityIndicator, ScrollView } from "react-native";
+import { TextInput, Chip, MD2Colors } from "react-native-paper";
+import { getAllPoliticians } from "../../../backend/database/Politicians.js";
+import { getTrendingPoliticians } from "../../../backend/database/Politicians";
+import { useTextInputProps } from "../../styles/TextInput";
 
-
-
-export default function SearchFlatList({data, handleOnPress}) {
-  const updateDataTrigger = useContext(GlobalContext).updateDataTrigger; // triggered when user goes back from profile screen
-  const [initialData, setInitialData] = useState(data); // all politicians
-  const [filteredData, setFilteredData] = useState(data); // politicians after search
+export default function SearchFlatList({ handleOnPress }) {
+  const [initialData, setInitialData] = useState([]); // all politicians
+  const [filteredData, setFilteredData] = useState([]); // politicians after search
   const [trendingPoliticians, setTrendingPoliticians] = useState([]); // trending politicians
   const [searchText, setSearchText] = useState("");
   const [isTrending, setIsTrending] = useState(false);
@@ -34,6 +19,7 @@ export default function SearchFlatList({data, handleOnPress}) {
   const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
   const [isNameSortingASC, setIsNameSortingASC] = useState(true);
   const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(false);
+  const [isRatingCountSortingASC, setIsRatingCountSortingASC] = useState(false);
 
   // PK: Clear button animation
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -41,21 +27,21 @@ export default function SearchFlatList({data, handleOnPress}) {
   useEffect(() => {
     // PK: Fade in
     searchText.length > 0 &&
-    Animated.timing(opacityAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-      easing: (value) => Easing.ease(value),
-    }).start();
+      Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+        easing: (value) => Easing.ease(value),
+      }).start();
 
     // PK: Fade out
     searchText.length === 0 &&
-    Animated.timing(opacityAnim, {
-      toValue: 0,
-      duration: 250,
-      useNativeDriver: true,
-      easing: (value) => Easing.ease(value),
-    }).start();
+      Animated.timing(opacityAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+        easing: (value) => Easing.ease(value),
+      }).start();
   }, [searchText]);
 
   /**
@@ -68,6 +54,7 @@ export default function SearchFlatList({data, handleOnPress}) {
       if (sortOrder === "surname") reverseOrder = isSurnameSortingASC;
       else if (sortOrder === "name") reverseOrder = isNameSortingASC;
       else if (sortOrder === "global_rating") reverseOrder = isGlobalRatingSortingASC;
+      else if (sortOrder === "rating_count") reverseOrder = isRatingCountSortingASC;
 
       const data = isTrending
         ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
@@ -80,7 +67,25 @@ export default function SearchFlatList({data, handleOnPress}) {
 
     ClearTextInput();
     getPoliticiansData();
-  }, [updateDataTrigger, sortOrder, isSurnameSortingASC, isNameSortingASC, isGlobalRatingSortingASC, isTrending, numberOfDays]);
+  }, [sortOrder, isSurnameSortingASC, isNameSortingASC, isGlobalRatingSortingASC, isRatingCountSortingASC, isTrending, numberOfDays]);
+
+  async function onRefresh() {
+    setIsLoading(true);
+    let reverseOrder = "surname";
+    if (sortOrder === "surname") reverseOrder = isSurnameSortingASC;
+    else if (sortOrder === "name") reverseOrder = isNameSortingASC;
+    else if (sortOrder === "global_rating") reverseOrder = isGlobalRatingSortingASC;
+    else if (sortOrder === "rating_count") reverseOrder = isRatingCountSortingASC;
+
+    const data = isTrending
+      ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
+      : await getAllPoliticians(sortOrder, !reverseOrder);
+
+    setInitialData(data);
+    setFilteredData(data);
+    ClearTextInput();
+    setIsLoading(false);
+  }
 
   /**
    * Filters through the array of politician names, by obtaining indexes of each occurrence of " " and "-" into array of ints.
@@ -105,8 +110,6 @@ export default function SearchFlatList({data, handleOnPress}) {
     } else {
       setFilteredData([]);
     }
-
-    // clearSortingButtons();
   }
 
   /**
@@ -127,7 +130,6 @@ export default function SearchFlatList({data, handleOnPress}) {
     setSearchText("");
     if (isTrending) setFilteredData(trendingPoliticians);
     else setFilteredData(initialData);
-    // clearSortingButtons();
   }
 
   return (
@@ -143,11 +145,11 @@ export default function SearchFlatList({data, handleOnPress}) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
-          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()}/>}
+          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()} />}
           right={
             <TextInput.Icon
               icon="close"
-              style={{opacity: opacityAnim}}
+              style={{ opacity: opacityAnim }}
               onPress={() => {
                 ClearTextInput();
                 // Keyboard.dismiss()
@@ -161,78 +163,116 @@ export default function SearchFlatList({data, handleOnPress}) {
         />
       </View>
 
-      <View style={styles.chipsContainer}>
-        {/* wszyscy politycy / politycy na czasie */}
-        <Chip style={styles.chip} icon="account" disabled={isLoading} onPress={() => setIsTrending(!isTrending)}>
-          {isTrending ? "Na Czasie" : "Wszyscy politycy"}
-        </Chip>
-
-        {/* Button do zmiany dni */}
-        {isTrending ? (
-          <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}>
-            Okres czasu: {numberOfDays}
+      <ScrollView
+        horizontal={true}
+        contentContainerStyle={{
+          flexGrow: 1,
+          position: "relative",
+        }}
+        style={styles.filtersScrollView}
+      >
+        <View style={styles.chipsContainer}>
+          {/* wszyscy politycy / politycy na czasie */}
+          <Chip style={styles.chip} icon="account" mode={!isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(false)}>
+            Wszyscy politycy
           </Chip>
-        ) : null}
-      </View>
 
-      <View style={styles.chipsContainer}>
-        <Chip
-          style={styles.chip}
-          disabled={isLoading}
-          icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
-          mode={sortOrder === "surname" ? "flat" : "outlined"}
-          onPress={() => {
-            let reverseOrder = sortOrder == "surname" ? !isSurnameSortingASC : isSurnameSortingASC;
-            setIsSurnameSortingASC(reverseOrder);
-            setsortOrder("surname");
-          }}
-        >
-          Nazwisko
-        </Chip>
+          <Chip style={styles.chip} icon="account" mode={isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(true)}>
+            Na Czasie
+          </Chip>
 
-        <Chip
-          style={styles.chip}
-          disabled={isLoading}
-          icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
-          mode={sortOrder === "name" ? "flat" : "outlined"}
-          onPress={() => {
-            let reverseOrder = sortOrder == "name" ? !isNameSortingASC : isNameSortingASC;
-            setIsNameSortingASC(reverseOrder);
-            setsortOrder("name");
-          }}
-        >
-          Imię
-        </Chip>
+          {/* Button do zmiany dni */}
+          {isTrending ? (
+            <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}>
+              Okres czasu: {numberOfDays}
+            </Chip>
+          ) : null}
+        </View>
+      </ScrollView>
 
-        <Chip
-          style={styles.chip}
-          disabled={isLoading}
-          icon={isGlobalRatingSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
-          mode={sortOrder === "global_rating" ? "flat" : "outlined"}
-          onPress={() => {
-            let reverseOrder = sortOrder == "global_rating" ? !isGlobalRatingSortingASC : isGlobalRatingSortingASC;
-            setIsGlobalRatingSortingASC(reverseOrder);
-            setsortOrder("global_rating");
-          }}
-        >
-          ocena globalna
-        </Chip>
-      </View>
+      <ScrollView
+        horizontal={true}
+        contentContainerStyle={{
+          flexGrow: 1,
+          position: "relative",
+        }}
+        style={styles.filtersScrollView}
+      >
+        <View style={styles.chipsContainer}>
+          <Chip
+            style={styles.chip}
+            disabled={isLoading}
+            icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+            mode={sortOrder === "surname" ? "flat" : "outlined"}
+            onPress={() => {
+              let reverseOrder = sortOrder == "surname" ? !isSurnameSortingASC : isSurnameSortingASC;
+              setIsSurnameSortingASC(reverseOrder);
+              setsortOrder("surname");
+            }}
+          >
+            Nazwisko
+          </Chip>
+
+          <Chip
+            style={styles.chip}
+            disabled={isLoading}
+            icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+            mode={sortOrder === "name" ? "flat" : "outlined"}
+            onPress={() => {
+              let reverseOrder = sortOrder == "name" ? !isNameSortingASC : isNameSortingASC;
+              setIsNameSortingASC(reverseOrder);
+              setsortOrder("name");
+            }}
+          >
+            Imię
+          </Chip>
+
+          <Chip
+            style={styles.chip}
+            disabled={isLoading}
+            icon={isGlobalRatingSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+            mode={sortOrder === "global_rating" ? "flat" : "outlined"}
+            onPress={() => {
+              let reverseOrder = sortOrder == "global_rating" ? !isGlobalRatingSortingASC : isGlobalRatingSortingASC;
+              setIsGlobalRatingSortingASC(reverseOrder);
+              setsortOrder("global_rating");
+            }}
+          >
+            ocena globalna
+          </Chip>
+
+          <Chip
+            style={styles.chip}
+            disabled={isLoading}
+            icon={isRatingCountSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
+            mode={sortOrder === "rating_count" ? "flat" : "outlined"}
+            onPress={() => {
+              let reverseOrder = sortOrder == "rating_count" ? !isRatingCountSortingASC : isRatingCountSortingASC;
+              setIsRatingCountSortingASC(reverseOrder);
+              setsortOrder("rating_count");
+            }}
+          >
+            liczba ocen
+          </Chip>
+        </View>
+      </ScrollView>
 
       {isLoading ? (
         <View style={styles.loaderContainer}>
           <Text style={styles.errorText}>Ładowanie</Text>
-          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800}/>
+          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800} />
         </View>
-      ) : filteredData.length !== 0 && !isLoading ? (
+      ) : filteredData.length !== 0 ? (
         <FlatList
           keyboardShouldPersistTaps={"handled"}
           persistentScrollbar={true}
           style={styles.list(filteredData)}
           data={filteredData}
           extraData={initialData}
+          onRefresh={onRefresh}
+          refreshing={isLoading}
           keyExtractor={(item) => item.key}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <Item
               id={item.key}
               nameSurname={item.value}
@@ -252,7 +292,7 @@ export default function SearchFlatList({data, handleOnPress}) {
     </View>
   );
 
-  function Item({id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending}) {
+  function Item({ id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
     return (
       <TouchableOpacity
         key={id}
@@ -265,9 +305,9 @@ export default function SearchFlatList({data, handleOnPress}) {
           source={
             picture && picture !== ""
               ? {
-                uri: `data:image/jpeg;base64,${picture}`,
-                cache: "force-cache",
-              }
+                  uri: `data:image/jpeg;base64,${picture}`,
+                  cache: "force-cache",
+                }
               : require("./../../../../assets/noPhoto.png")
           }
           style={styles.politicianItemImage}
@@ -303,12 +343,21 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   list: (result) => ({
-    maxWidth: "80%",
+    maxWidth: "90%",
     marginTop: 5,
     margin: 1,
-    marginBottom: 20,
+    marginBottom: 5,
     flexGrow: 0,
   }),
+  filtersScrollView: {
+    maxWidth: "90%",
+    marginTop: 4,
+    minHeight: 40,
+    maxHeight: 40,
+    paddingBottom: 4,
+    alignContent: "center",
+    flexGrow: 0,
+  },
 
   chipsContainer: {
     marginVertical: 2,
@@ -356,7 +405,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 3,
   },
