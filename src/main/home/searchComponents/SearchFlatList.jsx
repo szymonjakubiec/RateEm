@@ -256,6 +256,10 @@ export default function SearchFlatList({handleOnPress}) {
 
       <ScrollView
         horizontal={true}
+        snapToAlignment="center"
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={(event) => onMomentumHandler(event)}
+        keyboardShouldPersistTaps="always"
         contentContainerStyle={{
           flexGrow: 1,
           position: "relative",
@@ -286,6 +290,10 @@ export default function SearchFlatList({handleOnPress}) {
 
       <ScrollView
         horizontal={true}
+        snapToAlignment="center"
+        showsHorizontalScrollIndicator={false}
+        keyboardShouldPersistTaps="always"
+        onMomentumScrollEnd={(event) => onMomentumHandler(event)}
         contentContainerStyle={{
           flexGrow: 1,
           position: "relative",
