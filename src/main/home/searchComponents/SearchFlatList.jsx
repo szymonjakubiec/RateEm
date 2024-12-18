@@ -65,8 +65,8 @@ export default function SearchFlatList({handleOnPress}) {
         ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
         : await getAllPoliticians(sortOrder, !reverseOrder);
 
-      setInitialData(data);
-      setFilteredData(data);
+      setInitialData(data || []);
+      setFilteredData(data || []);
       setIsLoading(false);
     }
 
@@ -86,8 +86,8 @@ export default function SearchFlatList({handleOnPress}) {
       ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
       : await getAllPoliticians(sortOrder, !reverseOrder);
 
-    setInitialData(data);
-    setFilteredData(data);
+    setInitialData(data || []);
+    setFilteredData(data || []);
     ClearTextInput();
     setIsLoading(false);
   }
