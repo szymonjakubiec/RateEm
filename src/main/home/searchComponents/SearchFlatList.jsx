@@ -7,6 +7,7 @@ import {TextInput, Chip, useTheme} from "react-native-paper";
 import {getAllPoliticians} from "../../../backend/database/Politicians.js";
 import {getTrendingPoliticians} from "../../../backend/database/Politicians";
 import {useTextInputProps} from "../../styles/TextInput";
+import Item from "./Item";
 
 
 
@@ -400,44 +401,6 @@ export default function SearchFlatList({handleOnPress}) {
     </View>
   );
 
-  function Item({ id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
-    return (
-      <TouchableOpacity
-        key={id}
-        style={styles.politicianItem}
-        onPress={() => {
-          handleOnPress(id);
-        }}
-      >
-        <Image
-          source={
-            picture && picture !== ""
-              ? {
-                  uri: `data:image/jpeg;base64,${picture}`,
-                  cache: "force-cache",
-                }
-              : require("./../../../../assets/noPhoto.png")
-          }
-          style={styles.politicianItemImage}
-        />
-        <View style={styles.politicianInfo}>
-          {sortOrder === "name" ? (
-            <Text style={styles.politicianItemText}>
-              {name} {surname}
-            </Text>
-          ) : (
-            <Text style={styles.politicianItemText}>
-              {surname} {name}
-            </Text>
-          )}
-          <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
-          <Text style={styles.politicianScore}>
-            {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
 }
 
 
