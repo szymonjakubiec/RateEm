@@ -117,7 +117,7 @@ export default function SearchFlatList({ handleOnPress }) {
    */
   const handleNumberOfDaysClick = () => {
     setnumberOfDaysIndex((prevIndex) => {
-      const newIndex = prevIndex < 2 ? prevIndex + 1 : 0;
+      const newIndex = (prevIndex + 1) % numberOfDaysTable.length;
       setNumberOfDays(numberOfDaysTable[newIndex]);
       return newIndex;
     });
@@ -173,13 +173,15 @@ export default function SearchFlatList({ handleOnPress }) {
       >
         <View style={styles.chipsContainer}>
           {/* wszyscy politycy / politycy na czasie */}
-          <Chip style={styles.chip} icon="account" mode={!isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(false)}>
-            Wszyscy politycy
-          </Chip>
-
-          <Chip style={styles.chip} icon="account" mode={isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(true)}>
-            Na Czasie
-          </Chip>
+          {!isTrending ? (
+            <Chip style={styles.chip} icon="account" mode={"flat"} disabled={isLoading} onPress={() => setIsTrending(true)}>
+              Wszyscy
+            </Chip>
+          ) : (
+            <Chip style={styles.chip} icon="account" mode={"flat"} disabled={isLoading} onPress={() => setIsTrending(false)}>
+              Na Czasie
+            </Chip>
+          )}
 
           {/* Button do zmiany dni */}
           {isTrending ? (
