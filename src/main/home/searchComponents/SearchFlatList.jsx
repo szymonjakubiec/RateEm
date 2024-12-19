@@ -46,7 +46,7 @@ export default function SearchFlatList({ data, handleOnPress }) {
   }, [searchText]);
 
   /**
-   * Sets new data. Trigtered after going back from politicians profile.
+   * Sets new data. Triggered after going back from politicians profile.
    */
   useEffect(() => {
     async function getPoliticiansData() {
