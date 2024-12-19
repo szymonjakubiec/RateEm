@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image, ActivityIndicator, ScrollView } from "react-native";
 import { TextInput, Chip, MD2Colors } from "react-native-paper";
 import { getAllPoliticians } from "../../../backend/database/Politicians.js";
@@ -10,16 +10,26 @@ export default function SearchFlatList({ handleOnPress }) {
   const [filteredData, setFilteredData] = useState([]); // politicians after search
   const [trendingPoliticians, setTrendingPoliticians] = useState([]); // trending politicians
   const [searchText, setSearchText] = useState("");
+  
   const [isTrending, setIsTrending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const numberOfDaysTable = [
+    {key: 1, value: "1 dzień"},
+    {key: 7, value: "7 dni"},
+    {key: 30, value: "1 mies."}
+  ]
   const [numberOfDays, setNumberOfDays] = useState(1);
-  const [numberOfDaysIndex, setnumberOfDaysIndex] = useState(0);
-  const [numberOfDaysTable, setnumberOfDaysTable] = useState([1, 7, 30]);
-  const [sortOrder, setsortOrder] = useState("surname");
+  const [numberOfDaysDisplay, setNumberOfDaysDisplay] = useState(numberOfDaysTable[0].value);
+  const [numberOfDaysIndex, setNumberOfDaysIndex] = useState(0);
+  
+  const [sortOrder, setSortOrder] = useState("surname");
   const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
   const [isNameSortingASC, setIsNameSortingASC] = useState(true);
   const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(false);
   const [isRatingCountSortingASC, setIsRatingCountSortingASC] = useState(false);
+  
+  
 
   // PK: Clear button animation
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -45,7 +55,7 @@ export default function SearchFlatList({ handleOnPress }) {
   }, [searchText]);
 
   /**
-   * Sets new data. Trigtered after going back from politicians profile.
+   * Sets new data. Triggered after going back from politicians profile.
    */
   useEffect(() => {
     async function getPoliticiansData() {
@@ -116,9 +126,10 @@ export default function SearchFlatList({ handleOnPress }) {
    * Changes number of days from which we take the trending politicians.
    */
   const handleNumberOfDaysClick = () => {
-    setnumberOfDaysIndex((prevIndex) => {
-      const newIndex = prevIndex < 2 ? prevIndex + 1 : 0;
-      setNumberOfDays(numberOfDaysTable[newIndex]);
+    setNumberOfDaysIndex((prevIndex) => {
+      const newIndex = (prevIndex + 1) % numberOfDaysTable.length;
+      setNumberOfDays(numberOfDaysTable[newIndex].key);
+      setNumberOfDaysDisplay(numberOfDaysTable[newIndex].value);
       return newIndex;
     });
   };
@@ -173,18 +184,20 @@ export default function SearchFlatList({ handleOnPress }) {
       >
         <View style={styles.chipsContainer}>
           {/* wszyscy politycy / politycy na czasie */}
-          <Chip style={styles.chip} icon="account" mode={!isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(false)}>
-            Wszyscy politycy
-          </Chip>
-
-          <Chip style={styles.chip} icon="account" mode={isTrending ? "flat" : "outlined"} disabled={isLoading} onPress={() => setIsTrending(true)}>
-            Na Czasie
-          </Chip>
+          {!isTrending ? (
+            <Chip style={styles.chip} icon="account" mode={"flat"} disabled={isLoading} onPress={() => setIsTrending(true)}>
+              Wszyscy
+            </Chip>
+          ) : (
+            <Chip style={styles.chip} icon="account" mode={"flat"} disabled={isLoading} onPress={() => setIsTrending(false)}>
+              Na Czasie
+            </Chip>
+          )}
 
           {/* Button do zmiany dni */}
           {isTrending ? (
             <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}>
-              Okres czasu: {numberOfDays}
+              Okres: {numberOfDaysDisplay}
             </Chip>
           ) : null}
         </View>
@@ -207,7 +220,7 @@ export default function SearchFlatList({ handleOnPress }) {
             onPress={() => {
               let reverseOrder = sortOrder == "surname" ? !isSurnameSortingASC : isSurnameSortingASC;
               setIsSurnameSortingASC(reverseOrder);
-              setsortOrder("surname");
+              setSortOrder("surname");
             }}
           >
             Nazwisko
@@ -221,7 +234,7 @@ export default function SearchFlatList({ handleOnPress }) {
             onPress={() => {
               let reverseOrder = sortOrder == "name" ? !isNameSortingASC : isNameSortingASC;
               setIsNameSortingASC(reverseOrder);
-              setsortOrder("name");
+              setSortOrder("name");
             }}
           >
             Imię
@@ -235,7 +248,7 @@ export default function SearchFlatList({ handleOnPress }) {
             onPress={() => {
               let reverseOrder = sortOrder == "global_rating" ? !isGlobalRatingSortingASC : isGlobalRatingSortingASC;
               setIsGlobalRatingSortingASC(reverseOrder);
-              setsortOrder("global_rating");
+              setSortOrder("global_rating");
             }}
           >
             ocena globalna
@@ -249,7 +262,7 @@ export default function SearchFlatList({ handleOnPress }) {
             onPress={() => {
               let reverseOrder = sortOrder == "rating_count" ? !isRatingCountSortingASC : isRatingCountSortingASC;
               setIsRatingCountSortingASC(reverseOrder);
-              setsortOrder("rating_count");
+              setSortOrder("rating_count");
             }}
           >
             liczba ocen
@@ -313,15 +326,9 @@ export default function SearchFlatList({ handleOnPress }) {
           style={styles.politicianItemImage}
         />
         <View style={styles.politicianInfo}>
-          {sortOrder === "name" ? (
-            <Text style={styles.politicianItemText}>
-              {name} {surname}
-            </Text>
-          ) : (
-            <Text style={styles.politicianItemText}>
-              {surname} {name}
-            </Text>
-          )}
+          <Text style={styles.politicianItemText}>
+            {name} {surname}
+          </Text>
           <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
           <Text style={styles.politicianScore}>
             {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}

@@ -154,6 +154,45 @@ app.use(express.json());
     }
   });
 
+  // --- calculate ownRating USER_ID POLITICIAN_ID -----------------------------------------------------
+  app.get("/api/calculate-own-rating", async (req, res) => {
+    const { user_id, politician_id } = req.query; // Używamy req.query do pobrania parametrów
+
+    // Walidacja danych
+    if (!user_id || !politician_id) {
+      return res.status(400).json({
+        message: "Both user_id and politician_id must be provided",
+        missing: {
+          user_id: !user_id ? "Missing" : "Provided",
+          politician_id: !politician_id ? "Missing" : "Provided",
+        },
+      });
+    }
+
+    let connection;
+    try {
+      connection = await mysql.createConnection(config);
+      const [rows] = await connection.execute(
+        "SELECT SUM(value * weight) / SUM(weight) AS result FROM ratings WHERE user_id = ? AND politician_id = ?",
+        [user_id, politician_id]
+      );
+
+      // Sprawdzenie, czy wynik nie jest pusty
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Rating not found" });
+      }
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ message: "Internal Server Error", error: err.message });
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {}
+      }
+    }
+  });
+
   // --- select TRENDING POLITICIANS -----------------------------------------------------
   app.get("/api/trending-politicians", async (req, res) => {
     const days = req.query.days || "30";
@@ -386,6 +425,33 @@ app.use(express.json());
       }
     }
   });
+
+  // --- calculate globalRating -----------------------------------------------------
+  app.get("/api/calculate-global-rating", async (req, res) => {
+    const { politician_id } = req.query;
+
+    if (!politician_id) {
+      return res.status(400).json({ message: "No politician_id provided" });
+    }
+
+    let connection;
+    try {
+      connection = await mysql.createConnection(config);
+      const query = "SELECT AVG(value) AS result FROM own_ratings WHERE politician_id = ?";
+      const [rows] = await connection.execute(query, [politician_id]);
+
+      res.json(rows);
+    } catch (err) {
+      res.status(500).send(err.message);
+    } finally {
+      if (connection) {
+        try {
+          await connection.end();
+        } catch (err) {}
+      }
+    }
+  });
+  
 
   app.get("/api/own-ratings", async (req, res) => {
     const { user_id, politician_id } = req.query;

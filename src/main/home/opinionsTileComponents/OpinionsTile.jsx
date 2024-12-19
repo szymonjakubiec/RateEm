@@ -1,9 +1,10 @@
-import {FlatList, StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
+import {FlatList, StyleSheet, Text, TouchableHighlight, View} from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import {useContext, useEffect, useRef, useState} from "react";
 import {OpinionsTileContext} from "../nav/OpinionsTileContext";
 import {RatingPopupTypes, ConfirmPopupTypes} from "../../../backend/EnumTypes"; 
-import {Chip, Modal, Portal} from "react-native-paper";
+import {Chip, Modal, Portal, TextInput} from "react-native-paper";
+import {useTextInputProps} from "../../styles/TextInput";
 
 
 
@@ -342,7 +343,7 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRa
         <View style={styles.popupWrapper}>
           <View style={styles.popupView}>
             {(itemWeight === 1) && <TextInput
-              style={styles.textInput}
+              {...useTextInputProps()}
               placeholder="Wstaw tytuł"
               value={title}
               onChangeText={(input) => setTitle(input)}
@@ -356,7 +357,7 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRa
               enableHalfStar={false}
             />
           {(itemWeight === 1) && <TextInput
-              style={styles.textInput}
+              {...useTextInputProps()}
               placeholder="Wstaw komentarz do opinii"
               value={description}
               onChangeText={(input) => setDescription(input)}
@@ -448,14 +449,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   button: {
-    // width: "60%",
     backgroundColor: "whitesmoke",
     borderColor: "#000",
     borderWidth: 1,
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 15,
-    // marginTop: 10,
   },
   buttonNoBg: {
     borderColor: "#000",
@@ -475,24 +474,12 @@ const styles = StyleSheet.create({
     backgroundColor: "gray",
     padding: 10,
     marginBottom: 10,
-    // alignSelf: "center",
     borderRadius: 5,
   },
   ratingItemBase: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-around",
-  },
-  textInput: {
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#000",
-    borderStyle: "solid",
-    paddingTop: 6,
-    paddingBottom: 6,
-    paddingLeft: 20,
-    paddingRight: 20,
-    width: "90%",
   },
   
   //popup
@@ -509,9 +496,18 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderColor: "#000",
     borderWidth: 1,
-    // zIndex: 2,
     gap: 10,
   },
+  // textInput: {
+  //   borderRadius: 5,
+  //   borderWidth: 2,
+  //   borderColor: "#000",
+  //   borderStyle: "solid",
+  //   paddingTop: 6,
+  //   paddingBottom: 6,
+  //   paddingLeft: 20,
+  //   paddingRight: 20,
+  // },
   buttonsView: {
     display: "flex",
     flexDirection: "row",
