@@ -51,31 +51,34 @@ export default function CalculatorScreen({ navigation }) {
   useEffect(() => {
     let sumTemp = 0;
     for (let index = 0; index < inputValues.length; index++) {
-      // if (index < inputValues.length - 1) inputValues[index] = inputValues[index].replace(",", ".");
       inputValues[index] = inputValues[index].replace(",", ".");
 
       // makes sure that empty persentage input is considered like as 0
       if (inputValues[index] == "") {
         inputValues[index] = 0;
       } else if (inputValues[index].toString().includes(".")) {
+        // deletes unnecessary '.'
         const dividedByComma = inputValues[index].toString().split(".");
         if (dividedByComma.length - 1 > 1) {
           inputValues[index] = dividedByComma[0] + "." + dividedByComma[1];
         }
       }
 
+      sumTemp += parseFloat(inputValues[index]);
       setTheRestValue("0");
       if (sumTemp < 100) {
-        sumTemp += parseFloat(inputValues[index]);
-
         const shortage = 100 - sumTemp;
         if (shortage > 0) {
           setTheRestValue(shortage.toFixed(2).toString());
         }
-      }
-
-      if (sumTemp >= 100) {
-        const surplus = sumTemp - 100;
+      } else if (sumTemp >= 100) {
+        let takenPersentage = 0;
+        if (index < inputValues.length) {
+          for (let i = index + 1; i < inputValues.length; i++) {
+            takenPersentage += parseFloat(inputValues[i]);
+          }
+        }
+        const surplus = sumTemp - 100 + takenPersentage;
         inputValues[index] = (inputValues[index] - surplus).toString();
         sumTemp = sumTemp - surplus;
       }
