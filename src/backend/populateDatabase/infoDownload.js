@@ -1,7 +1,6 @@
 const mysql = require("mysql2");
 const fs = require("fs");
 const axios = require("axios");
-const { log } = require("console");
 
 var config = {
   host: "rateem-server.mysql.database.azure.com",
@@ -24,6 +23,7 @@ class InfoDownload {
     this.uploadData();
   }
 
+  // zarządza pobieraniem danych
   async getData() {
     await this.sejmKadencja();
     await this.prezydentKadencja();
@@ -33,6 +33,7 @@ class InfoDownload {
     this.sortPolitycy();
   }
 
+  // pobiera kadencje Sejmu
   async sejmKadencja() {
     try {
       // pobiera z API daty poprzednich wyborów
@@ -73,6 +74,7 @@ class InfoDownload {
     }
   }
 
+  // pobiera kadencje Prezydenta RP
   async prezydentKadencja() {
     try {
       // pobiera z API daty poprzednich wyborów
@@ -127,6 +129,7 @@ class InfoDownload {
     }
   }
 
+  // pobiera kadencje Parlamentu Europejskiego
   async euKadencja() {
     const url = `https://api.sejm.gov.pl/eli/acts/search?publisher=DU&title=o%20wynikach%20wyborów%20posłów%20do%20Parlamentu%20Europejskiego%20przeprowadzonych%20w%20dniu&type=Obwieszczenie`;
 
@@ -155,6 +158,7 @@ class InfoDownload {
     }
   }
 
+  // zmienia format daty
   makeDateAppropriate(date) {
     date = date.replace("stycznia", "01");
     date = date.replace("lutego", "02");
@@ -186,7 +190,9 @@ class InfoDownload {
     return date;
   }
 
+  // pobiera informacje o politykach z Sejmu
   async sejmPolitycy() {
+    console.log("SEJM POLITYCY");
     try {
       // pobiera numery kadencji sejmu (żeby wiedzieć, na jakim numerze zakończyć)
       const url = `https://api.sejm.gov.pl/sejm/term`;
@@ -238,13 +244,29 @@ class InfoDownload {
     }
   }
 
+  // pobiera informacje o politykach z Parlamentu Europejskiego
   async euPolitycy() {
+    console.log("EU POLITYCY");
     try {
       // pobiera numery kadencji eu parlamentu (żeby wiedzieć, na jakim numerze zakończyć)
-      this.euWszystkieKadencje = [{ num: 10 }, { num: 9 }, { num: 8 }]; // rozwiązanie tymczasowe
-      //
-      //
-      //
+      let kadencjaOk = false;
+      let kadencjaNr = 8;
+      while (!kadencjaOk) {
+        try {
+          const url = `https://data.europarl.europa.eu/api/v2/meps?parliamentary-term=${kadencjaNr}&country-of-representation=PL&format=application%2Fld%2Bjson&offset=0`;
+          const response = await fetch(url);
+          await response.json();
+          kadencjaNr++;
+        } catch (error) {
+          kadencjaOk = true;
+          kadencjaNr--;
+        }
+      }
+
+      this.euWszystkieKadencje = [];
+      this.euWszystkieKadencje.push({ num: kadencjaNr });
+      this.euWszystkieKadencje.push({ num: kadencjaNr - 1 });
+      this.euWszystkieKadencje.push({ num: kadencjaNr - 2 });
 
       // pobiera wszystkich posłów dla każdej kadencji
       for (const kadencja of this.euWszystkieKadencje) {
@@ -269,12 +291,14 @@ class InfoDownload {
                   // przed dodaniem do listy waliduje czy taka osoba już w niej nie jest
                   if (this.isPoliticianInData(politykSzczegoly)) {
                     var osobaTemp = {};
-                    osobaTemp.fullName = osoba.givenName + " " + osoba.familyName;
-                    osobaTemp.firstName = osoba.givenName;
-                    osobaTemp.lastName = osoba.familyName;
+                    osobaTemp.fullName = osoba.givenName && osoba.familyName ? osoba.givenName + " " + osoba.familyName : "";
+                    osobaTemp.firstName = osoba.givenName ? osoba.givenName : "";
+                    osobaTemp.lastName = osoba.familyName ? osoba.familyName : "";
                     osobaTemp.partiaSkrot = "";
                     osobaTemp.partia = "";
-                    osobaTemp.dataUrodzenia = politykSzczegoly.bday;
+                    osobaTemp.dataUrodzenia = politykSzczegoly.bday ? politykSzczegoly.bday : "0000-00-00";
+
+                    // zdjęcie
                     try {
                       const photoResponse = await axios.get(politykSzczegoly.img, {
                         responseType: "arraybuffer",
@@ -284,13 +308,17 @@ class InfoDownload {
                     } catch (error) {
                       osobaTemp.zdjecie = "";
                     }
+
+                    // płeć
                     if (politykSzczegoly.hasGender.includes("FEMALE")) {
                       osobaTemp.gender = "female";
                     } else if (politykSzczegoly.hasGender.includes("MALE")) {
                       osobaTemp.gender = "male";
                     } else {
-                      osobaTemp.gender = "pokemon";
+                      osobaTemp.gender = "else";
                     }
+
+                    // przynależność partyjna
                     for (const membership of politykSzczegoly.hasMembership) {
                       if (membership.membershipClassification == "def/ep-entities/NATIONAL_CHAMBER") {
                         let clubInfo = await this.getEuClubName(membership.organization, osobaTemp.gender);
@@ -300,6 +328,8 @@ class InfoDownload {
                         }
                       }
                     }
+
+                    // linki do socialmediów
                     if (politykSzczegoly.account !== undefined) {
                       for (const link in politykSzczegoly.account) {
                         if (politykSzczegoly.account[link].id.includes("facebook")) {
@@ -319,7 +349,6 @@ class InfoDownload {
                     }
 
                     this.politycy.push(osobaTemp);
-                    // console.log(this.politycy.length);
                   }
                 } catch (error) {
                   console.log("error");
@@ -334,23 +363,16 @@ class InfoDownload {
     }
   }
 
+  // sprawdz czy polityk jest już w pamięci programu
   isPoliticianInData(osoba) {
     const fullName = osoba.familyName.toLowerCase();
     const bday = osoba.bday;
 
-    // if (fullName == "hoffmann") {4
-    // console.log("\n\n\n", politician.lastName.toLowerCase(), fullName, " || ", politician.dataUrodzenia, bday, "\n\n\n");
-    // }
-
     for (const politician of this.politycy) {
       if (politician.lastName.toLowerCase() == fullName && politician.dataUrodzenia == bday) {
-        // console.log(politician.lastName);
-
         return false;
       }
     }
-
-    // console.log(politician.dataUrodzenia, " || ", bDay);
 
     return true;
   }
@@ -377,6 +399,7 @@ class InfoDownload {
     }
   }
 
+  // pobiera nazwy partii politycznych dla Parlamentu Europejskiego
   async getEuClubName(orgId, gender) {
     orgId = orgId.split("/")[1];
 
@@ -408,15 +431,18 @@ class InfoDownload {
     return "";
   }
 
+  // sortuje pobranych polityków w kolejności alfabetycznej
   sortPolitycy() {
     this.politycy.sort(function (a, b) {
-      var textA = a.fullName.toLowerCase();
-      var textB = b.fullName.toLowerCase();
+      var textA = a.lastName.toLowerCase();
+      var textB = b.lastName.toLowerCase();
       return textA < textB ? -1 : textA > textB ? 1 : 0;
     });
   }
 
+  // zarządza wgrywaniem danych do bazy danych
   uploadData() {
+    console.log("UPLOADOWANIE");
     var self = this;
     this.conn = new mysql.createConnection(config);
 
@@ -437,6 +463,7 @@ class InfoDownload {
     self.uploadPolitycy();
   }
 
+  // wgrywa dane o kadencji Sejmu
   uploadKadencjaSejm() {
     for (const wybor of this.sejmKadencje) {
       var name = "sejm_" + wybor;
@@ -448,6 +475,7 @@ class InfoDownload {
     }
   }
 
+  // wgrywa dane o kadencji Prezydenta RP
   uploadKadencjaPrezydent() {
     for (const wybor of this.prezydentKadencje) {
       var name = "prezydent_" + wybor;
@@ -459,6 +487,7 @@ class InfoDownload {
     }
   }
 
+  // wgrywa dane o kadencji Parlamentu Europejskiego+
   uploadKadencjaEu() {
     for (const wybor of this.euKadencje) {
       var name = "eu_" + wybor;
@@ -470,6 +499,7 @@ class InfoDownload {
     }
   }
 
+  // wgrywa dane o politykach
   async uploadPolitycy() {
     for (const polityk of this.politycy) {
       const resultLength = await this.getPolitician(polityk);
@@ -488,6 +518,7 @@ class InfoDownload {
     }
   }
 
+  // sprawdza czy polityk o danym imieniu i nazwisku istnieje w bazie danych
   async getPolitician(polityk) {
     var conn = new mysql.createConnection(config);
     let resultLength = 0;
@@ -495,14 +526,18 @@ class InfoDownload {
     try {
       await conn.connect();
       return new Promise((resolve, reject) => {
-        conn.execute("SELECT id, names_surname FROM politicians WHERE names_surname=?;", [polityk.fullName], (err, results) => {
-          if (err) {
-            reject(err);
-          } else {
-            resultLength = results.length;
-            resolve(resultLength);
+        conn.execute(
+          "SELECT id, names_surname FROM politicians WHERE surname=? AND birth_date=?;",
+          [polityk.lastName, polityk.dataUrodzenia],
+          (err, results) => {
+            if (err) {
+              reject(err);
+            } else {
+              resultLength = results.length;
+              resolve(resultLength);
+            }
           }
-        });
+        );
       });
     } catch (err) {
       throw err;
@@ -511,6 +546,7 @@ class InfoDownload {
     }
   }
 
+  // dodaje nowy rekord danego polityka
   async insertNewPolitician(polityk) {
     var conn = new mysql.createConnection(config);
 
@@ -547,6 +583,7 @@ class InfoDownload {
     }
   }
 
+  // aktualizuje rekord danego polityka
   async updatePolitician(polityk) {
     var conn = new mysql.createConnection(config);
 

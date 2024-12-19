@@ -18,6 +18,8 @@ export default function CalculatorScreen({ navigation }) {
   const [theRestValue, setTheRestValue] = useState("100");
   const [theRestMandatesValue, setTheRestMandatesValue] = useState(0);
 
+  const [triggerUpdate, setTriggerUpdate] = useState(true);
+
   // PK: Hide bottom TabBar
   useEffect(() => {
     return tabBarAnim(navigation);
@@ -32,8 +34,6 @@ export default function CalculatorScreen({ navigation }) {
     if (parties.length < 9 && sum < 100) {
       setParties((prevParties) => [...prevParties, 0]);
     }
-    onPersentageChange();
-    onPersentageChange();
   }
 
   // deletes party from further calculations
@@ -45,12 +45,10 @@ export default function CalculatorScreen({ navigation }) {
       inputValues[indexToDelete] = 0;
       outputValues[indexToDelete] = 0;
     }
-    onPersentageChange();
-    onPersentageChange();
   }
 
   // called whenever user changes something in the inpputboxes
-  function onPersentageChange() {
+  useEffect(() => {
     let sumTemp = 0;
     for (let index = 0; index < inputValues.length; index++) {
       inputValues[index] = inputValues[index].replace(",", ".");
@@ -59,24 +57,28 @@ export default function CalculatorScreen({ navigation }) {
       if (inputValues[index] == "") {
         inputValues[index] = 0;
       } else if (inputValues[index].toString().includes(".")) {
+        // deletes unnecessary '.'
         const dividedByComma = inputValues[index].toString().split(".");
         if (dividedByComma.length - 1 > 1) {
           inputValues[index] = dividedByComma[0] + "." + dividedByComma[1];
         }
       }
 
+      sumTemp += parseFloat(inputValues[index]);
       setTheRestValue("0");
       if (sumTemp < 100) {
-        sumTemp += parseFloat(inputValues[index]);
-
         const shortage = 100 - sumTemp;
         if (shortage > 0) {
           setTheRestValue(shortage.toFixed(2).toString());
         }
-      }
-
-      if (sumTemp >= 100) {
-        const surplus = sumTemp - 100;
+      } else if (sumTemp >= 100) {
+        let takenPersentage = 0;
+        if (index < inputValues.length) {
+          for (let i = index + 1; i < inputValues.length; i++) {
+            takenPersentage += parseFloat(inputValues[i]);
+          }
+        }
+        const surplus = sumTemp - 100 + takenPersentage;
         inputValues[index] = (inputValues[index] - surplus).toString();
         sumTemp = sumTemp - surplus;
       }
@@ -92,7 +94,7 @@ export default function CalculatorScreen({ navigation }) {
         inputValues[index] = "";
       }
     }
-  }
+  }, [parties, triggerUpdate]);
 
   // starts proccess of calculating mandates
   function calculateDhondtMandates() {
@@ -218,7 +220,8 @@ export default function CalculatorScreen({ navigation }) {
                   value={inputValues[index]}
                   onChangeText={(newValue) => {
                     inputValues[index] = newValue;
-                    onPersentageChange();
+                    // onPersentageChange();
+                    setTriggerUpdate(!triggerUpdate);
                   }}
                   keyboardType="numeric"
                   maxLength={5}
@@ -232,7 +235,8 @@ export default function CalculatorScreen({ navigation }) {
                   checkBoxColor="white"
                   onClick={() => {
                     overThreshold[index] = !overThreshold[index];
-                    onPersentageChange();
+                    // onPersentageChange();
+                    setTriggerUpdate(!triggerUpdate);
                   }}
                   isChecked={overThreshold[index]}
                 />
