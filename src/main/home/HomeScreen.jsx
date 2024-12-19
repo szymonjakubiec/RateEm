@@ -84,7 +84,7 @@ export default function HomeScreen({navigation}) {
 const styles = StyleSheet.create({
   container: {
     padding: 0,
-    paddingBottom: "15%",
+    paddingBottom: "1%",
     margin: 0,
     justifyContent: "flex-start"
   },

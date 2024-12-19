@@ -160,8 +160,6 @@ export default function SearchFlatList({handleOnPress}) {
 
     searchFlatList: {
       flex: 1,
-      // width: "100%",
-      // alignItems: "center",
     },
 
     searchBox: {
@@ -205,6 +203,7 @@ export default function SearchFlatList({handleOnPress}) {
     },
 
     noResultsText: (text) => ({
+      height: "74%",
       opacity: text ? 0.8 : 0,
       paddingLeft: "7%",
       paddingTop: "5%",
@@ -212,8 +211,9 @@ export default function SearchFlatList({handleOnPress}) {
     }),
 
     loaderContainer: {
+      height: "74%",
       alignItems: "center",
-      marginTop: "15%"
+      paddingTop: "20%",
     },
     errorText: {
       fontSize: 18,
@@ -371,7 +371,8 @@ export default function SearchFlatList({handleOnPress}) {
         </View>
       ) : filteredData.length !== 0 ? (
         <FlatList
-          keyboardShouldPersistTaps={"handled"}
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode="on-drag"
           persistentScrollbar={true}
           style={styles.list}
           contentContainerStyle={{paddingHorizontal: 5, paddingBottom: 5}}
