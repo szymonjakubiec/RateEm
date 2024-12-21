@@ -231,7 +231,7 @@ app.use(express.json());
               p.twitter_link 
             FROM politicians as p
             WHERE p.id IN (${politicianIds.join(",")})
-            ORDER BY ${order} ${reverseOrder};
+            ORDER BY ${order} ${reverseOrder}, name;
         `,
           [days]
         );
@@ -451,7 +451,6 @@ app.use(express.json());
       }
     }
   });
-  
 
   app.get("/api/own-ratings", async (req, res) => {
     const { user_id, politician_id } = req.query;
@@ -618,7 +617,7 @@ app.use(express.json());
           p.facebook_link, 
           p.twitter_link 
         FROM politicians as p
-        ORDER BY ${order} ${reverseOrder};`
+        ORDER BY ${order} ${reverseOrder}, name;`
       );
 
       res.json(rows);
