@@ -3,6 +3,7 @@ import {BackHandler, StyleSheet, Text} from "react-native";
 import {Button, Dialog, Portal} from "react-native-paper";
 import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
 import _Container from "../styles/Container";
+import {isKeyboardVisible} from "../../backend/CommonMethods";
 
 
 
@@ -51,9 +52,14 @@ export default function HomeScreen({navigation}) {
     setSelectedPoliticianId(0);
   }, []);
 
+
+  const keyboardShown = isKeyboardVisible();
+
+
   return (
     <_Container
-      style={styles.container}>
+      style={styles.container(keyboardShown)}>
+
       <SearchFlatList handleOnPress={handlePress}/>
 
       {/* Exit alert when leaving app */}
@@ -82,10 +88,10 @@ export default function HomeScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  container: (keyboardShown) => ({
     padding: 0,
-    paddingBottom: "1%",
+    paddingBottom: keyboardShown ? "1%" : "11.5%",
     margin: 0,
     justifyContent: "flex-start"
-  },
+  }),
 });

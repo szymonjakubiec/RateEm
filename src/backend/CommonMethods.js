@@ -1,7 +1,7 @@
-import {Alert, BackHandler, LayoutAnimation} from "react-native";
+import {Alert, BackHandler, Keyboard, LayoutAnimation} from "react-native";
 import {Resend} from "resend";
 import emailjs from "@emailjs/react-native";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 
 
 
@@ -227,4 +227,40 @@ function tabBarAnim(navigation) {
 }
 
 
-module.exports = {tabBarAnim, sendVerificationSMS, checkVerificationSMS, sendMail, alert, ownGoBack, getUserAddress};
+/**
+ * Checks if keyboard is visible.
+ * @returns {boolean}
+ */
+const isKeyboardVisible = () => {
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => setKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => setKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  return isKeyboardVisible;
+};
+
+
+module.exports = {
+  tabBarAnim,
+  sendVerificationSMS,
+  checkVerificationSMS,
+  sendMail,
+  alert,
+  ownGoBack,
+  getUserAddress,
+  isKeyboardVisible
+};
