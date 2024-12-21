@@ -8,28 +8,25 @@ import { useTextInputProps } from "../../styles/TextInput";
 export default function SearchFlatList({ handleOnPress }) {
   const [initialData, setInitialData] = useState([]); // all politicians
   const [filteredData, setFilteredData] = useState([]); // politicians after search
-  const [trendingPoliticians, setTrendingPoliticians] = useState([]); // trending politicians
   const [searchText, setSearchText] = useState("");
-  
+
   const [isTrending, setIsTrending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const numberOfDaysTable = [
-    {key: 1, value: "1 dzień"},
-    {key: 7, value: "7 dni"},
-    {key: 30, value: "1 mies."}
-  ]
+    { key: 1, value: "1 dzień" },
+    { key: 7, value: "7 dni" },
+    { key: 30, value: "1 mies." },
+  ];
   const [numberOfDays, setNumberOfDays] = useState(1);
   const [numberOfDaysDisplay, setNumberOfDaysDisplay] = useState(numberOfDaysTable[0].value);
   const [numberOfDaysIndex, setNumberOfDaysIndex] = useState(0);
-  
+
   const [sortOrder, setSortOrder] = useState("surname");
   const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
   const [isNameSortingASC, setIsNameSortingASC] = useState(true);
   const [isGlobalRatingSortingASC, setIsGlobalRatingSortingASC] = useState(false);
   const [isRatingCountSortingASC, setIsRatingCountSortingASC] = useState(false);
-  
-  
 
   // PK: Clear button animation
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -104,9 +101,6 @@ export default function SearchFlatList({ handleOnPress }) {
    */
   function handleInput(input) {
     let sourceData = initialData;
-    if (isTrending) {
-      sourceData = trendingPoliticians;
-    }
 
     let result = sourceData.filter((obj) =>
       [0, ...obj.value.matchAll(/[ -]/g)]
@@ -139,8 +133,7 @@ export default function SearchFlatList({ handleOnPress }) {
    */
   function ClearTextInput() {
     setSearchText("");
-    if (isTrending) setFilteredData(trendingPoliticians);
-    else setFilteredData(initialData);
+    setFilteredData(initialData);
   }
 
   return (
