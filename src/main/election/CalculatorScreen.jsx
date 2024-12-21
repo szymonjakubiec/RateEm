@@ -264,6 +264,7 @@ export default function CalculatorScreen({ navigation }) {
 
         <View style={styles.calculatorDescDiv}>
           <Text style={styles.calculatorDescTitle}>Uwaga</Text>
+          <Text style={styles.calculatorDescText}>Zgodnie z obowiązującymi przepisami próg wyborczy dla partii wynosi 5% i dla koalicji 8%</Text>
           <Text style={styles.calculatorDescText}>Dane wyliczone przez kalkulator są tylko szacunkiem. Nie należy się do nich przywiązywać.</Text>
           <Text style={styles.calculatorDescText}>
             Zalecamy uzupełnić dane w taki sposób, aby "Inni" mieli jak najmniej % głosów. W przeciwnym wypadku dostaną oni nieproporcjonalnie dużo
