@@ -1,20 +1,21 @@
 import {Image, StyleSheet, Text, TouchableHighlight, View} from "react-native";
+import {memo} from "react";
 import {useTheme} from "react-native-paper";
 
 
 
-export default function Item({
-                               id,
-                               nameSurname,
-                               name,
-                               surname,
-                               globalRating,
-                               ratingCount,
-                               picture,
-                               handleOnPress,
-                               isTrending,
-                               sortOrder,
-                             }) {
+export default memo(function Item({
+                                    id,
+                                    nameSurname,
+                                    name,
+                                    surname,
+                                    globalRating,
+                                    ratingCount,
+                                    picture,
+                                    handleOnPress,
+                                    isTrending,
+                                    sortOrder,
+                                  }) {
 
   const theme = useTheme();
 
@@ -75,15 +76,15 @@ export default function Item({
           style={styles.politicianItemImage}
         />
         <View style={styles.politicianInfo}>
-          {sortOrder === "name" ? (
-            <Text style={styles.politicianItemText}>
-              {name} {surname}
-            </Text>
-          ) : (
-            <Text style={styles.politicianItemText}>
-              {surname} {name}
-            </Text>
-          )}
+          {/* {sortOrder === "name" ? ( */}
+          <Text style={styles.politicianItemText}>
+            {name} {surname}
+          </Text>
+          {/* ) : ( */}
+          {/* <Text style={styles.politicianItemText}> */}
+          {/*   {surname} {name} */}
+          {/* </Text> */}
+          {/* )} */}
           <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
           <Text style={styles.politicianScore}>
             {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
@@ -92,4 +93,4 @@ export default function Item({
       </>
     </TouchableHighlight>
   );
-}
+});
