@@ -2,20 +2,17 @@ import {ScrollView, StyleSheet, Text, View} from "react-native";
 import {useContext, useEffect, useRef, useState} from "react";
 import {Image} from "react-native";
 import {
-  getOwnRating,
-  addOwnRating,
-  updateOwnRating,
-  deleteOwnRating,
-  getAllPoliticianOwnRatings
+  getOwnRating, addOwnRating, updateOwnRating,
+  deleteOwnRating, getAllPoliticianOwnRatings
 } from "../../backend/database/OwnRatings";
 import {getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating} from "../../backend/database/Ratings";
 import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
 import OpinionsTile from "../home/opinionsTileComponents/OpinionsTile";
 import {useTheme} from "react-native-paper";
 import {GlobalContext} from "../nav/GlobalContext";
-import {OpinionsTileContext} from "../home/nav/OpinionsTileContext";
+import {OpinionsTileContext} from "./nav/OpinionsTileContext";
 import _Container from "../styles/Container";
-import {ownGoBack, tabBarAnim} from "../../backend/CommonMethods";
+import {tabBarAnim} from "../../backend/CommonMethods";
 
 
 
@@ -128,7 +125,7 @@ export default function ProfileScreen({navigation, route}) {
 
     let weightedAverage = Math.round((numerator * 100) / denominator) / 100; // round number to 2 decimal places
 
-    console.log("Srednia ważona wychodzi: " + weightedAverage);
+    // console.log("Srednia ważona wychodzi: " + weightedAverage);
     await updateOwnRating(selectedPoliticianId, userId, weightedAverage);
 
     setOwnRating(weightedAverage);
@@ -154,7 +151,7 @@ export default function ProfileScreen({navigation, route}) {
       average = Math.round((numerator * 100) / denominator) / 100;
     }
 
-    console.log("Średnia globalna wynosi: " + average);
+    // console.log("Średnia globalna wynosi: " + average);
 
     setGlobalRating(average);
     updatePolitician(selectedPoliticianId, {global_rating: average});
@@ -164,15 +161,15 @@ export default function ProfileScreen({navigation, route}) {
     await addRating(
       userId,
       selectedPoliticianId,
-      `Bazowa opinia o ${politicianNames} ${politicianSurname}`,
+      `OPINIA BAZOWA`,
       firstOwnRating,
-      "Użytkownik ma już wyrobione zdanie.",
+      `Opinia bazowa o polityku ${politicianNames} ${politicianSurname}.`,
       currentDate,
       10
     );
-    addOwnRating(userId, selectedPoliticianId, firstOwnRating);
+    await addOwnRating(userId, selectedPoliticianId, firstOwnRating);
     setFirstOwnRating(0);
-    loadSingleRatings();
+    await loadSingleRatings();
   }
 
   async function handleNewSingleRating() {
@@ -180,7 +177,7 @@ export default function ProfileScreen({navigation, route}) {
     setNewSingleRating(0);
     setNewTitle("");
     setNewDescription("");
-    loadSingleRatings();
+    await loadSingleRatings();
   }
 
   /**
@@ -308,21 +305,26 @@ export default function ProfileScreen({navigation, route}) {
     }
   }, [ownRating]);
 
+
+  const theme = useTheme();
+
   return (
-    <ScrollView style={{backgroundColor: useTheme().colors.background}}>
-      <_Container style={styles.container}>
-        <View style={styles.infoTile}>
+    <_Container style={styles.container}>
+      <ScrollView style={styles.scrollView(theme)} contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.infoTile(theme)}>
           <View style={styles.nameContainer}>
             <View style={styles.nameSurnameColumn}>
               <Text adjustsFontSizeToFit={true} numberOfLines={1} style={styles.surname}>
                 {politicianSurname}
               </Text>
-              <Text style={styles.names}>{politicianNames}</Text>
+              <Text adjustsFontSizeToFit={true} numberOfLines={1} style={styles.names}>
+                {politicianNames}
+              </Text>
             </View>
-            <View style={styles.imageContainer}>
+            <View style={styles.imageContainer(theme)}>
               {photo ? (
                 <Image
-                  style={styles.image}
+                  style={styles.image(theme)}
                   source={{
                     uri: `data:image/jpeg;base64,${photo}`,
                     cache: "force-cache",
@@ -330,31 +332,27 @@ export default function ProfileScreen({navigation, route}) {
                   alt="politician"
                 />
               ) : (
-                <Image source={require("./../../../assets/noPhoto.png")} alt="politician" style={styles.image}/>
+                <Image source={require("./../../../assets/noPhoto.png")} alt="politician" style={styles.image(theme)}/>
               )}
             </View>
           </View>
           <View>
             <View style={styles.ratingRow}>
-              <Text style={styles.rating}>Globalna ocena:</Text>
-              <View>
-                {globalRating > 0 ? <Text style={styles.rating}>{globalRating.toFixed(2)}</Text> :
-                  <Text style={styles.rating}>Brak</Text>}
-                {/* <Image>star</Image> */}
-              </View>
+              <Text style={styles.ratingLabel}>Globalna ocena:</Text>
+              <Text style={styles.rating(theme)}>
+                {globalRating > 0 ? globalRating.toFixed(2) : "   -   "}
+              </Text>
             </View>
             <View style={styles.ratingRow}>
-              <Text style={styles.rating}>Twoja ocena:</Text>
-              <View>
-                {ownRating > 0 ? <Text style={styles.rating}>{ownRating.toFixed(2)}</Text> :
-                  <Text style={styles.rating}>Brak</Text>}
-                {/* <Image>star</Image> */}
-              </View>
+              <Text style={styles.ratingLabel}>Twoja ocena:</Text>
+              <Text style={styles.rating(theme)}>
+                {ownRating > 0 ? ownRating.toFixed(2) : "   -   "}
+              </Text>
             </View>
           </View>
           <View>
-            <Text style={styles.rating}>Partia polityczna:</Text>
-            <Text>{party}.</Text>
+            <Text style={styles.ratingLabel}>Partia polityczna:</Text>
+            <Text style={styles.party}>{party}</Text>
           </View>
         </View>
         <OpinionsTileContext.Provider
@@ -368,100 +366,101 @@ export default function ProfileScreen({navigation, route}) {
         >
           <OpinionsTile ownRating={ownRating}/>
         </OpinionsTileContext.Provider>
-      </_Container>
-    </ScrollView>
+      </ScrollView>
+    </_Container>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "stretch",
-    padding: 10,
-    gap: 15,
+    padding: "1%",
+    paddingTop: "1%",
   },
-  infoTile: {
-    // height: "100vh",
-    height: 300,
-    backgroundColor: "lightgray",
-    padding: 30,
+  scrollView: (theme) => ({
+    backgroundColor: theme.colors.background,
+    // backgroundColor: "green",
+    width: "100%",
+  }),
+  scrollViewContent: {
+    paddingBottom: 10,
+    // height: "auto",
+    // flexGrow: 1,
+    // gap: 15,
+  },
+  infoTile: (theme) => ({
+    flex: 1,
+    padding: 20,
+    margin: 10,
     gap: 20,
-  },
+
+    backgroundColor: theme.colors.primaryContainer2,
+
+    borderRadius: 15,
+
+    elevation: 8,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: {width: 2, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+  }),
   nameContainer: {
-    display: "flex",
     flexDirection: "row",
-    // backgroundColor: "white",
-    height: "30%",
+    height: "40%",
   },
   nameSurnameColumn: {
-    // backgroundColor: "white",
-    display: "flex",
     justifyContent: "center",
     flexGrow: 1,
     maxWidth: "80%",
   },
   surname: {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: "bold",
     maxWidth: "90%",
-    // backgroundColor: "lightblue",
   },
   names: {
     maxWidth: "90%",
-    fontSize: 22,
+    fontSize: 24,
     height: "auto",
     fontWeight: "semibold",
   },
-  imageContainer: {
-    // flexGrow: 6,
-    borderWidth: 5,
-  },
-  image: {
+  imageContainer: (theme) => ({
+    elevation: 7,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: {width: 2, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+
+    height: 105,
+  }),
+  image: (theme) => ({
     height: "100%",
-    aspectRatio: 1 / 1,
-    borderColor: "black",
-  },
+    aspectRatio: 1,
+    borderColor: theme.colors.inverseSurface,
+    borderWidth: 3,
+    borderRadius: 15,
+  }),
   ratingRow: {
-    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "baseline",
+    paddingRight: "6%",
+    marginBottom: 3,
   },
-  rating: {
+  ratingLabel: {
     fontSize: 22,
     fontWeight: "bold",
   },
-  button: {
-    width: "60%",
-    backgroundColor: "whitesmoke",
-    borderColor: "#000",
-    borderWidth: 1,
-    textAlign: "center",
-    marginTop: 10,
-  },
-  wrongInputText: {
-    fontSize: 10,
-    color: "red",
-    marginBottom: 15,
-  },
-
-  ratingItem: {
-    backgroundColor: "gray",
-    padding: 20,
-    marginBottom: 10,
-  },
-  ratingItemBase: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  textInput: {
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#000",
-    borderStyle: "solid",
-    paddingTop: 6,
-    paddingBottom: 6,
-    paddingLeft: 20,
-    paddingRight: 20,
-    width: "90%",
+  rating: (theme) => ({
+    fontSize: 24,
+    fontWeight: "bold",
+    paddingHorizontal: 10,
+    backgroundColor: theme.colors.surfaceDisabled,
+    borderRadius: 3,
+  }),
+  party: {
+    fontSize: 16,
+    
+    paddingTop: 3,
+    paddingBottom: "4%",
   },
 });
