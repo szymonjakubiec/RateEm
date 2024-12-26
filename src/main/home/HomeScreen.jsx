@@ -57,8 +57,7 @@ export default function HomeScreen({navigation}) {
 
 
   return (
-    <_Container
-      style={styles.container(keyboardShown)}>
+    <_Container style={styles.container(keyboardShown)}>
 
       <SearchFlatList handleOnPress={handlePress}/>
 
@@ -92,6 +91,6 @@ const styles = StyleSheet.create({
     padding: 0,
     paddingBottom: keyboardShown ? "1%" : "11.5%",
     margin: 0,
-    justifyContent: "flex-start"
+    justifyContent: "flex-start",
   }),
 });

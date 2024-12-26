@@ -36,10 +36,12 @@ export default function App() {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      outlineVariant: useTheme().colors.primary.replace("1)", "0.7)"), // PK: Pressed _Button
-      sejm: "#11dfe8",
-      prezydent: "#f24726",
-      parlament: "#8fd14f",
+      buttonPress: "#6750A4B2",
+      primaryContainer2: "#C6A8F3",
+      secondaryContainer2: "#D2BBEF",
+      sejm: "#11DFE8",
+      prezydent: "#F24726",
+      parlament: "#8FD14F",
       // primary: "#00ffd9",
       // onPrimary: "#fff",
       // secondary: "#f1c40f",

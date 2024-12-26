@@ -341,7 +341,7 @@ export default function CalculatorScreen({navigation}) {
               <View style={styles.viewHorizontal}>
                 <TextInput
                   {...textInputProps}
-                  selectionColor={theme.colors.outlineVariant}
+                  selectionColor={theme.colors.buttonPress}
                   selectionHandleColor={theme.colors.onSecondaryContainer}
                   style={styles.partyTileInput}
                   contentStyle={styles.partyTileInputContent}
@@ -373,8 +373,8 @@ export default function CalculatorScreen({navigation}) {
                 disabled={!inputValues[index]}
                 onClick={() => {
                   overThreshold[index] = !overThreshold[index];
-                    // onPercentageChange();
-                    setTriggerUpdate(!triggerUpdate);
+                  // onPercentageChange();
+                  setTriggerUpdate(!triggerUpdate);
                 }}
                 rightText="Nie przekroczono progu wyborczego"
                 rightTextStyle={styles.checkBoxText}
@@ -393,7 +393,7 @@ export default function CalculatorScreen({navigation}) {
 
 
         {/* PK: Rest party tile */}
-        <View style={[styles.partyTile, {backgroundColor: theme.colors.outlineVariant}]}>
+        <View style={[styles.partyTile, {backgroundColor: theme.colors.buttonPress}]}>
           <View style={{width: "100%"}}>
             <Text style={styles.partyTileText}>Reszta</Text>
             <View style={styles.viewHorizontal}>
