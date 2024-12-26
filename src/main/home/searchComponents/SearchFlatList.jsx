@@ -173,74 +173,6 @@ export default function SearchFlatList({handleOnPress}) {
 
   const theme = useTheme();
 
-
-  const styles = StyleSheet.create({
-
-    searchFlatList: {
-      flex: 1,
-    },
-
-    searchBox: {
-      width: "90%",
-      minWidth: "90%",
-      marginVertical: 20,
-      height: 50,
-    },
-    searchInput: {
-      flexGrow: 1,
-    },
-    list: {
-      marginVertical: 5,
-      flexGrow: 0,
-      paddingHorizontal: 10,
-    },
-
-    filtersScrollView: {
-      maxWidth: "90%",
-      alignSelf: "center",
-      minHeight: 40,
-      alignContent: "center",
-      flexGrow: 0,
-      marginVertical: 3,
-    },
-    chipsContainer: {
-      paddingTop: 4,
-      paddingBottom: 6,
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    chip: {
-      justifyContent: "center",
-      marginHorizontal: 2,
-      minHeight: 38,
-      marginVertical: 5,
-    },
-    chipLabel: {
-      fontSize: 16,
-      marginRight: 10,
-    },
-
-    noResultsText: (text) => ({
-      height: "74%",
-      opacity: text ? 0.8 : 0,
-      paddingLeft: "7%",
-      paddingTop: "5%",
-      fontSize: 20,
-    }),
-
-    loaderContainer: {
-      height: "74%",
-      alignItems: "center",
-      paddingTop: "20%",
-    },
-    errorText: {
-      fontSize: 18,
-      textAlign: "center",
-      marginTop: 5,
-    },
-  });
-
-
   return (
     <View style={styles.searchFlatList}>
       <View style={styles.searchBox}>
@@ -255,19 +187,12 @@ export default function SearchFlatList({handleOnPress}) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
-          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()}/>}
-          right={
-            <TextInput.Icon
-              icon="close"
-              style={{opacity: opacityAnim}}
-              onPress={() => {
-                ClearTextInput();
-                // Keyboard.dismiss()
-              }}
-            />
-          }
+          disabled={isLoading}
+          left={<TextInput.Icon disabled={isLoading} icon="magnify" onPress={() => Keyboard.dismiss()}/>}
+          right={<TextInput.Icon disabled={isLoading} icon="close" style={{opacity: opacityAnim}}
+                                 onPress={() => ClearTextInput()}/>}
           onChangeText={(text) => {
-            setSearchText(text);
+            setSearchText(text.trim());
             handleInput(text.trim());
           }}
         />
@@ -275,6 +200,7 @@ export default function SearchFlatList({handleOnPress}) {
 
       <ScrollView
         horizontal={true}
+        scrollEnabled={!isLoading}
         snapToAlignment="center"
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={(event) => onMomentumHandler(event)}
@@ -309,6 +235,7 @@ export default function SearchFlatList({handleOnPress}) {
 
       <ScrollView
         horizontal={true}
+        scrollEnabled={!isLoading}
         snapToAlignment="center"
         showsHorizontalScrollIndicator={false}
         keyboardShouldPersistTaps="always"
@@ -403,7 +330,7 @@ export default function SearchFlatList({handleOnPress}) {
             <Item
               id={item.key}
               nameSurname={item.value}
-              name={item.name}
+              name={item.name.split(' ')[0]} //PK: Żeby tylko imię
               surname={item.surname}
               globalRating={item.globalRating}
               ratingCount={item.ratingCount}
@@ -415,11 +342,78 @@ export default function SearchFlatList({handleOnPress}) {
           )}
         />
       ) : (
-        <Text style={styles.noResultsText(searchText)}>Brak wyników.</Text>
+        <Text style={styles.noResultsText}>Brak wyników.</Text>
       )}
     </View>
   );
 
 }
+
+
+const styles = StyleSheet.create({
+
+  searchFlatList: {
+    flex: 1,
+  },
+
+  searchBox: {
+    width: "90%",
+    minWidth: "90%",
+    marginVertical: 20,
+    height: 50,
+  },
+  searchInput: {
+    flexGrow: 1,
+  },
+  list: {
+    marginVertical: 5,
+    flexGrow: 0,
+    paddingHorizontal: 5,
+    marginHorizontal: -5,
+  },
+
+  filtersScrollView: {
+    maxWidth: "90%",
+    alignSelf: "center",
+    minHeight: 40,
+    alignContent: "center",
+    flexGrow: 0,
+    marginVertical: 3,
+  },
+  chipsContainer: {
+    paddingTop: 4,
+    paddingBottom: 6,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  chip: {
+    justifyContent: "center",
+    marginHorizontal: 2,
+    minHeight: 38,
+    marginVertical: 5,
+  },
+  chipLabel: {
+    fontSize: 16,
+    marginRight: 10,
+  },
+
+  noResultsText: {
+    height: "74%",
+    paddingLeft: "7%",
+    paddingTop: "5%",
+    fontSize: 20,
+  },
+
+  loaderContainer: {
+    height: "74%",
+    alignItems: "center",
+    paddingTop: "20%",
+  },
+  errorText: {
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 5,
+  },
+});
 
 
