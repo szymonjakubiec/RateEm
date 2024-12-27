@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View, ScrollView} from "react-native";
 import * as Location from "expo-location";
 import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
 import {getUserAddress, tabBarAnim} from "../../backend/CommonMethods";
@@ -11,9 +11,10 @@ import {ActivityIndicator, useTheme} from "react-native-paper";
 
 export default function ElectoralDistricts({navigation}) {
   const [addressCurrent, setAddressCurrent] = useState('');
-  const [sejmDistrictCurrent, setSejmDistrictCurrent] = useState("");
-  const [euDistrictCurrent, setEuDistrictCurrent] = useState("");
+  const [locationMap, setLocationMap] = useState(null);
 
+  const [sejmDistrictInfo, setSejmDistrictInfo] = useState(null);
+  const [euDistrictInfo, setEuDistrictInfo] = useState(null);
   const [mapComponent, setMapComponent] = useState();
 
   const theme = useTheme();
@@ -47,14 +48,25 @@ export default function ElectoralDistricts({navigation}) {
 
     const result = await getAddress(parseFloat(locationTemp.coords.latitude.toFixed(5)), parseFloat(locationTemp.coords.longitude.toFixed(5)));
     setAddressCurrent(result.address);
-    setSejmDistrictCurrent(result.sejmDistrict);
-    setEuDistrictCurrent(result.euDistrict);
+    setSejmDistrictInfo(await createSejmDistrictInfo(result.sejmDistrictInfo, result.sejmDistrict));
+    setEuDistrictInfo(await createEuDistrictInfo(result.euDistrictInfo, result.euDistrict));
 
     return {
       latitude: parseFloat(locationTemp.coords.latitude.toFixed(5)),
       longitude: parseFloat(locationTemp.coords.longitude.toFixed(5)),
     };
   };
+
+  function setMapLocation(location) {
+    try {
+      setLocationMap({
+        latitude: parseFloat(location.latitude.toFixed(5)),
+        longitude: parseFloat(location.longitude.toFixed(5)),
+      });
+    } catch (error) {
+      setLocationMap({latitude: 50.25962, longitude: 19.021725});
+    }
+  }
 
   function debounce(func, delay) {
     let timeout;
@@ -67,18 +79,14 @@ export default function ElectoralDistricts({navigation}) {
   async function onLocationMapChange(location) {
     try {
       setAddressCurrent("Ładowanie...");
-      setSejmDistrictCurrent("Ładowanie...");
-      setEuDistrictCurrent("Ładowanie...");
 
       const result = await getAddress(parseFloat(location.latitude.toFixed(5)), parseFloat(location.longitude.toFixed(5)));
 
       setAddressCurrent(result.address);
-      setSejmDistrictCurrent(result.sejmDistrict);
-      setEuDistrictCurrent(result.euDistrict);
+      setSejmDistrictInfo(await createSejmDistrictInfo(result.sejmDistrictInfo, result.sejmDistrict));
+      setEuDistrictInfo(await createEuDistrictInfo(result.euDistrictInfo, result.euDistrict));
     } catch (error) {
       setAddressCurrent("błąd");
-      setSejmDistrictCurrent("");
-      setEuDistrictCurrent("");
     }
   }
 
@@ -90,8 +98,13 @@ export default function ElectoralDistricts({navigation}) {
 
       if (countyName === "PL") {
         if (powiatName !== "") {
-          const sejmDistrictData = (await getSejmDistrict(powiatName))[0];
-          const euDistrictData = (await getEuDistrict(powiatName))[0];
+          const sejmData = await getSejmDistrict(powiatName);
+          const sejmDistrictData = sejmData.filteredData[0];
+          const sejmDistrictTemp = sejmData.districtInfo;
+
+          const euData = await getEuDistrict(powiatName);
+          const euDistrictData = euData.filteredData[0];
+          const euDistrictTemp = euData.districtInfo;
 
           if (sejmDistrictData.powiat_name === "Zagranica" || euDistrictData.powiat_name === "Zagranica") {
             powiatName = "Zagranica";
@@ -100,17 +113,31 @@ export default function ElectoralDistricts({navigation}) {
             address: powiatName,
             sejmDistrict: sejmDistrictData.district_number,
             euDistrict: euDistrictData.district_number,
+            sejmDistrictInfo: sejmDistrictTemp,
+            euDistrictInfo: euDistrictTemp,
           };
         } else {
-          return {address: "błąd", sejmDistrict: 0, euDistrict: 0};
+          return { address: "błąd", sejmDistrict: 0, euDistrict: 0, sejmDistrictInfo: {}, euDistrictInfo: {} };
         }
       } else if (countyName === "") {
-        return {address: "Teren morski", sejmDistrict: 19, euDistrict: 4};
+        return {
+          address: "Teren morski",
+          sejmDistrict: 19,
+          euDistrict: 4,
+          sejmDistrictInfo: [{ powiat_name: "Teren morski" }],
+          euDistrictInfo: [{ powiat_name: "Teren morski" }],
+        };
       } else {
-        return {address: "Za granicą", sejmDistrict: 19, euDistrict: 4};
+        return {
+          address: "Za granicą",
+          sejmDistrict: 19,
+          euDistrict: 4,
+          sejmDistrictInfo: [{ powiat_name: "Za granicą" }],
+          euDistrictInfo: [{ powiat_name: "Za granicą" }],
+        };
       }
     } catch (error) {
-      return {address: "błąd", sejmDistrict: 0, euDistrict: 0};
+      return { address: "błąd", sejmDistrict: 0, euDistrict: 0, sejmDistrictInfo: {}, euDistrictInfo: {} };
     }
   }
 
@@ -150,6 +177,7 @@ export default function ElectoralDistricts({navigation}) {
           provider={PROVIDER_GOOGLE}
           region={locationMap}
           showsCompass={true}
+          onRegionChange={setMapLocation}
           onRegionChangeComplete={debounce((region, gesture) => {
             if (gesture.isGesture) {
               onLocationMapChange(region);
@@ -173,6 +201,7 @@ export default function ElectoralDistricts({navigation}) {
           provider={PROVIDER_GOOGLE}
           region={locationMap}
           showsCompass={true}
+          onRegionChange={setMapLocation}
           onRegionChangeComplete={debounce((region, gesture) => {
             if (gesture.isGesture) {
               onLocationMapChange(region);
@@ -189,6 +218,44 @@ export default function ElectoralDistricts({navigation}) {
       );
     }
   }
+
+
+  async function createSejmDistrictInfo(sejmDistrictInfo, sejmDistrict) {
+    let powiats = "";
+    if (sejmDistrictInfo) {
+      for (const index in sejmDistrictInfo) {
+        powiats += sejmDistrictInfo[index].powiat_name;
+        if (index < sejmDistrictInfo.length - 1) powiats += ", ";
+      }
+    }
+
+    return (
+      <View>
+        <Text style={styles.districtElementLabel}>Sejm RP - okręg {sejmDistrict}</Text>
+        <Text style={styles.districtElementText}>Powiaty: </Text>
+        <Text style={styles.districtElementText}>{powiats}</Text>
+      </View>
+    );
+  }
+
+  async function createEuDistrictInfo(euDistrictInfo, euDistrict) {
+    let powiats = "";
+    if (euDistrictInfo) {
+      for (const index in euDistrictInfo) {
+        powiats += euDistrictInfo[index].powiat_name;
+        if (index < euDistrictInfo.length - 1) powiats += ", ";
+      }
+    }
+
+    return (
+      <View>
+        <Text style={styles.districtElementLabel}>Parlament Europejski - okręg {euDistrict}</Text>
+        <Text style={styles.districtElementText}>Powiaty: </Text>
+        <Text style={styles.districtElementText}>{powiats}</Text>
+      </View>
+    );
+  }
+  
 
   const styles = StyleSheet.create({
     container: {
@@ -236,6 +303,19 @@ export default function ElectoralDistricts({navigation}) {
       width: "100%",
       height: 300,
     },
+    districtElementLabel: {
+      color: "#ffffff",
+      fontSize: 18,
+      fontWeight: "500",
+    },
+    districtDescription: {
+      backgroundColor: "#000",
+      width: "100%",
+      minHeight: 100,
+      padding: 15,
+      marginTop: 20,
+      borderRadius: 20,
+    },
   });
 
   return (
@@ -250,11 +330,11 @@ export default function ElectoralDistricts({navigation}) {
                 ? `Powiat ${addressCurrent}` : addressCurrent}</Text>
             <View style={styles.sejmEURow}>
               <Text style={[styles.text, styles.sejmEU]}>SEJM:</Text>
-              <Text style={styles.text}>{sejmDistrictCurrent}</Text>
+              <Text style={styles.text}>{sejmDistrictInfo}</Text>
             </View>
             <View style={styles.sejmEURow}>
               <Text style={[styles.text, styles.sejmEU]}>EU:</Text>
-              <Text style={styles.text}>{euDistrictCurrent}</Text>
+              <Text style={styles.text}>{euDistrictInfo}</Text>
             </View>
           </View>
         </>) : (
@@ -263,9 +343,4 @@ export default function ElectoralDistricts({navigation}) {
       </View>
     </_Container>
   );
-
-
 }
-
-
-

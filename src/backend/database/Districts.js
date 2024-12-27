@@ -16,10 +16,12 @@ const getSejmDistrict = async (powiatName) => {
     const data = await response.json();
     const filteredData = data.filter((district) => district.powiat_name === powiatName);
     if (filteredData.length == 0) {
-      return [{district_number: 19, id: 173, powiat_name: "Zagranica"}];
+      return [{ district_number: 19, id: 173, powiat_name: "Zagranica" }];
     }
+    const districtNumber = filteredData[0].district_number;
+    const districtInfo = data.filter((district) => district.district_number === districtNumber);
 
-    return filteredData;
+    return { filteredData: filteredData, districtInfo: districtInfo };
   } catch (error) {
     return null;
   }
@@ -43,13 +45,15 @@ const getEuDistrict = async (powiatName) => {
     const data = await response.json();
     const filteredData = data.filter((district) => district.powiat_name === powiatName);
     if (filteredData.length == 0) {
-      return [{district_number: 4, id: 173, powiat_name: "Zagranica"}];
+      return [{ district_number: 4, id: 173, powiat_name: "Zagranica" }];
     }
+    const districtNumber = filteredData[0].district_number;
+    const districtInfo = data.filter((district) => district.district_number === districtNumber);
 
-    return filteredData;
+    return { filteredData: filteredData, districtInfo: districtInfo };
   } catch (error) {
     return null;
   }
 };
 
-module.exports = {getSejmDistrict, getEuDistrict};
+module.exports = { getSejmDistrict, getEuDistrict };

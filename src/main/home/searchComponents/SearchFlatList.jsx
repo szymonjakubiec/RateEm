@@ -1,26 +1,27 @@
-import {useEffect, useRef, useState} from "react";
-import {
-  StyleSheet, Text, FlatList, View, Animated,
-  Easing, Keyboard, ActivityIndicator, ScrollView
-} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image, ActivityIndicator, ScrollView } from "react-native";
 import {TextInput, Chip, useTheme} from "react-native-paper";
-import {getAllPoliticians} from "../../../backend/database/Politicians.js";
-import {getTrendingPoliticians} from "../../../backend/database/Politicians";
-import {useTextInputProps} from "../../styles/TextInput";
-import Item from "./Item";
+import { getAllPoliticians } from "../../../backend/database/Politicians.js";
+import { getTrendingPoliticians } from "../../../backend/database/Politicians";
+import { useTextInputProps } from "../../styles/TextInput";
 
-
-
-export default function SearchFlatList({handleOnPress}) {
+export default function SearchFlatList({ handleOnPress }) {
   const [initialData, setInitialData] = useState([]); // all politicians
   const [filteredData, setFilteredData] = useState([]); // politicians after search
-  const [trendingPoliticians, setTrendingPoliticians] = useState([]); // trending politicians
   const [searchText, setSearchText] = useState("");
+
   const [isTrending, setIsTrending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const numberOfDaysTable = [
+    { key: 1, value: "1 dzień" },
+    { key: 7, value: "7 dni" },
+    { key: 30, value: "1 mies." },
+  ];
   const [numberOfDays, setNumberOfDays] = useState(1);
+  const [numberOfDaysDisplay, setNumberOfDaysDisplay] = useState(numberOfDaysTable[0].value);
   const [numberOfDaysIndex, setNumberOfDaysIndex] = useState(0);
-  const [numberOfDaysTable, setNumberOfDaysTable] = useState([1, 7, 30]);
+
   const [sortOrder, setSortOrder] = useState("surname");
   const [isSurnameSortingASC, setIsSurnameSortingASC] = useState(true);
   const [isNameSortingASC, setIsNameSortingASC] = useState(true);
@@ -51,7 +52,7 @@ export default function SearchFlatList({handleOnPress}) {
   }, [searchText]);
 
   /**
-   * Sets new data. Trigtered after going back from politicians profile.
+   * Sets new data. Triggered after going back from politicians profile.
    */
   useEffect(() => {
     async function getPoliticiansData() {
@@ -118,9 +119,6 @@ export default function SearchFlatList({handleOnPress}) {
    */
   function handleInput(input) {
     let sourceData = initialData;
-    if (isTrending) {
-      sourceData = trendingPoliticians;
-    }
 
     let result = sourceData.filter((obj) =>
       [0, ...obj.value.matchAll(/[ -]/g)]
@@ -141,8 +139,9 @@ export default function SearchFlatList({handleOnPress}) {
    */
   const handleNumberOfDaysClick = () => {
     setNumberOfDaysIndex((prevIndex) => {
-      const newIndex = prevIndex < 2 ? prevIndex + 1 : 0;
-      setNumberOfDays(numberOfDaysTable[newIndex]);
+      const newIndex = (prevIndex + 1) % numberOfDaysTable.length;
+      setNumberOfDays(numberOfDaysTable[newIndex].key);
+      setNumberOfDaysDisplay(numberOfDaysTable[newIndex].value);
       return newIndex;
     });
   };
@@ -152,8 +151,7 @@ export default function SearchFlatList({handleOnPress}) {
    */
   function ClearTextInput() {
     setSearchText("");
-    if (isTrending) setFilteredData(trendingPoliticians);
-    else setFilteredData(initialData);
+    setFilteredData(initialData);
   }
 
   /**
@@ -213,21 +211,14 @@ export default function SearchFlatList({handleOnPress}) {
       >
         <View style={styles.chipsContainer}>
           {/* wszyscy politycy / politycy na czasie */}
-          <Chip style={styles.chip} icon="account" mode={!isTrending ? "flat" : "outlined"} disabled={isLoading}
-                onPress={() => setIsTrending(false)} textStyle={styles.chipLabel}>
-            Wszyscy politycy
-          </Chip>
-
-          <Chip style={styles.chip} icon="account" mode={isTrending ? "flat" : "outlined"} disabled={isLoading}
-                onPress={() => setIsTrending(true)} textStyle={styles.chipLabel}>
-            Na Czasie
-          </Chip>
+          <Chip style={styles.chip} textStyle={styles.chipLabel} icon="account" mode={"flat"} disabled={isLoading} onPress={() => setIsTrending(!isTrending)}>
+            {isTrending ? "Na Czasie" : "Wszyscy"}
+            </Chip>
 
           {/* Button do zmiany dni */}
           {isTrending ? (
-            <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}
-                  textStyle={styles.chipLabel}>
-              Okres czasu: {numberOfDays}
+            <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick} textStyle={styles.chipLabel}>
+              Okres: {numberOfDaysDisplay}
             </Chip>
           ) : null}
         </View>
@@ -337,7 +328,6 @@ export default function SearchFlatList({handleOnPress}) {
               picture={item.picture}
               handleOnPress={handleOnPress}
               isTrending={isTrending}
-              sortOrder={sortOrder}
             />
           )}
         />
@@ -347,8 +337,39 @@ export default function SearchFlatList({handleOnPress}) {
     </View>
   );
 
+  function Item({ id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
+    return (
+      <TouchableOpacity
+        key={id}
+        style={styles.politicianItem}
+        onPress={() => {
+          handleOnPress(id);
+        }}
+      >
+        <Image
+          source={
+            picture && picture !== ""
+              ? {
+                  uri: `data:image/jpeg;base64,${picture}`,
+                  cache: "force-cache",
+                }
+              : require("./../../../../assets/noPhoto.png")
+          }
+          style={styles.politicianItemImage}
+        />
+        <View style={styles.politicianInfo}>
+          <Text style={styles.politicianItemText}>
+            {name} {surname}
+          </Text>
+          <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
+          <Text style={styles.politicianScore}>
+            {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
 }
-
 
 const styles = StyleSheet.create({
 

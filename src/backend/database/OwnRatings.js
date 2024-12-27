@@ -62,6 +62,28 @@ const getAllPoliticianOwnRatings = async (politician_id) => {
 };
 
 /**
+ * Calculates globalRating.
+ * 
+ * @param user_id
+ * @param politician_id
+ * @returns {Promise<any|null>}
+ */
+const calcGlobalRating = async (politician_id) => {
+  const url = `${global.SERVER_URL}/calculate-global-rating?politician_id=${politician_id}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+/**
  * Adds own rating.
  *
  * @async
@@ -156,4 +178,5 @@ module.exports = {
   getAllOwnRatings,
   getAllPoliticianOwnRatings,
   getOwnRating,
+  countPoliticianOwnRatings: calcGlobalRating,
 };

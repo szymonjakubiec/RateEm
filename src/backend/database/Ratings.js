@@ -100,6 +100,31 @@ const getRatingsUserIdPoliticianId = async (user_id, politician_id) => {
 };
 
 /**
+ * Calculates ownRating.
+ * @param user_id
+ * @param politician_id
+ * @returns {Promise<any|null>}
+ */
+const calcOwnRating = async (user_id, politician_id) => {
+  const url = `${global.SERVER_URL}/calculate-own-rating?user_id=${user_id}&politician_id=${politician_id}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+/**
  * Adds rating.
  *
  * @async
@@ -221,4 +246,5 @@ module.exports = {
   getRating,
   getRatingsUserId,
   getRatingsUserIdPoliticianId,
+  countRatingsUserIdPoliticianId: calcOwnRating,
 };

@@ -67,24 +67,28 @@ export default function CalculatorScreen({navigation}) {
       if (inputValues[index] === "") {
         inputValues[index] = 0;
       } else if (inputValues[index].toString().includes(".")) {
+        // deletes unnecessary '.'
         const dividedByComma = inputValues[index].toString().split(".");
         if (dividedByComma.length - 1 > 1) {
           inputValues[index] = dividedByComma[0] + "." + dividedByComma[1];
         }
       }
 
+      sumTemp += parseFloat(inputValues[index]);
       setTheRestValue("0");
       if (sumTemp < 100) {
-        sumTemp += parseFloat(inputValues[index]);
-
         const shortage = 100 - sumTemp;
         if (shortage > 0) {
           setTheRestValue(shortage.toString().includes('.') ? shortage.toFixed(2).toString() : shortage.toString());
         }
-      }
-
-      if (sumTemp >= 100) {
-        const surplus = sumTemp - 100;
+      } else if (sumTemp >= 100) {
+        let takenPercentage = 0;
+        if (index < inputValues.length) {
+          for (let i = index + 1; i < inputValues.length; i++) {
+            takenPercentage += parseFloat(inputValues[i]);
+          }
+        }
+        const surplus = sumTemp - 100 + takenPercentage;
         inputValues[index] = (inputValues[index] - surplus).toString();
         sumTemp = sumTemp - surplus;
       }
@@ -428,6 +432,7 @@ export default function CalculatorScreen({navigation}) {
         {/* PK: Description */}
         <View style={styles.calculatorDescDiv}>
           <Text style={styles.calculatorDescTitle}>{'  '}Uwaga</Text>
+          <Text style={styles.calculatorDescText}>Zgodnie z obowiązującymi przepisami próg wyborczy dla partii wynosi 5% i dla koalicji 8%</Text>
           <Text style={styles.calculatorDescText}>Dane wyliczone przez kalkulator są tylko{'\n'}szacunkiem. Nie należy
             się do nich przywiązywać.</Text>
           <Text style={styles.calculatorDescText}>

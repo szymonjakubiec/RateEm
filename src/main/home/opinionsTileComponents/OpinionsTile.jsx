@@ -3,9 +3,8 @@ import StarRating from "react-native-star-rating-widget";
 import {useContext, useEffect, useState} from "react";
 import {OpinionsTileContext} from "../nav/OpinionsTileContext";
 import {RatingPopupTypes, ConfirmPopupTypes} from "../../../backend/EnumTypes";
-import {Chip, Modal, Portal, useTheme, TextInput, Divider} from "react-native-paper";
+import {Chip, Modal, Portal, TextInput, useTheme} from "react-native-paper";
 import _Button from "../../styles/Button";
-import {useTextInputProps} from "../../styles/TextInput";
 
 
 

@@ -1,11 +1,17 @@
 import {ScrollView, StyleSheet, Text, View} from "react-native";
-import {useContext, useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {Image} from "react-native";
 import {
-  getOwnRating, addOwnRating, updateOwnRating,
-  deleteOwnRating, getAllPoliticianOwnRatings
+  addOwnRating, updateOwnRating,
+  deleteOwnRating, countPoliticianOwnRatings
 } from "../../backend/database/OwnRatings";
-import {getRatingsUserIdPoliticianId, addRating, updateRating, deleteRating} from "../../backend/database/Ratings";
+import {
+  getRatingsUserIdPoliticianId,
+  addRating,
+  updateRating,
+  deleteRating,
+  countRatingsUserIdPoliticianId
+} from "../../backend/database/Ratings";
 import {getPolitician, updatePolitician} from "../../backend/database/Politicians";
 import OpinionsTile from "../home/opinionsTileComponents/OpinionsTile";
 import {useTheme} from "react-native-paper";
@@ -20,31 +26,25 @@ export default function ProfileScreen({navigation, route}) {
   const {selectedPoliticianId} = route.params;
   const {userId} = useContext(GlobalContext);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCountingRatings, setIsCountingRatings] = useState(false);
+  
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
   const [politicianSurname, setPoliticianSurname] = useState();
   const [photo, setPhoto] = useState();
-
-  const [surnameTextHeight, setSurnameTextHeight] = useState(0); // for adjusting names and surname font sizes on long surnames
 
   const [party, setParty] = useState("Brak Partii");
   const [partyShort, setPartyShort] = useState("Brak Partii");
 
   const [globalRating, setGlobalRating] = useState(0.0);
   const [ownRating, setOwnRating] = useState(0.0);
-  const [firstOwnRating, setFirstOwnRating] = useState(0);
+  const [firstOwnRating, setFirstOwnRating] = useState(0.0);
   const [singleRatings, setSingleRatings] = useState([]); // ratings from ratings.js
-  const [newSingleRating, setNewSingleRating] = useState(0);
-
+  const [newSingleRating, setNewSingleRating] = useState(0.0);
 
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-
-  /**
-   * Variable preventing using useEffect from ownRating right after it is initialized.
-   */
-  const useEffectFirstTime = useRef(true);
-
 
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
 
@@ -57,12 +57,11 @@ export default function ProfileScreen({navigation, route}) {
     init();
   }, []);
 
-
   async function init() {
-    loadPoliticianData();
-    if (await loadSingleRatings() === false) {
-      countGlobalRating();
-    }
+    setIsLoading(true);
+    await loadPoliticianData();
+    await reloadRatings();
+    setIsLoading(false);
   }
 
   /**
@@ -74,7 +73,6 @@ export default function ProfileScreen({navigation, route}) {
   async function loadPoliticianData() {
     const data = await getPolitician(selectedPoliticianId);
     setPoliticianData(data);
-    // if (data.at(0).global_rating !== null) setGlobalRating(data.at(0).global_rating);
     if (data.at(0).party !== null) {
       setParty(data.at(0).party);
     }
@@ -84,18 +82,15 @@ export default function ProfileScreen({navigation, route}) {
   }
 
   /**
-   * Loads asynchronously ownRating and if it is not null then allows to run loadSingleRatings.
-   * Also sets loadOwnRatingInitialized to allow updating the globalRating after completing the whole function.
-   * @returns {Promise<boolean>}
+   * Loads/reloads singleRatings from database and counts ownRating and globalRating.
+   * @returns {Promise<void>}
    */
-  async function loadOwnRating() {
-    const data = await getOwnRating(userId, selectedPoliticianId);
-    if (data !== null) {
-      setOwnRating(data.at(0).value);
-      return true;
-    } else {
-      return false;
-    }
+  async function reloadRatings(){
+    loadSingleRatings();
+    setIsCountingRatings(true);
+    await countOwnRating();
+    await countGlobalRating();
+    setIsCountingRatings(false);
   }
 
   /**
@@ -110,51 +105,30 @@ export default function ProfileScreen({navigation, route}) {
     return false;
   }
 
+
   /**
-   * Runs every time the singleRatings table is updated and has at least 1 record.
-   * It calculates ownRating as the weighted average, and uploads the result to the base.
+   * Calculates ownRating as the weighted average, and uploads the result to the base.
    */
   async function countOwnRating() {
-    let numerator = 0;
-    let denominator = 0;
-
-    for (singleRating of singleRatings) {
-      numerator = numerator + singleRating.value * singleRating.weight;
-      denominator = denominator + singleRating.weight;
-    }
-
-    let weightedAverage = Math.round((numerator * 100) / denominator) / 100; // round number to 2 decimal places
-
-    // console.log("Srednia ważona wychodzi: " + weightedAverage);
+    let data = await countRatingsUserIdPoliticianId(userId, selectedPoliticianId);
+    let weightedAverage = data[0].result;
     await updateOwnRating(selectedPoliticianId, userId, weightedAverage);
 
-    setOwnRating(weightedAverage);
+    if (weightedAverage > 0) 
+      setOwnRating(weightedAverage);
+    else
+      setOwnRating(0);
   }
 
   /**
-   * Runs right after ownRating is added/updated.
-   * It downloads ownRatings if there are any, from all users, calculates globalRating as the arithmetical average, and uploads the result to the base.
+   * Calculates globalRating as the arithmetical average, and uploads the result to the base.
    * @returns {Promise<void>}
    */
   async function countGlobalRating() {
-    const politicianOwnRatings = await getAllPoliticianOwnRatings(selectedPoliticianId);
-    let numerator = 0;
-    let denominator = 0;
-    let average = 0;
+    let average = await countPoliticianOwnRatings(selectedPoliticianId);
 
-    for (politicianOwnRating of politicianOwnRatings) {
-      numerator += politicianOwnRating.value;
-      denominator += 1;
-    }
-
-    if (denominator > 0) {
-      average = Math.round((numerator * 100) / denominator) / 100;
-    }
-
-    // console.log("Średnia globalna wynosi: " + average);
-
-    setGlobalRating(average);
-    updatePolitician(selectedPoliticianId, {global_rating: average});
+    setGlobalRating(average[0].result);
+    await updatePolitician(selectedPoliticianId, {global_rating: average[0].result});
   }
 
   async function handleFirstOwnRating() {
@@ -169,7 +143,7 @@ export default function ProfileScreen({navigation, route}) {
     );
     await addOwnRating(userId, selectedPoliticianId, firstOwnRating);
     setFirstOwnRating(0);
-    await loadSingleRatings();
+    await reloadRatings();
   }
 
   async function handleNewSingleRating() {
@@ -177,7 +151,7 @@ export default function ProfileScreen({navigation, route}) {
     setNewSingleRating(0);
     setNewTitle("");
     setNewDescription("");
-    await loadSingleRatings();
+    await reloadRatings();
   }
 
   /**
@@ -195,7 +169,7 @@ export default function ProfileScreen({navigation, route}) {
 
 
   /**
-   * Updates specific single rating and runs loadSingleRatings which triggers setOwnRating.
+   * Updates specific single rating and reload all ratings.
    * @param itemId
    * @param titleUpdate
    * @param ratingUpdate
@@ -211,11 +185,11 @@ export default function ProfileScreen({navigation, route}) {
       description: descriptionUpdate,
       date: currentDate,
     });
-    loadSingleRatings();
+    await reloadRatings();
   }
 
   /**
-   * Updates specific single rating and runs loadSingleRatings which triggers setOwnRating.
+   * Updates specific single rating and reloads all ratings.
    * @param itemId
    * @param ratingUpdate
    * @returns {Promise<void>}
@@ -227,17 +201,17 @@ export default function ProfileScreen({navigation, route}) {
       value: ratingUpdate,
       date: currentDate,
     });
-    loadSingleRatings();
+    await reloadRatings();
   }
 
   /**
-   * Deletes selected rating and recalculates ownRating and globalRating.
+   * Deletes selected rating and reloads all ratings.
    * @param itemId
    * @returns {Promise<void>}
    */
   async function deleteSingleRating(itemId) {
     await deleteRating(itemId);
-    loadSingleRatings();
+    await reloadRatings();
   }
 
   /**
@@ -250,11 +224,11 @@ export default function ProfileScreen({navigation, route}) {
     await deleteOwnRating(userId, selectedPoliticianId);
     setSingleRatings([]);
     setOwnRating(0);
+    await reloadRatings();
   }
 
   /**
-   * If the rating to update is of weight = 1 (singleRating) then updates the title, description and value of rating.
-   * If the rating is of weight = 10, but it is the only value on the list then updates only the value.
+   * Updates selected rating in database.
    * @param itemId
    * @param itemWeight
    * @param titleUpdate
@@ -264,17 +238,23 @@ export default function ProfileScreen({navigation, route}) {
    */
   async function handleOtSingleRatingUpdate(itemId, itemWeight, titleUpdate, ratingUpdate, descriptionUpdate) {
     if (itemWeight === 1) {
-      updateSingleRating(itemId, titleUpdate, ratingUpdate, descriptionUpdate);
+      await updateSingleRating(itemId, titleUpdate, ratingUpdate, descriptionUpdate);
     } else if (singleRatings.length === 1) {
-      updateFirstOwnRating(itemId, ratingUpdate);
+      await updateFirstOwnRating(itemId, ratingUpdate);
     }
   }
 
+  /**
+   * Deletes selected rating from database.
+   * @param itemId
+   * @param itemWeight
+   * @returns {Promise<void>}
+   */
   async function handleOtSingleRatingDeletion(itemId, itemWeight) {
     if (itemWeight === 1) {
-      deleteSingleRating(itemId);
+      await deleteSingleRating(itemId);
     } else if (singleRatings.length === 1) {
-      deleteFirstOwnRating(itemId);
+      await deleteFirstOwnRating(itemId);
     }
   }
 
@@ -289,22 +269,6 @@ export default function ProfileScreen({navigation, route}) {
       handleNewSingleRating();
     }
   }, [newSingleRating, newTitle, newDescription]);
-
-  useEffect(() => {
-    if (singleRatings.length > 0) {
-      countOwnRating();
-    }
-  }, [singleRatings]);
-
-
-  useEffect(() => {
-    if (useEffectFirstTime.current === false) {
-      countGlobalRating();
-    } else {
-      useEffectFirstTime.current = false;
-    }
-  }, [ownRating]);
-
 
   const theme = useTheme();
 
@@ -339,15 +303,17 @@ export default function ProfileScreen({navigation, route}) {
           <View>
             <View style={styles.ratingRow}>
               <Text style={styles.ratingLabel}>Globalna ocena:</Text>
-              <Text style={styles.rating(theme)}>
+              {!isCountingRatings && 
+                <Text style={styles.rating(theme)}>
                 {globalRating > 0 ? globalRating.toFixed(2) : "   -   "}
-              </Text>
+              </Text>}
             </View>
             <View style={styles.ratingRow}>
               <Text style={styles.ratingLabel}>Twoja ocena:</Text>
-              <Text style={styles.rating(theme)}>
+              {!isCountingRatings &&
+                <Text style={styles.rating(theme)}>
                 {ownRating > 0 ? ownRating.toFixed(2) : "   -   "}
-              </Text>
+              </Text>}
             </View>
           </View>
           <View>
