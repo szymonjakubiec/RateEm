@@ -18,10 +18,8 @@ const getSejmDistrict = async (powiatName) => {
     if (filteredData.length == 0) {
       return [{ district_number: 19, id: 173, powiat_name: "Zagranica" }];
     }
-    const districtNumber = filteredData[0].district_number;
-    const districtInfo = data.filter((district) => district.district_number === districtNumber);
 
-    return { filteredData: filteredData, districtInfo: districtInfo };
+    return filteredData;
   } catch (error) {
     return null;
   }
@@ -47,10 +45,8 @@ const getEuDistrict = async (powiatName) => {
     if (filteredData.length == 0) {
       return [{ district_number: 4, id: 173, powiat_name: "Zagranica" }];
     }
-    const districtNumber = filteredData[0].district_number;
-    const districtInfo = data.filter((district) => district.district_number === districtNumber);
 
-    return { filteredData: filteredData, districtInfo: districtInfo };
+    return filteredData;
   } catch (error) {
     return null;
   }
