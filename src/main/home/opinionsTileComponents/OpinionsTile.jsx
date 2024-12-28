@@ -40,7 +40,7 @@ export default function OpinionsTile({ownRating}) {
         <Text style={styles.yourOpinionsTitle}>Brak opinii</Text>
         <Text style={styles.ratingItemTitle}>Masz już wyrobione zdanie o tym polityku?</Text>
         <_Button
-          style={styles.buttonMain(theme)} text="Ustaw opinię bazową"
+          style={[styles.buttonMain(theme), {marginTop: 10}]} text="Ustaw opinię bazową"
           onPress={() => setRatingType(RatingPopupTypes.Add)}
         />
         <RatingPopup
