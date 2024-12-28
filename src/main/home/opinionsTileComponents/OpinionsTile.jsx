@@ -418,20 +418,24 @@ function ConfirmationPopup({popupVisible, popupType, handleConfirmation, handleR
         dismissableBackButton={false}
       >
         <View style={styles.popupWrapper(theme)}>
-          {popupType === ConfirmPopupTypes.Update ? (
-            <Text>Czy na pewno chcesz zmienić tą ocenę?</Text>
-          ) : (
-            <Text>Czy na pewno chcesz usunąć tą ocenę?</Text>
-          )}
+          <Text style={styles.chipText}>Czy na pewno
+            chcesz {popupType === ConfirmPopupTypes.Update ? "zmienić" : "usunąć"} tę ocenę?</Text>
 
           <View style={styles.buttonsRow}>
-            <TouchableHighlight onPress={handleConfirmation} style={styles.deleteButton}>
-              {popupType === ConfirmPopupTypes.Update ? (<Text>Zmień</Text>) : (
-                <Text style={{color: "white"}}>Usuń</Text>)}
-            </TouchableHighlight>
-            <TouchableHighlight onPress={handleRejection} style={styles.button(theme)}>
-              <Text>Anuluj</Text>
-            </TouchableHighlight>
+            <_Button
+              text="Usuń"
+              iconLeft={{icon: "delete", size: 17}}
+              onPress={handleConfirmation}
+              style={[styles.button(theme), {backgroundColor: theme.colors.error}]}
+              textStyle={styles.buttonText}
+            />
+            <_Button
+              text="Anuluj"
+              iconLeft={{icon: "close", size: 18}}
+              onPress={handleRejection}
+              style={[styles.button(theme), {backgroundColor: theme.colors.primary}]}
+              textStyle={styles.buttonText}
+            />
           </View>
         </View>
       </Modal>
