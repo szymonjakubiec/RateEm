@@ -13,6 +13,9 @@ const Stack = createStackNavigator();
 
 // Setting global parameters
 
+// MM
+global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
+
 // PK
 // global.SERVER_URL = "http://10.10.17.22:3000/api"; // ms
 // global.SERVER_URL = "http://157.158.168.62:3000/api"; // aka
@@ -22,8 +25,6 @@ const Stack = createStackNavigator();
 //global.SERVER_URL = "http://157.158.168.61:3000/api"; // aka
 // global.SERVER_URL = "http://192.168.1.136:3000/api"; // home
 
-// MM
-global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
 
 console.log(global["SERVER_URL"]);
 
@@ -35,7 +36,12 @@ export default function App() {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      outlineVariant: useTheme().colors.primary.replace("1)", "0.7)"), // PK: Pressed _Button
+      buttonPress: "#6750A4B2",
+      primaryContainer2: "#C6A8F3",
+      secondaryContainer2: "#D2BBEF",
+      sejm: "#11DFE8",
+      prezydent: "#F24726",
+      parlament: "#8FD14F",
       // primary: "#00ffd9",
       // onPrimary: "#fff",
       // secondary: "#f1c40f",

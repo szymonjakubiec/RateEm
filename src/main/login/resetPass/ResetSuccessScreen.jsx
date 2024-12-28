@@ -19,7 +19,7 @@ export default function ResetSuccessScreen({navigation}) {
       <Text style={styles.title}>Sukces!</Text>
       <Text style={styles.subTitle}>Hasło zostało zmienione.</Text>
 
-      <_Button buttonText="Powrót do menu" onPress={() => {
+      <_Button text="Powrót do menu" onPress={() => {
         navigation.popToTop();
         navigation.goBack();
       }}/>

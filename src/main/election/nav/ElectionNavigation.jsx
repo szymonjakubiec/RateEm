@@ -8,6 +8,8 @@ import SejmExplanationScreen from "../SejmExplanationScreen.jsx";
 import PrezydentExplanationScreen from "../PrezydentExplanationScreen.jsx";
 import EuExplanationScreen from "../EuExplanationScreen.jsx";
 import DhondtExplanationScreen from "../DhondtExplanationScreen.jsx";
+import {Text, View} from "react-native";
+import {Icon, useTheme} from "react-native-paper";
 
 
 
@@ -35,7 +37,7 @@ export default function ElectionNavigation({route}) {
         name="Calendar"
         component={CalendarScreen}
         options={() => ({
-          headerTitle: "Kalendarz",
+          headerTitle: "Kalendarz wyborczy",
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
@@ -53,7 +55,7 @@ export default function ElectionNavigation({route}) {
         name="ElectoralDistricts"
         component={ElectoralDistrictsScreen}
         options={() => ({
-          headerTitle: "Okręgi wyborcze",
+          headerTitle: "Mapa okręgów wyborczych",
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
@@ -71,7 +73,12 @@ export default function ElectionNavigation({route}) {
         name="SejmExplanation"
         component={SejmExplanationScreen}
         options={() => ({
-          headerTitle: "Wytłumaczenie wyborów",
+          headerTitle: () => (
+            <View style={{flexDirection: "row", alignItems: "center"}}>
+              <Icon color={useTheme().colors.sejm} size={22} source="circle-slice-8"/>
+              <Text style={{fontSize: 20, fontWeight: 500, paddingLeft: 5}}>Wybory do Sejmu</Text>
+            </View>
+          ),
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
@@ -80,7 +87,12 @@ export default function ElectionNavigation({route}) {
         name="PrezydentExplanation"
         component={PrezydentExplanationScreen}
         options={() => ({
-          headerTitle: "Wytłumaczenie wyborów",
+          headerTitle: () => (
+            <View style={{flexDirection: "row", alignItems: "center"}}>
+              <Icon color={useTheme().colors.prezydent} size={22} source="circle-slice-8"/>
+              <Text style={{fontSize: 20, fontWeight: 500, paddingLeft: 5}}>Wybory Prezydenta RP</Text>
+            </View>
+          ),
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
@@ -89,7 +101,12 @@ export default function ElectionNavigation({route}) {
         name="EuExplanation"
         component={EuExplanationScreen}
         options={() => ({
-          headerTitle: "Wytłumaczenie wyborów",
+          headerTitle: () => (
+            <View style={{flexDirection: "row", alignItems: "center"}}>
+              <Icon color={useTheme().colors.parlament} size={22} source="circle-slice-8"/>
+              <Text style={{fontSize: 20, fontWeight: 500, paddingLeft: 5}}>Wybory do Parlamentu</Text>
+            </View>
+          ),
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}
@@ -98,7 +115,12 @@ export default function ElectionNavigation({route}) {
         name="DhondtExplanation"
         component={DhondtExplanationScreen}
         options={() => ({
-          headerTitle: "Wytłumaczenie wyborów",
+          headerTitle: () => (
+            <View style={{flexDirection: "row", alignItems: "center"}}>
+              <Icon color="black" size={22} source="circle-slice-8"/>
+              <Text style={{fontSize: 20, fontWeight: 500, paddingLeft: 5}}>Metoda d'Hondta</Text>
+            </View>
+          ),
           headerTitleAlign: "center",
           gestureEnabled: false, // wyłącza swipe back na IOS
         })}

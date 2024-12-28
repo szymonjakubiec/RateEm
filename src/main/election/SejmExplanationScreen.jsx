@@ -1,5 +1,6 @@
 import {StyleSheet, Text, View, ScrollView} from "react-native";
 import _Container from "../styles/Container";
+import {Icon, useTheme} from "react-native-paper";
 
 
 
@@ -7,10 +8,6 @@ export default function SejmExplanation({navigation}) {
 
   return (
     <_Container style={{padding: "4%"}}>
-      <View style={styles.titleDiv}>
-        <View style={styles.circleSejm}/>
-        <Text style={styles.title}>wybory do Sejmu</Text>
-      </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Opis</Text>
@@ -29,7 +26,7 @@ export default function SejmExplanation({navigation}) {
             Wybory odbywają się co cztery lata, choć możliwe jest ich przyspieszenie w przypadku rozwiązania Sejmu przez
             Prezydenta RP lub upływu
             kadencji przed czasem. W głosowaniu mogą uczestniczyć wszyscy obywatele Polski, którzy osiągnęli
-            pełnoletniość i posiadają pełne prawa
+            pełnoletność i posiadają pełne prawa
             wyborcze. W Polsce stosuje się system proporcjonalny, co oznacza, że mandaty są przydzielane proporcjonalnie
             do liczby głosów oddanych na
             poszczególne komitety wyborcze. Próg wyborczy wynosi 5% dla partii politycznych i 8% dla koalicji.
@@ -86,16 +83,14 @@ export default function SejmExplanation({navigation}) {
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>System liczenia głosów</Text>
           <Text style={styles.scrollViewText}>
-            <Text>W wyborach do Sejmu obowiązuje liczenie głosów metodą </Text>
-            <Text
-              style={[styles.scrollViewText, styles.textLink]}
-              onPress={() => {
-                navigation.navigate("DhondtExplanation");
-              }}
-            >
-              d'Hondta
-            </Text>
-            <Text>.</Text>
+            <Text>W wyborach do Sejmu obowiązuje liczenie głosów metodą{' '}
+              <Text
+                style={[styles.scrollViewText, styles.textLink]}
+                onPress={() => navigation.navigate("DhondtExplanation")}
+              >
+                d'Hondta
+              </Text>
+              {'.'}</Text>
           </Text>
         </View>
 
@@ -140,6 +135,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   scrollViewDiv: {
+    marginTop: 10,
     marginBottom: 15,
   },
   scrollViewTitle: {
@@ -160,23 +156,4 @@ const styles = StyleSheet.create({
     color: "#009982",
   },
 
-  titleDiv: {
-    alignSelf: "left",
-    flexDirection: "row",
-    marginBottom: 5,
-  },
-  title: {
-    color: "black",
-    fontSize: 20,
-    fontWeight: "700",
-    marginLeft: 10,
-  },
-  circleSejm: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 10,
-    marginVertical: 7,
-    backgroundColor: "#12cdd4",
-  },
 });

@@ -120,7 +120,7 @@ export default function ChangePassScreen({navigation, route}) {
       <_ErrorText text={wrongPassRep}/>
 
       <_Button
-        buttonText="Zmień hasło"
+        text="Zmień hasło"
         style={{marginTop: 40}}
         disabled={!validateFieldsOnBlur()}
         onPress={() => {

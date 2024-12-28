@@ -7,10 +7,6 @@ export default function SejmExplanation({navigation}) {
 
   return (
     <_Container style={{padding: "4%"}}>
-      <View style={styles.titleDiv}>
-        <View style={styles.circleEu}/>
-        <Text style={styles.title}>wybory do Parlamentu Europejskiego</Text>
-      </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Opis</Text>
@@ -111,16 +107,14 @@ export default function SejmExplanation({navigation}) {
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>System liczenia głosów</Text>
           <Text style={styles.scrollViewText}>
-            <Text>W wyborach do Parlamentu Europejskiego obowiązuje liczenie głosów metodą </Text>
-            <Text
-              style={[styles.scrollViewText, styles.textLink]}
-              onPress={() => {
-                navigation.navigate("DhondtExplanation");
-              }}
-            >
-              d'Hondta
-            </Text>
-            <Text>.</Text>
+            <Text>W wyborach do Parlamentu Europejskiego obowiązuje liczenie głosów metodą{' '}
+              <Text
+                style={[styles.scrollViewText, styles.textLink]}
+                onPress={() => navigation.navigate("DhondtExplanation")}
+              >
+                d'Hondta
+              </Text>
+              {'.'}</Text>
           </Text>
         </View>
 
@@ -166,6 +160,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   scrollViewDiv: {
+    marginTop: 10,
     marginBottom: 15,
   },
   scrollViewTitle: {
@@ -184,25 +179,5 @@ const styles = StyleSheet.create({
 
   textLink: {
     color: "#009982",
-  },
-
-  titleDiv: {
-    alignSelf: "left",
-    flexDirection: "row",
-    marginBottom: 5,
-  },
-  title: {
-    color: "black",
-    fontSize: 20,
-    fontWeight: "700",
-    marginLeft: 10,
-  },
-  circleEu: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 10,
-    marginVertical: 7,
-    backgroundColor: "#8fd14f",
   },
 });

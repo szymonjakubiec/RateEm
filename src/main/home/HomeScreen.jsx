@@ -1,10 +1,13 @@
-import { useContext, useEffect, useState } from "react";
-import { ActivityIndicator, BackHandler, StyleSheet, Text, View } from "react-native";
-import { Button, Dialog, MD2Colors, Portal } from "react-native-paper";
-import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
+import {useEffect, useState} from "react";
+import {BackHandler, StyleSheet, Text} from "react-native";
+import {Button, Dialog, Portal} from "react-native-paper";
+import {SearchFlatListMemo} from "./searchComponents/SearchFlatList.jsx";
 import _Container from "../styles/Container";
+import {isKeyboardVisible} from "../../backend/CommonMethods";
 
-export default function HomeScreen({ navigation }) {
+
+
+export default function HomeScreen({navigation}) {
   const [selectedPoliticianId, setSelectedPoliticianId] = useState(0);
   const [exitDialog, setExitDialog] = useState(false);
   const showDialog = () => setExitDialog(true);
@@ -49,9 +52,16 @@ export default function HomeScreen({ navigation }) {
     setSelectedPoliticianId(0);
   }, []);
 
+
+  const keyboardShown = isKeyboardVisible();
+
+
   return (
-    <_Container style={{ justifyContent: "flex-start", padding: 0 }}>
-      <SearchFlatList handleOnPress={handlePress} />
+    <_Container style={styles.container(keyboardShown)}>
+
+      <SearchFlatListMemo handleOnPress={handlePress}/>
+
+      {/* Exit alert when leaving app */}
       <Portal>
         <Dialog visible={exitDialog} onDismiss={hideDialog}>
           <Dialog.Title>Uwaga</Dialog.Title>
@@ -71,19 +81,16 @@ export default function HomeScreen({ navigation }) {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
     </_Container>
   );
 }
 
 const styles = StyleSheet.create({
-  loaderContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-  errorText: {
-    fontSize: 18,
-    textAlign: "center",
-    marginTop: 20,
-  },
+  container: (keyboardShown) => ({
+    padding: 0,
+    paddingBottom: keyboardShown ? "1%" : "11.5%",
+    margin: 0,
+    justifyContent: "flex-start",
+  }),
 });

@@ -1,11 +1,24 @@
-import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image, ActivityIndicator, ScrollView } from "react-native";
-import { TextInput, Chip, MD2Colors } from "react-native-paper";
-import { getAllPoliticians } from "../../../backend/database/Politicians.js";
-import { getTrendingPoliticians } from "../../../backend/database/Politicians";
-import { useTextInputProps } from "../../styles/TextInput";
+import {memo, useEffect, useRef, useState} from "react";
+import {
+  StyleSheet,
+  Text,
+  FlatList,
+  View,
+  Animated,
+  Easing,
+  Keyboard,
+  ActivityIndicator,
+  ScrollView
+} from "react-native";
+import {TextInput, Chip, useTheme} from "react-native-paper";
+import {getAllPoliticians} from "../../../backend/database/Politicians.js";
+import {getTrendingPoliticians} from "../../../backend/database/Politicians";
+import {useTextInputProps} from "../../styles/TextInput";
+import Item from "./Item";
 
-export default function SearchFlatList({ handleOnPress }) {
+
+
+function SearchFlatList({handleOnPress}) {
   const [initialData, setInitialData] = useState([]); // all politicians
   const [filteredData, setFilteredData] = useState([]); // politicians after search
   const [searchText, setSearchText] = useState("");
@@ -14,9 +27,9 @@ export default function SearchFlatList({ handleOnPress }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const numberOfDaysTable = [
-    { key: 1, value: "1 dzień" },
-    { key: 7, value: "7 dni" },
-    { key: 30, value: "1 mies." },
+    {key: 1, value: "1 dzień"},
+    {key: 7, value: "7 dni"},
+    {key: 30, value: "1 miesiąc"},
   ];
   const [numberOfDays, setNumberOfDays] = useState(1);
   const [numberOfDaysDisplay, setNumberOfDaysDisplay] = useState(numberOfDaysTable[0].value);
@@ -34,21 +47,21 @@ export default function SearchFlatList({ handleOnPress }) {
   useEffect(() => {
     // PK: Fade in
     searchText.length > 0 &&
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-        easing: (value) => Easing.ease(value),
-      }).start();
+    Animated.timing(opacityAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+      easing: (value) => Easing.ease(value),
+    }).start();
 
     // PK: Fade out
     searchText.length === 0 &&
-      Animated.timing(opacityAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-        easing: (value) => Easing.ease(value),
-      }).start();
+    Animated.timing(opacityAnim, {
+      toValue: 0,
+      duration: 250,
+      useNativeDriver: true,
+      easing: (value) => Easing.ease(value),
+    }).start();
   }, [searchText]);
 
   /**
@@ -65,11 +78,20 @@ export default function SearchFlatList({ handleOnPress }) {
 
       const data = isTrending
         ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
+        : await getAllPoliticians(sortOrder, !reverseOrder, 100);
+
+      setInitialData(data || []);
+      setFilteredData(data || []);
+      setIsLoading(false);
+
+      const dataFull = isTrending
+        ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
         : await getAllPoliticians(sortOrder, !reverseOrder);
 
-      setInitialData(data);
-      setFilteredData(data);
-      setIsLoading(false);
+      // console.log(data[0]);
+      // console.log(dataFull[0]);
+      setInitialData(dataFull || []);
+      setFilteredData(dataFull || []);
     }
 
     ClearTextInput();
@@ -86,12 +108,21 @@ export default function SearchFlatList({ handleOnPress }) {
 
     const data = isTrending
       ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
+      : await getAllPoliticians(sortOrder, !reverseOrder, 100);
+
+    ClearTextInput();
+    setInitialData(data || []);
+    setFilteredData(data || []);
+    setIsLoading(false);
+
+    const dataFull = isTrending
+      ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
       : await getAllPoliticians(sortOrder, !reverseOrder);
 
-    setInitialData(data);
-    setFilteredData(data);
-    ClearTextInput();
-    setIsLoading(false);
+    // console.log(data[0]);
+    // console.log(dataFull[0]);
+    setInitialData(dataFull || []);
+    setFilteredData(dataFull || []);
   }
 
   /**
@@ -136,9 +167,27 @@ export default function SearchFlatList({ handleOnPress }) {
     setFilteredData(initialData);
   }
 
+  /**
+   * Handler for ScrollView's onMomentum event to remove padding bug when scrolling too fast to left.
+   * @param event
+   */
+  const onMomentumHandler = (event) => {
+    const {contentOffset, contentSize, layoutMeasurement} = event.nativeEvent;
+    const maxOffset = contentSize.width - layoutMeasurement.width;
+    if (contentOffset.x < 25) {
+      event.currentTarget.scrollTo({x: 0, animated: true});
+    } else if (contentOffset.x > maxOffset - 25) {
+      event.currentTarget.scrollTo({x: maxOffset, animated: true});
+    }
+  };
+
+
+  const theme = useTheme();
+
   return (
-    <View>
+    <View style={styles.searchFlatList}>
       <View style={styles.searchBox}>
+
         {/* wyszukiwarka */}
         <TextInput
           {...useTextInputProps()}
@@ -149,19 +198,12 @@ export default function SearchFlatList({ handleOnPress }) {
           textContentType="name"
           autoCapitalize="words"
           value={searchText}
-          left={<TextInput.Icon icon="magnify" onPress={() => Keyboard.dismiss()} />}
-          right={
-            <TextInput.Icon
-              icon="close"
-              style={{ opacity: opacityAnim }}
-              onPress={() => {
-                ClearTextInput();
-                // Keyboard.dismiss()
-              }}
-            />
-          }
+          disabled={isLoading}
+          left={<TextInput.Icon disabled={isLoading} icon="magnify" onPress={() => Keyboard.dismiss()}/>}
+          right={<TextInput.Icon disabled={isLoading} icon="close" style={{opacity: opacityAnim}}
+                                 onPress={() => ClearTextInput()}/>}
           onChangeText={(text) => {
-            setSearchText(text);
+            setSearchText(text.trim());
             handleInput(text.trim());
           }}
         />
@@ -169,6 +211,11 @@ export default function SearchFlatList({ handleOnPress }) {
 
       <ScrollView
         horizontal={true}
+        scrollEnabled={!isLoading}
+        snapToAlignment="center"
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={(event) => onMomentumHandler(event)}
+        keyboardShouldPersistTaps="always"
         contentContainerStyle={{
           flexGrow: 1,
           position: "relative",
@@ -177,19 +224,17 @@ export default function SearchFlatList({ handleOnPress }) {
       >
         <View style={styles.chipsContainer}>
           {/* wszyscy politycy / politycy na czasie */}
-          {!isTrending ? (
-            <Chip style={styles.chip} icon="account" mode={"flat"} disabled={isLoading} onPress={() => setIsTrending(true)}>
-              Wszyscy
-            </Chip>
-          ) : (
-            <Chip style={styles.chip} icon="account" mode={"flat"} disabled={isLoading} onPress={() => setIsTrending(false)}>
-              Na Czasie
-            </Chip>
-          )}
+          <Chip style={styles.chip} textStyle={styles.chipLabel}
+                icon={isTrending ? "trending-up" : "account"}
+                mode={"flat"} disabled={isLoading}
+                onPress={() => setIsTrending(!isTrending)}>
+            {isTrending ? "Na Czasie" : "Wszyscy"}
+          </Chip>
 
           {/* Button do zmiany dni */}
           {isTrending ? (
-            <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}>
+            <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}
+                  textStyle={styles.chipLabel}>
               Okres: {numberOfDaysDisplay}
             </Chip>
           ) : null}
@@ -198,6 +243,11 @@ export default function SearchFlatList({ handleOnPress }) {
 
       <ScrollView
         horizontal={true}
+        scrollEnabled={!isLoading}
+        snapToAlignment="center"
+        showsHorizontalScrollIndicator={false}
+        keyboardShouldPersistTaps="always"
+        onMomentumScrollEnd={(event) => onMomentumHandler(event)}
         contentContainerStyle={{
           flexGrow: 1,
           position: "relative",
@@ -207,11 +257,12 @@ export default function SearchFlatList({ handleOnPress }) {
         <View style={styles.chipsContainer}>
           <Chip
             style={styles.chip}
+            textStyle={styles.chipLabel}
             disabled={isLoading}
             icon={isSurnameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sortOrder === "surname" ? "flat" : "outlined"}
             onPress={() => {
-              let reverseOrder = sortOrder == "surname" ? !isSurnameSortingASC : isSurnameSortingASC;
+              let reverseOrder = sortOrder === "surname" ? !isSurnameSortingASC : isSurnameSortingASC;
               setIsSurnameSortingASC(reverseOrder);
               setSortOrder("surname");
             }}
@@ -221,11 +272,12 @@ export default function SearchFlatList({ handleOnPress }) {
 
           <Chip
             style={styles.chip}
+            textStyle={styles.chipLabel}
             disabled={isLoading}
             icon={isNameSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sortOrder === "name" ? "flat" : "outlined"}
             onPress={() => {
-              let reverseOrder = sortOrder == "name" ? !isNameSortingASC : isNameSortingASC;
+              let reverseOrder = sortOrder === "name" ? !isNameSortingASC : isNameSortingASC;
               setIsNameSortingASC(reverseOrder);
               setSortOrder("name");
             }}
@@ -235,54 +287,58 @@ export default function SearchFlatList({ handleOnPress }) {
 
           <Chip
             style={styles.chip}
+            textStyle={styles.chipLabel}
             disabled={isLoading}
             icon={isGlobalRatingSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sortOrder === "global_rating" ? "flat" : "outlined"}
             onPress={() => {
-              let reverseOrder = sortOrder == "global_rating" ? !isGlobalRatingSortingASC : isGlobalRatingSortingASC;
+              let reverseOrder = sortOrder === "global_rating" ? !isGlobalRatingSortingASC : isGlobalRatingSortingASC;
               setIsGlobalRatingSortingASC(reverseOrder);
               setSortOrder("global_rating");
             }}
           >
-            ocena globalna
+            Ocena globalna
           </Chip>
 
           <Chip
             style={styles.chip}
+            textStyle={styles.chipLabel}
             disabled={isLoading}
             icon={isRatingCountSortingASC ? "arrow-up-thin" : "arrow-down-thin"}
             mode={sortOrder === "rating_count" ? "flat" : "outlined"}
             onPress={() => {
-              let reverseOrder = sortOrder == "rating_count" ? !isRatingCountSortingASC : isRatingCountSortingASC;
+              let reverseOrder = sortOrder === "rating_count" ? !isRatingCountSortingASC : isRatingCountSortingASC;
               setIsRatingCountSortingASC(reverseOrder);
               setSortOrder("rating_count");
             }}
           >
-            liczba ocen
+            Liczba ocen
           </Chip>
         </View>
       </ScrollView>
 
       {isLoading ? (
         <View style={styles.loaderContainer}>
-          <Text style={styles.errorText}>Ładowanie</Text>
-          <ActivityIndicator size={"large"} animating={true} color={MD2Colors.red800} />
+          <ActivityIndicator size={45} animating={true} color={theme.colors.primary}/>
+          <Text style={styles.errorText}>Ładowanie...</Text>
         </View>
       ) : filteredData.length !== 0 ? (
         <FlatList
-          keyboardShouldPersistTaps={"handled"}
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode="on-drag"
           persistentScrollbar={true}
-          style={styles.list(filteredData)}
+          style={styles.list}
+          contentContainerStyle={{paddingHorizontal: 5, paddingBottom: 5}}
           data={filteredData}
           extraData={initialData}
           onRefresh={onRefresh}
           refreshing={isLoading}
           keyExtractor={(item) => item.key}
-          renderItem={({ item }) => (
+          renderItem={({item}) => (
             <Item
               id={item.key}
               nameSurname={item.value}
-              name={item.name}
+              name={item.name.split(' ')[0]} //PK: Żeby tylko imię
               surname={item.surname}
               globalRating={item.globalRating}
               ratingCount={item.ratingCount}
@@ -293,148 +349,78 @@ export default function SearchFlatList({ handleOnPress }) {
           )}
         />
       ) : (
-        <Text style={styles.noResultsText(searchText)}>Brak wyników.</Text>
+        <Text style={styles.noResultsText}>Brak wyników.</Text>
       )}
     </View>
   );
-
-  function Item({ id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
-    return (
-      <TouchableOpacity
-        key={id}
-        style={styles.politicianItem}
-        onPress={() => {
-          handleOnPress(id);
-        }}
-      >
-        <Image
-          source={
-            picture && picture !== ""
-              ? {
-                  uri: `data:image/jpeg;base64,${picture}`,
-                  cache: "force-cache",
-                }
-              : require("./../../../../assets/noPhoto.png")
-          }
-          style={styles.politicianItemImage}
-        />
-        <View style={styles.politicianInfo}>
-          <Text style={styles.politicianItemText}>
-            {name} {surname}
-          </Text>
-          <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
-          <Text style={styles.politicianScore}>
-            {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
 }
 
+export const SearchFlatListMemo = memo(SearchFlatList);
+
 const styles = StyleSheet.create({
+
+  searchFlatList: {
+    flex: 1,
+  },
+
   searchBox: {
     width: "90%",
     minWidth: "90%",
-    marginVertical: 10,
+    marginVertical: 20,
     height: 50,
   },
   searchInput: {
     flexGrow: 1,
   },
-  list: (result) => ({
-    maxWidth: "90%",
-    marginTop: 5,
-    margin: 1,
-    marginBottom: 5,
+  list: {
+    marginVertical: 5,
     flexGrow: 0,
-  }),
-  filtersScrollView: {
-    maxWidth: "90%",
-    marginTop: 4,
-    minHeight: 40,
-    maxHeight: 40,
-    paddingBottom: 4,
-    alignContent: "center",
-    flexGrow: 0,
+    paddingHorizontal: 5,
+    marginHorizontal: -5,
   },
 
+  filtersScrollView: {
+    maxWidth: "90%",
+    alignSelf: "center",
+    minHeight: 40,
+    alignContent: "center",
+    flexGrow: 0,
+    marginVertical: 3,
+  },
   chipsContainer: {
-    marginVertical: 2,
+    paddingTop: 4,
+    paddingBottom: 6,
     flexDirection: "row",
     alignItems: "center",
-    flexWrap: "wrap",
+  },
+  chip: {
+    justifyContent: "center",
+    marginHorizontal: 2,
+    minHeight: 38,
+    marginVertical: 5,
   },
   chipLabel: {
     fontSize: 16,
-    fontWeight: "600",
-    marginRight: 8,
-  },
-  chip: {
-    marginHorizontal: 2,
-  },
-
-  item: {
-    borderRadius: 7,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-  },
-  itemText: {
-    fontSize: 18,
-  },
-  noResultsText: (text) => ({
-    opacity: text ? 0.7 : 0,
-    paddingLeft: 10,
-    paddingTop: 5,
-    fontSize: 17,
-  }),
-  clearButton: {
-    alignSelf: "center",
-    padding: 5,
-  },
-  clearButtonText: {
-    color: "blue",
-  },
-
-  politicianItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#FFF",
-    marginVertical: 5,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  politicianItemText: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  politicianScore: {
-    fontSize: 14,
-    color: "#555",
-  },
-  politicianItemImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
     marginRight: 10,
   },
-  politicianInfo: {
-    flex: 1,
+
+  noResultsText: {
+    height: "74%",
+    paddingLeft: "7%",
+    paddingTop: "5%",
+    fontSize: 20,
   },
 
   loaderContainer: {
-    justifyContent: "center",
+    height: "74%",
     alignItems: "center",
-    flex: 1,
+    paddingTop: "20%",
   },
   errorText: {
     fontSize: 18,
     textAlign: "center",
-    marginTop: 20,
+    marginTop: 5,
   },
 });
+
+

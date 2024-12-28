@@ -215,7 +215,7 @@ export default function GuideScreen({navigation}) {
           </Text>
           <_Button
             style={{minWidth: "40%", width: "40%", alignSelf: "center", marginTop: "15%"}}
-            buttonText="Zaczynamy!"
+            text="Zaczynamy!"
             onPress={() => {
               navigation.popToTop();
             }}
