@@ -180,7 +180,6 @@ export default function ProfileScreen({navigation, route}) {
       title: titleUpdate,
       value: ratingUpdate,
       description: descriptionUpdate,
-      date: currentDate,
     });
     reloadRatings();
   }
@@ -196,7 +195,6 @@ export default function ProfileScreen({navigation, route}) {
       user_id: userId,
       politicianId: selectedPoliticianId,
       value: ratingUpdate,
-      date: currentDate,
     });
     reloadRatings();
   }

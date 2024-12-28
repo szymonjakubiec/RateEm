@@ -9,7 +9,6 @@ import {useTextInputProps} from "../../styles/TextInput";
 
 
 export default function OpinionsTile({ownRating}) {
-  const [ratingType, setRatingType] = useState(RatingPopupTypes.Undefined);
 
   const [expandedRatingList, setExpandedRatingList] = useState(false);
 
@@ -17,7 +16,6 @@ export default function OpinionsTile({ownRating}) {
 
   function turnOffRatingPopup(){
     setRatingPopupVisible(false);
-    setRatingType(RatingPopupTypes.Undefined);
   }
 
   return(
@@ -25,13 +23,7 @@ export default function OpinionsTile({ownRating}) {
   );
 
 
-  function NoOpinionComponent() {
-    useEffect(() => {
-      if (ratingType !== RatingPopupTypes.Undefined) {
-        setRatingPopupVisible(true);
-      }
-    }, [ratingType]);
-    
+  function NoOpinionComponent() {    
     return (
       <View style={styles.opinionsTile}>
         <Text>Brak opinii</Text>
@@ -39,27 +31,21 @@ export default function OpinionsTile({ownRating}) {
         <Text>Ustaw opinię bazową</Text>
         <TouchableHighlight
           style={styles.button}
-          onPress={() => setRatingType(RatingPopupTypes.Add)} // function to run the RatingPopup
+          onPress={() => setRatingPopupVisible(true)} // function to run the RatingPopup
         >
           <Text>Ustaw</Text>
         </TouchableHighlight>
         <RatingPopup
           popupVisible={ratingPopupVisible}
           itemWeight={10}
-          popupType={ratingType}
+          popupType={RatingPopupTypes.Add}
           turnOffRatingPopup={turnOffRatingPopup}
         />
       </View>
     );
   }
 
-  function YourOpinionsComponent() {
-    useEffect(() => {
-      if (ratingType !== RatingPopupTypes.Undefined) {
-        setRatingPopupVisible(true);
-      }
-    }, [ratingType]);
-    
+  function YourOpinionsComponent() {    
     return (
       <View style={styles.opinionsTile}>
         <View style={styles.topBar}>
@@ -86,14 +72,14 @@ export default function OpinionsTile({ownRating}) {
         <RatingsList expandedRatingList={expandedRatingList} />
         <TouchableHighlight
           style={styles.button}
-          onPress={() => setRatingType(RatingPopupTypes.Add)}
+          onPress={() => setRatingPopupVisible(true)}
         >
           <Text style={{ fontWeight: "500", fontSize: 18, alignSelf: "center" }}>Dodaj opinię</Text>
         </TouchableHighlight>
         <RatingPopup 
           popupVisible={ratingPopupVisible}
           itemWeight={1}
-          popupType={ratingType}
+          popupType={RatingPopupTypes.Add}
           turnOffRatingPopup={turnOffRatingPopup}
         />
       </View>
@@ -124,6 +110,7 @@ function RatingsList({expandedRatingList}) {
         keyExtractor={(item) => item.id}
         scrollEnabled={false}
         style={styles.flatList}
+        inverted={true}
       />
     );
   }
