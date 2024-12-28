@@ -206,6 +206,9 @@ function RatingsList({expandedRatingList}) {
             popupVisible={ratingPopupVisible}
             itemId={item.id}
             itemWeight={item.weight}
+            itemTitle={item.title}
+            itemRating={item.value}
+            itemDescription={item.description}
             popupType={RatingPopupTypes.Update}
             turnOffRatingPopup={turnOffRatingPopup}
           />
@@ -223,12 +226,12 @@ function RatingsList({expandedRatingList}) {
 }
 
 
-function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRatingPopup}){
+function RatingPopup({popupVisible, itemId = 0, itemWeight, itemTitle = "", itemRating = 0, itemDescription = "", popupType, turnOffRatingPopup}){
   const {handleFirstOwnRating, handleNewSingleRating, handleSingleRatingUpdate} = useContext(OpinionsTileContext);
   
-  const [title, setTitle] = useState("");
-  const [rating, setRating] = useState(0);
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(itemTitle);
+  const [rating, setRating] = useState(itemRating);
+  const [description, setDescription] = useState(itemDescription);
 
   const [confirmPopupVisible, setConfirmPopupVisible] = useState(false);
 
@@ -266,10 +269,10 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRa
    */
   function handleRatingPopupClose() {
     if (itemWeight === 1){
-      setTitle("");
-      setDescription("");
+      setTitle(itemTitle);
+      setDescription(itemDescription);
     }
-    setRating(0);
+    setRating(itemRating);
     turnOffRatingPopup();
   }
   
