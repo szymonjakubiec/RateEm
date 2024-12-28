@@ -89,8 +89,9 @@ const updatePolitician = async (id, newData = {}) => {
  *
  * @async
  * @function
- * @param {number} count - Amount of politicians we want to get
  * @param {number} days - Amount of days back to check
+ * @param order
+ * @param reverseOrder
  */
 const getTrendingPoliticians = async (days, order, reverseOrder) => {
   const reverse = reverseOrder ? "DESC" : "ASC";

@@ -28,7 +28,7 @@ export default function ProfileScreen({navigation, route}) {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isCountingRatings, setIsCountingRatings] = useState(false);
-  
+
   const [politicianData, setPoliticianData] = useState(); // JSON object from Politicians.js
   const [politicianNames, setPoliticianNames] = useState();
   const [politicianSurname, setPoliticianSurname] = useState();
@@ -85,7 +85,7 @@ export default function ProfileScreen({navigation, route}) {
    * Loads/reloads singleRatings from database and counts ownRating and globalRating.
    * @returns {Promise<void>}
    */
-  async function reloadRatings(){
+  async function reloadRatings() {
     loadSingleRatings();
     setIsCountingRatings(true);
     await countOwnRating();
@@ -114,10 +114,7 @@ export default function ProfileScreen({navigation, route}) {
     let weightedAverage = data[0].result;
     await updateOwnRating(selectedPoliticianId, userId, weightedAverage);
 
-    if (weightedAverage > 0) 
-      setOwnRating(weightedAverage);
-    else
-      setOwnRating(0);
+    setOwnRating(weightedAverage);
   }
 
   /**
@@ -303,17 +300,15 @@ export default function ProfileScreen({navigation, route}) {
           <View>
             <View style={styles.ratingRow}>
               <Text style={styles.ratingLabel}>Globalna ocena:</Text>
-              {!isCountingRatings && 
-                <Text style={styles.rating(theme)}>
+              <Text style={[styles.rating(theme), (isCountingRatings || globalRating === 0) && {color: "transparent"}]}>
                 {globalRating > 0 ? globalRating.toFixed(2) : "   -   "}
-              </Text>}
+              </Text>
             </View>
             <View style={styles.ratingRow}>
               <Text style={styles.ratingLabel}>Twoja ocena:</Text>
-              {!isCountingRatings &&
-                <Text style={styles.rating(theme)}>
+              <Text style={[styles.rating(theme), (isCountingRatings || ownRating === 0) && {color: "transparent"}]}>
                 {ownRating > 0 ? ownRating.toFixed(2) : "   -   "}
-              </Text>}
+              </Text>
             </View>
           </View>
           <View>
@@ -409,7 +404,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-    paddingRight: "6%",
+    paddingRight: "2%",
     marginBottom: 3,
   },
   ratingLabel: {
@@ -425,7 +420,7 @@ const styles = StyleSheet.create({
   }),
   party: {
     fontSize: 16,
-    
+
     paddingTop: 3,
     paddingBottom: "4%",
   },

@@ -159,7 +159,7 @@ app.use(express.json());
 
   // --- calculate ownRating USER_ID POLITICIAN_ID -----------------------------------------------------
   app.get("/api/calculate-own-rating", async (req, res) => {
-    const { user_id, politician_id } = req.query; // Używamy req.query do pobrania parametrów
+    const {user_id, politician_id} = req.query; // Używamy req.query do pobrania parametrów
 
     // Walidacja danych
     if (!user_id || !politician_id) {
@@ -182,16 +182,17 @@ app.use(express.json());
 
       // Sprawdzenie, czy wynik nie jest pusty
       if (rows.length === 0) {
-        return res.status(404).json({ message: "Rating not found" });
+        return res.status(404).json({message: "Rating not found"});
       }
       res.json(rows);
     } catch (err) {
-      res.status(500).json({ message: "Internal Server Error", error: err.message });
+      res.status(500).json({message: "Internal Server Error", error: err.message});
     } finally {
       if (connection) {
         try {
           await connection.end();
-        } catch (err) {}
+        } catch (err) {
+        }
       }
     }
   });
@@ -230,7 +231,7 @@ app.use(express.json());
                      (SELECT COUNT(*) FROM ratings WHERE date >= CURDATE() - INTERVAL ? DAY AND politician_id=p.id) as rating_count, p.birth_date, p.facebook_link, p.twitter_link
               FROM politicians as p
               WHERE p.id IN (${politicianIds.join(",")})
-            ORDER BY ${order} ${reverseOrder}, name;
+              ORDER BY ${order} ${reverseOrder}, name;
           `,
           [days]
         );
@@ -432,10 +433,10 @@ app.use(express.json());
 
   // --- calculate globalRating -----------------------------------------------------
   app.get("/api/calculate-global-rating", async (req, res) => {
-    const { politician_id } = req.query;
+    const {politician_id} = req.query;
 
     if (!politician_id) {
-      return res.status(400).json({ message: "No politician_id provided" });
+      return res.status(400).json({message: "No politician_id provided"});
     }
 
     let connection;
@@ -451,7 +452,8 @@ app.use(express.json());
       if (connection) {
         try {
           await connection.end();
-        } catch (err) {}
+        } catch (err) {
+        }
       }
     }
   });
@@ -624,7 +626,7 @@ app.use(express.json());
                 p.facebook_link,
                 p.twitter_link
          FROM politicians as p
-        ORDER BY ${order} ${reverseOrder}, name;`
+         ORDER BY ${order} ${reverseOrder}, name${req.query.limit !== "0" ? ` LIMIT ${req.query.limit}` : ''};`
       );
 
       res.json(rows);

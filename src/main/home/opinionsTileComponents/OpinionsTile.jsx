@@ -3,8 +3,9 @@ import StarRating from "react-native-star-rating-widget";
 import {useContext, useEffect, useState} from "react";
 import {OpinionsTileContext} from "../nav/OpinionsTileContext";
 import {RatingPopupTypes, ConfirmPopupTypes} from "../../../backend/EnumTypes";
-import {Chip, Modal, Portal, TextInput, useTheme} from "react-native-paper";
+import {Chip, Divider, Modal, Portal, TextInput, useTheme} from "react-native-paper";
 import _Button from "../../styles/Button";
+import {useTextInputProps} from "../../styles/TextInput";
 
 
 
@@ -97,7 +98,7 @@ export default function OpinionsTile({ownRating}) {
   }
 
   return (
-    ownRating === 0 ? <NoOpinionComponent/> : <YourOpinionsComponent/>
+    !ownRating ? <NoOpinionComponent/> : <YourOpinionsComponent/>
   );
 }
 
@@ -206,7 +207,7 @@ function RatingsList({showRatings}) {
         <View style={styles.ratingItemExt(theme, item.weight !== 10)}>
           <Text style={styles.ratingItemDesc}>Opis: {item.description}</Text>
 
-          <Divider bold/>
+          <Divider style={item.weight === 10 && {display: "none"}} bold/>
 
           {
             (singleRatings.length === 1 || item.weight !== 10) &&

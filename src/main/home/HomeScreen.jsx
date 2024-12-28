@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {BackHandler, StyleSheet, Text} from "react-native";
 import {Button, Dialog, Portal} from "react-native-paper";
-import SearchFlatList from "./searchComponents/SearchFlatList.jsx";
+import {SearchFlatListMemo} from "./searchComponents/SearchFlatList.jsx";
 import _Container from "../styles/Container";
 import {isKeyboardVisible} from "../../backend/CommonMethods";
 
@@ -59,7 +59,7 @@ export default function HomeScreen({navigation}) {
   return (
     <_Container style={styles.container(keyboardShown)}>
 
-      <SearchFlatList handleOnPress={handlePress}/>
+      <SearchFlatListMemo handleOnPress={handlePress}/>
 
       {/* Exit alert when leaving app */}
       <Portal>

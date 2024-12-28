@@ -1,11 +1,24 @@
-import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, FlatList, View, Animated, Easing, Keyboard, TouchableOpacity, Image, ActivityIndicator, ScrollView } from "react-native";
+import {memo, useEffect, useRef, useState} from "react";
+import {
+  StyleSheet,
+  Text,
+  FlatList,
+  View,
+  Animated,
+  Easing,
+  Keyboard,
+  ActivityIndicator,
+  ScrollView
+} from "react-native";
 import {TextInput, Chip, useTheme} from "react-native-paper";
-import { getAllPoliticians } from "../../../backend/database/Politicians.js";
-import { getTrendingPoliticians } from "../../../backend/database/Politicians";
-import { useTextInputProps } from "../../styles/TextInput";
+import {getAllPoliticians} from "../../../backend/database/Politicians.js";
+import {getTrendingPoliticians} from "../../../backend/database/Politicians";
+import {useTextInputProps} from "../../styles/TextInput";
+import Item from "./Item";
 
-export default function SearchFlatList({ handleOnPress }) {
+
+
+function SearchFlatList({handleOnPress}) {
   const [initialData, setInitialData] = useState([]); // all politicians
   const [filteredData, setFilteredData] = useState([]); // politicians after search
   const [searchText, setSearchText] = useState("");
@@ -14,9 +27,9 @@ export default function SearchFlatList({ handleOnPress }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const numberOfDaysTable = [
-    { key: 1, value: "1 dzień" },
-    { key: 7, value: "7 dni" },
-    { key: 30, value: "1 mies." },
+    {key: 1, value: "1 dzień"},
+    {key: 7, value: "7 dni"},
+    {key: 30, value: "1 miesiąc"},
   ];
   const [numberOfDays, setNumberOfDays] = useState(1);
   const [numberOfDaysDisplay, setNumberOfDaysDisplay] = useState(numberOfDaysTable[0].value);
@@ -65,7 +78,7 @@ export default function SearchFlatList({ handleOnPress }) {
 
       const data = isTrending
         ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
-        : await getAllPoliticians(sortOrder, !reverseOrder, 50);
+        : await getAllPoliticians(sortOrder, !reverseOrder, 100);
 
       setInitialData(data || []);
       setFilteredData(data || []);
@@ -95,7 +108,7 @@ export default function SearchFlatList({ handleOnPress }) {
 
     const data = isTrending
       ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
-      : await getAllPoliticians(sortOrder, !reverseOrder, 50);
+      : await getAllPoliticians(sortOrder, !reverseOrder, 100);
 
     ClearTextInput();
     setInitialData(data || []);
@@ -211,13 +224,17 @@ export default function SearchFlatList({ handleOnPress }) {
       >
         <View style={styles.chipsContainer}>
           {/* wszyscy politycy / politycy na czasie */}
-          <Chip style={styles.chip} textStyle={styles.chipLabel} icon="account" mode={"flat"} disabled={isLoading} onPress={() => setIsTrending(!isTrending)}>
+          <Chip style={styles.chip} textStyle={styles.chipLabel}
+                icon={isTrending ? "trending-up" : "account"}
+                mode={"flat"} disabled={isLoading}
+                onPress={() => setIsTrending(!isTrending)}>
             {isTrending ? "Na Czasie" : "Wszyscy"}
-            </Chip>
+          </Chip>
 
           {/* Button do zmiany dni */}
           {isTrending ? (
-            <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick} textStyle={styles.chipLabel}>
+            <Chip style={styles.chip} disabled={isLoading} onPress={handleNumberOfDaysClick}
+                  textStyle={styles.chipLabel}>
               Okres: {numberOfDaysDisplay}
             </Chip>
           ) : null}
@@ -336,40 +353,9 @@ export default function SearchFlatList({ handleOnPress }) {
       )}
     </View>
   );
-
-  function Item({ id, nameSurname, name, surname, globalRating, ratingCount, picture, handleOnPress, isTrending }) {
-    return (
-      <TouchableOpacity
-        key={id}
-        style={styles.politicianItem}
-        onPress={() => {
-          handleOnPress(id);
-        }}
-      >
-        <Image
-          source={
-            picture && picture !== ""
-              ? {
-                  uri: `data:image/jpeg;base64,${picture}`,
-                  cache: "force-cache",
-                }
-              : require("./../../../../assets/noPhoto.png")
-          }
-          style={styles.politicianItemImage}
-        />
-        <View style={styles.politicianInfo}>
-          <Text style={styles.politicianItemText}>
-            {name} {surname}
-          </Text>
-          <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
-          <Text style={styles.politicianScore}>
-            {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
 }
+
+export const SearchFlatListMemo = memo(SearchFlatList);
 
 const styles = StyleSheet.create({
 
