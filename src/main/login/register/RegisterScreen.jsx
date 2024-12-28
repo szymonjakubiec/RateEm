@@ -224,7 +224,7 @@ export default function RegisterScreen({navigation}) {
 
         {/* PK: Register button */}
         <_Button
-          buttonText="Zarejestruj"
+          text="Zarejestruj"
           onPress={() => {
             validateFieldsOnSubmit().then((result) => {
               if (result) {

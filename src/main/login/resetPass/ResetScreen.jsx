@@ -124,7 +124,7 @@ export default function ResetScreen({navigation}) {
 
       {/* PK: Reset password button */}
       <_Button
-        buttonText="Zresetuj hasło"
+        text="Zresetuj hasło"
         onPress={() => {
           validateFieldsOnSubmit().then((result) => {
             if (result) {

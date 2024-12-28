@@ -7,10 +7,6 @@ export default function PrezydentExplanation({navigation}) {
 
   return (
     <_Container style={{padding: "4%"}}>
-      <View style={styles.titleDiv}>
-        <View style={styles.circlePrezydent}/>
-        <Text style={styles.title}>wybory Prezydenta RP</Text>
-      </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.scrollViewDiv}>
           <Text style={styles.scrollViewTitle}>Opis</Text>
@@ -136,6 +132,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   scrollViewDiv: {
+    marginTop: 10,
     marginBottom: 15,
   },
   scrollViewTitle: {
@@ -150,25 +147,5 @@ const styles = StyleSheet.create({
   scrollViewText: {
     fontSize: 18,
     fontWeight: "300",
-  },
-
-  titleDiv: {
-    alignSelf: "left",
-    flexDirection: "row",
-    marginBottom: 5,
-  },
-  title: {
-    color: "black",
-    fontSize: 20,
-    fontWeight: "700",
-    marginLeft: 10,
-  },
-  circlePrezydent: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    marginLeft: 10,
-    marginVertical: 7,
-    backgroundColor: "#f24726",
   },
 });

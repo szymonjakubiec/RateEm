@@ -436,7 +436,7 @@ export default function SettingsScreen({navigation, route}) {
       <Animated.View style={{position: "absolute", alignSelf: "center", bottom: buttonBottom}}>
         <_Button
           style={{minWidth: "35%"}}
-          buttonText="Zapisz"
+          text="Zapisz"
           disabled={!buttonActive}
           onPress={async () => {
 

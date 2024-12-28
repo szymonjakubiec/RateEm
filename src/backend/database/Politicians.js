@@ -3,33 +3,35 @@
  *
  * @async
  * @function
+ * @param order
+ * @param reverseOrder
+ * @param [limit=0]
  * @returns {Promise<Object[]>} Array of politician objects
  */
-const getAllPoliticians = async (order, reverseOrder) => {
+const getAllPoliticians = async (order, reverseOrder, limit = 0) => {
   const reverse = reverseOrder ? "DESC" : "ASC";
-  const url = `${global.SERVER_URL}/all-politicians?order=${order}&reverseOrder=${reverse}`;
+  const url = `${global.SERVER_URL}/all-politicians?order=${order}&reverseOrder=${reverse}&limit=${limit}`;
+
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const rawData = await response.json();
 
-    const data = [];
-    for await (const element of rawData) {
-      data.push({
-        key: element.id,
-        value: element.names_surname,
-        name: element.name,
-        surname: element.surname,
-        picture: element.picture,
-        globalRating: element.global_rating,
-        ratingCount: element.rating_count,
-      });
-    }
+    const data = await response.json();
 
-    return data;
-  } catch (error) {
+    return data.map(({id, names_surname, name, surname, picture, global_rating, rating_count}) => ({
+      key: id,
+      value: names_surname,
+      name,
+      surname,
+      picture,
+      globalRating: global_rating,
+      ratingCount: rating_count,
+    }));
+
+  } catch (err) {
+    console.error("Error fetching politicians:", err);
     return null;
   }
 };
@@ -87,8 +89,9 @@ const updatePolitician = async (id, newData = {}) => {
  *
  * @async
  * @function
- * @param {number} count - Amount of politicians we want to get
  * @param {number} days - Amount of days back to check
+ * @param order
+ * @param reverseOrder
  */
 const getTrendingPoliticians = async (days, order, reverseOrder) => {
   const reverse = reverseOrder ? "DESC" : "ASC";
@@ -120,4 +123,4 @@ const getTrendingPoliticians = async (days, order, reverseOrder) => {
   }
 };
 
-module.exports = { getAllPoliticians, getPolitician, updatePolitician, getTrendingPoliticians };
+module.exports = {getAllPoliticians, getPolitician, updatePolitician, getTrendingPoliticians};

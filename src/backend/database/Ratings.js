@@ -105,7 +105,7 @@ const getRatingsUserIdPoliticianId = async (user_id, politician_id) => {
  * @param politician_id
  * @returns {Promise<any|null>}
  */
-const calcOwnRating = async (user_id, politician_id) => {
+const countRatingsUserIdPoliticianId = async (user_id, politician_id) => {
   const url = `${global.SERVER_URL}/calculate-own-rating?user_id=${user_id}&politician_id=${politician_id}`;
   try {
     const response = await fetch(url, {
@@ -246,5 +246,5 @@ module.exports = {
   getRating,
   getRatingsUserId,
   getRatingsUserIdPoliticianId,
-  countRatingsUserIdPoliticianId: calcOwnRating,
+  countRatingsUserIdPoliticianId,
 };

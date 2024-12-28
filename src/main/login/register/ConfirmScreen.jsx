@@ -119,7 +119,7 @@ export default function ConfirmScreen({navigation, route}) {
         <_ErrorText text={wrongCode}/>
 
         <_Button
-          buttonText="Potwierdź"
+          text="Potwierdź"
           disabled={!isCodeValid()}
           style={{marginTop: 35}}
           onPress={() => {
