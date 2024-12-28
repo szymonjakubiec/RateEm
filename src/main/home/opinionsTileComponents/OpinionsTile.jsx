@@ -26,6 +26,9 @@ export default function OpinionsTile({ownRating}) {
    * @constructor
    */
   function NoOpinionComponent() {
+    
+    const theme = useTheme();
+    
     return (
       <View style={styles.opinionsTile(theme)}>
         <Text style={styles.yourOpinionsTitle}>Brak opinii</Text>
@@ -50,6 +53,9 @@ export default function OpinionsTile({ownRating}) {
    * @constructor
    */
   function YourOpinionsComponent() {
+    
+    const theme = useTheme();
+    
     return (
       <View style={styles.opinionsTile(theme)}>
         <View style={styles.yourOpinionsTopBar}>
