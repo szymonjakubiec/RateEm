@@ -1,26 +1,26 @@
-import { View, Text, StyleSheet, Modal, TouchableOpacity, Image, FlatList } from "react-native";
-import { useContext, useEffect, useState } from "react";
-import { getRatingsUserId } from "../../backend/database/Ratings";
-import { ownGoBack, tabBarAnim } from "../../backend/CommonMethods";
-import { GlobalContext } from "../nav/GlobalContext";
+import {FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {useContext, useEffect, useState} from "react";
+import {getRatingsUserId} from "../../backend/database/Ratings";
+import {tabBarAnim} from "../../backend/CommonMethods";
+import {GlobalContext} from "../nav/GlobalContext";
 import _Container from "../styles/Container";
+import {Button, Dialog, Portal} from "react-native-paper";
 
-export default function SummaryScreen({ navigation }) {
+
+
+export default function SummaryScreen({navigation}) {
   // PK: Hide bottom TabBar
   useEffect(() => {
     return tabBarAnim(navigation);
   }, []);
 
-  // Pk: Going back
-  //goBack(navigation);
-
   const [ratings, setRatings] = useState([]);
   const [highestRating, setHighestRating] = useState(null);
   const [lowestRating, setLowestRating] = useState(null);
   const [selectedPolitician, setSelectedPolitician] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
   const [totalRatings, setTotalRatings] = useState(0); // Dodano stan dla łącznej liczby ocen
-  const { userId } = useContext(GlobalContext);
+  const {userId} = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchRatings = async () => {
@@ -40,7 +40,7 @@ export default function SummaryScreen({ navigation }) {
     fetchRatings();
   }, []);
 
-  const renderRatingItem = ({ item }) => (
+  const renderRatingItem = ({item}) => (
     <View style={styles.ratingItemContainer}>
       <TouchableOpacity style={styles.ratingItem} onPress={() => handleratingClick(item)}>
         {item.picture ? (
@@ -52,7 +52,7 @@ export default function SummaryScreen({ navigation }) {
             style={styles.ratingImage}
           />
         ) : (
-          <Image source={require("./../../../assets/noPhoto.png")} style={styles.ratingImage} />
+          <Image source={require("./../../../assets/noPhoto.png")} style={styles.ratingImage}/>
         )}
         <Text style={styles.ratingItemText}>
           {item.names_surname} {item.value}
@@ -62,16 +62,16 @@ export default function SummaryScreen({ navigation }) {
   );
   const handleratingClick = (item) => {
     setSelectedPolitician(item);
-    setModalVisible(true);
+    setDialogVisible(true);
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
+  const closeDialog = () => {
+    setDialogVisible(false);
     setSelectedPolitician(null);
   };
 
   return (
-    <_Container style={{ alignItems: "stretch", padding: 20 }}>
+    <_Container style={{alignItems: "stretch", padding: 20}}>
       <Text style={styles.title}>Wystawione oceny</Text>
       {ratings.length === 0 ? (
         <View style={styles.ratingContainer}>
@@ -114,35 +114,28 @@ export default function SummaryScreen({ navigation }) {
       )}
 
       {/* Modal z informacjami o polityku */}
-      <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={closeModal}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.closeIcon} onPress={closeModal}>
-              <Text style={styles.closeIconText}>✕</Text>
-            </TouchableOpacity>
-            {selectedPolitician && (
-              <>
-                <Text style={styles.modalTitle}>{selectedPolitician.names_surname}</Text>
-                <Text style={styles.modalText}>
-                  <Text style={styles.modalLabel}>Ocena: </Text>
-                  {selectedPolitician.value}
-                </Text>
-                <Text style={styles.modalText}>
-                  <Text style={styles.modalLabel}>Opis: </Text>
-                  {selectedPolitician.description}
-                </Text>
-                <Text style={styles.modalText}>
-                  <Text style={styles.modalLabel}>Partia: </Text>
-                  {selectedPolitician.party || "Brak Informacji"}
-                </Text>
-              </>
-            )}
-            <TouchableOpacity style={styles.actionButton} onPress={closeModal}>
-              <Text style={styles.actionButtonText}>Zamknij</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <Portal>
+        <Dialog visible={dialogVisible} onDismiss={closeDialog}>
+          <Dialog.Title>{selectedPolitician?.names_surname || "Szczegóły oceny"}</Dialog.Title>
+          <Dialog.Content>
+            <Text style={styles.dialogText}>
+              <Text style={styles.dialogLabel}>Ocena: </Text>
+              {selectedPolitician?.value}
+            </Text>
+            <Text style={styles.dialogText}>
+              <Text style={styles.dialogLabel}>Opis: </Text>
+              {selectedPolitician?.description || "Brak opisu"}
+            </Text>
+            <Text style={styles.dialogText}>
+              <Text style={styles.dialogLabel}>Partia: </Text>
+              {selectedPolitician?.party || "Brak informacji"}
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={closeDialog}>Zamknij</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </_Container>
   );
 }
@@ -162,7 +155,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 8,
     elevation: 3,
   },
@@ -180,7 +173,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 8,
     elevation: 3,
   },
@@ -200,7 +193,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 8,
     elevation: 3,
   },
@@ -221,7 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     elevation: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 5,
     maxHeight: "80%",
@@ -278,5 +271,14 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25, // Zaokrąglone zdjęcie
+  },
+  dialogText: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: "#555",
+  },
+  dialogLabel: {
+    fontWeight: "bold",
+    color: "#333",
   },
 });

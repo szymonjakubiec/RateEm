@@ -11,13 +11,12 @@ import {useTextInputProps} from "../../styles/TextInput";
 
 export default function OpinionsTile({ownRating}) {
 
-  const [ratingType, setRatingType] = useState(RatingPopupTypes.Undefined);
   const [expandedRatingList, setExpandedRatingList] = useState(true);
+
   const [ratingPopupVisible, setRatingPopupVisible] = useState(false);
 
   function turnOffRatingPopup() {
     setRatingPopupVisible(false);
-    setRatingType(RatingPopupTypes.Undefined);
   }
 
 
@@ -27,26 +26,21 @@ export default function OpinionsTile({ownRating}) {
    * @constructor
    */
   function NoOpinionComponent() {
-    useEffect(() => {
-      if (ratingType !== RatingPopupTypes.Undefined) {
-        setRatingPopupVisible(true);
-      }
-    }, [ratingType]);
-
+    
     const theme = useTheme();
-
+    
     return (
       <View style={styles.opinionsTile(theme)}>
         <Text style={styles.yourOpinionsTitle}>Brak opinii</Text>
         <Text style={styles.ratingItemTitle}>Masz już wyrobione zdanie o tym polityku?</Text>
         <_Button
           style={[styles.buttonMain(theme), {marginTop: 10}]} text="Ustaw opinię bazową"
-          onPress={() => setRatingType(RatingPopupTypes.Add)}
+          onPress={() => setRatingPopupVisible(true)}
         />
         <RatingPopup
           popupVisible={ratingPopupVisible}
           itemWeight={10}
-          popupType={ratingType}
+          popupType={RatingPopupTypes.Add}
           turnOffRatingPopup={turnOffRatingPopup}
         />
       </View>
@@ -59,14 +53,9 @@ export default function OpinionsTile({ownRating}) {
    * @constructor
    */
   function YourOpinionsComponent() {
-    useEffect(() => {
-      if (ratingType !== RatingPopupTypes.Undefined) {
-        setRatingPopupVisible(true);
-      }
-    }, [ratingType]);
-
+    
     const theme = useTheme();
-
+    
     return (
       <View style={styles.opinionsTile(theme)}>
         <View style={styles.yourOpinionsTopBar}>
@@ -84,13 +73,13 @@ export default function OpinionsTile({ownRating}) {
         </View>
         <_Button
           style={styles.buttonMain(theme)} text="Dodaj opinię"
-          onPress={() => setRatingType(RatingPopupTypes.Add)}
+          onPress={() => setRatingPopupVisible(true)}
         />
         <RatingsList showRatings={expandedRatingList}/>
         <RatingPopup
           popupVisible={ratingPopupVisible}
           itemWeight={1}
-          popupType={ratingType}
+          popupType={RatingPopupTypes.Add}
           turnOffRatingPopup={turnOffRatingPopup}
         />
       </View>
@@ -233,10 +222,13 @@ function RatingsList({showRatings}) {
             popupVisible={ratingPopupVisible}
             itemId={item.id}
             itemWeight={item.weight}
+            itemTitle={item.title}
+            itemRating={item.value}
+            itemDescription={item.description}
             popupType={RatingPopupTypes.Update}
             turnOffRatingPopup={turnOffRatingPopup}
           />
-
+          
           <ConfirmationPopup
             popupVisible={confirmPopupVisible}
             popupType={ConfirmPopupTypes.Deletion}
@@ -250,12 +242,12 @@ function RatingsList({showRatings}) {
 }
 
 
-function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRatingPopup}) {
+function RatingPopup({popupVisible, itemId = 0, itemWeight, itemTitle = "", itemRating = 0, itemDescription = "", popupType, turnOffRatingPopup}){
   const {handleFirstOwnRating, handleNewSingleRating, handleSingleRatingUpdate} = useContext(OpinionsTileContext);
 
-  const [title, setTitle] = useState('');
-  const [rating, setRating] = useState(1);
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState(itemTitle);
+  const [rating, setRating] = useState(itemRating);
+  const [description, setDescription] = useState(itemDescription);
 
   const [confirmPopupVisible, setConfirmPopupVisible] = useState(false);
 
@@ -290,11 +282,11 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, popupType, turnOffRa
    * Turns off this popup and nullifies the variables.
    */
   function handleRatingPopupClose() {
-    if (itemWeight === 1) {
-      setTitle("");
-      setDescription("");
+    if (itemWeight === 1){
+      setTitle(itemTitle);
+      setDescription(itemDescription);
     }
-    setRating(1);
+    setRating(itemRating);
     turnOffRatingPopup();
   }
 
