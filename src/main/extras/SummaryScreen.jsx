@@ -1,10 +1,19 @@
-import {FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  TouchableOpacity,
+  View
+} from "react-native";
 import {useContext, useEffect, useState} from "react";
 import {getRatingsUserId} from "../../backend/database/Ratings";
 import {tabBarAnim} from "../../backend/CommonMethods";
 import {GlobalContext} from "../nav/GlobalContext";
 import _Container from "../styles/Container";
-import {Button, Dialog, Portal} from "react-native-paper";
+import {Button, Dialog, Portal, useTheme} from "react-native-paper";
 
 
 
@@ -14,6 +23,7 @@ export default function SummaryScreen({navigation}) {
     return tabBarAnim(navigation);
   }, []);
 
+  const [isLoading, setIsLoading] = useState(true);
   const [ratings, setRatings] = useState([]);
   const [highestRating, setHighestRating] = useState(null);
   const [lowestRating, setLowestRating] = useState(null);
@@ -26,6 +36,7 @@ export default function SummaryScreen({navigation}) {
     const fetchRatings = async () => {
       const fetchedRatings = await getRatingsUserId(userId);
       setRatings(fetchedRatings.reverse().filter((rating) => rating.weight !== 10));
+      setIsLoading(false);
 
       if (fetchedRatings.length > 0) {
         const highest = Math.max(...fetchedRatings.map((rating) => rating.value));
@@ -40,25 +51,36 @@ export default function SummaryScreen({navigation}) {
     fetchRatings();
   }, []);
 
+  const theme = useTheme();
+
   const renderRatingItem = ({item}) => (
-    <View style={styles.ratingItemContainer}>
-      <TouchableOpacity style={styles.ratingItem} onPress={() => handleratingClick(item)}>
-        {item.picture ? (
-          <Image
-            source={{
-              uri: `data:image/jpeg;base64,${item.picture}`,
-              cache: "force-cache",
-            }}
-            style={styles.ratingImage}
-          />
-        ) : (
-          <Image source={require("./../../../assets/noPhoto.png")} style={styles.ratingImage}/>
-        )}
-        <Text style={styles.ratingItemText}>
-          {item.names_surname} {item.value}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableHighlight
+      style={styles.ratingItem(theme)}
+      underlayColor={theme.colors.primaryContainer}
+      onPress={() => handleratingClick(item)}
+    >
+      <>
+        <Image
+          source={
+            item.picture
+              ? {
+                uri: `data:image/jpeg;base64,${item.picture}`,
+                cache: "force-cache",
+              }
+              : require("./../../../assets/noPhoto.png")
+          }
+          style={styles.ratingImage}
+        />
+        <View>
+          <Text style={{fontSize: 22}}>
+            {item.names_surname}
+          </Text>
+          <Text style={{fontSize: 28, fontWeight: "bold", alignSelf: "flex-end"}}>
+            {item.value}
+          </Text>
+        </View>
+      </>
+    </TouchableHighlight>
   );
   const handleratingClick = (item) => {
     setSelectedPolitician(item);
@@ -72,36 +94,54 @@ export default function SummaryScreen({navigation}) {
 
   return (
     <_Container style={{alignItems: "stretch", padding: 20}}>
-      <Text style={styles.title}>Wystawione oceny</Text>
-      {ratings.length === 0 ? (
-        <View style={styles.ratingContainer}>
-          <Text>Nie ma niczego do pokazania... Najpierw dodaj opinię!</Text>
+      {isLoading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size={45} animating={true} color={theme.colors.primary}/>
+          <Text style={styles.loaderLabel}>Ładowanie...</Text>
+        </View>
+      ) : ratings.length === 0 ? (
+        <View style={styles.noRatingsContainer(theme)}>
+          <Text style={{fontSize: 18}}>Nie ma niczego do pokazania...{'\n'}Najpierw dodaj opinię!</Text>
         </View>
       ) : (
-        <View>
-          <View style={styles.totalRatingsContainer}>
-            <Text style={styles.totalRatingsText}>Łączna liczba ocen: {totalRatings}</Text>
+        <View style={styles.summaryTile(theme)}>
+
+          {!!highestRating && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={styles.highestLowestTile(theme)}
+              onPress={() => handleratingClick(highestRating)}
+            >
+              <View style={{gap: 3}}>
+                <Text style={{fontSize: 18, fontWeight: "bold"}}>Najwyższa ocena:</Text>
+                <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-end", marginRight: 5}}>
+                  <Text style={{fontSize: 20}}>{highestRating.names_surname}</Text>
+                  <Text style={{fontSize: 24, fontWeight: "bold", marginLeft: 15}}>{highestRating.value}</Text>
+                </View>
+              </View>
+
+            </TouchableOpacity>
+          )}
+
+          {!!lowestRating && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={styles.highestLowestTile(theme)}
+              onPress={() => handleratingClick(lowestRating)}
+            >
+              <Text style={{fontSize: 18, fontWeight: "bold"}}>Najniższa ocena:</Text>
+              <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-end", marginRight: 5}}>
+                <Text style={{fontSize: 20}}>{lowestRating.names_surname}</Text>
+                <Text style={{fontSize: 24, fontWeight: "bold", marginLeft: 15}}>{lowestRating.value}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
+          <View style={{flexDirection: "row", gap: 15, alignItems: "center", marginLeft: 8}}>
+            <Text style={{fontSize: 20, fontWeight: "500"}}>Łączna liczba ocen:</Text>
+            <Text style={{fontSize: 24, fontWeight: "bold"}}>{totalRatings}</Text>
           </View>
 
-          <View style={styles.ratingContainer}>
-            {highestRating && (
-              <TouchableOpacity style={styles.ratingItem} onPress={() => handleratingClick(highestRating)}>
-                <Text style={styles.ratingText}>
-                  Najwyższa ocena: {highestRating.names_surname} {highestRating.value}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          <View style={styles.ratingContainer}>
-            {lowestRating && (
-              <TouchableOpacity style={styles.ratingItem} onPress={() => handleratingClick(lowestRating)}>
-                <Text style={styles.ratingText}>
-                  Najniższa ocena: {lowestRating.names_surname} {lowestRating.value}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
         </View>
       )}
       {ratings && (
@@ -109,25 +149,31 @@ export default function SummaryScreen({navigation}) {
           data={ratings}
           renderItem={renderRatingItem}
           keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.scrollContainer}
+          persistentScrollbar={true}
+          style={styles.list}
+          contentContainerStyle={{paddingHorizontal: 5, paddingBottom: 5}}
         />
       )}
 
       {/* Modal z informacjami o polityku */}
       <Portal>
-        <Dialog visible={dialogVisible} onDismiss={closeDialog}>
-          <Dialog.Title>{selectedPolitician?.names_surname || "Szczegóły oceny"}</Dialog.Title>
-          <Dialog.Content>
-            <Text style={styles.dialogText}>
-              <Text style={styles.dialogLabel}>Ocena: </Text>
+        <Dialog
+          style={{backgroundColor: theme.colors.surfaceVariant}}
+          visible={dialogVisible}
+          onDismiss={closeDialog}
+        >
+          <Dialog.Title style={{fontSize: 26}}>{selectedPolitician?.names_surname || "Szczegóły oceny"}</Dialog.Title>
+          <Dialog.Content style={{gap: 8}}>
+            <Text style={styles.dialogText(theme)}>
+              <Text style={styles.dialogLabel}>Ocena:{"  "}</Text>
               {selectedPolitician?.value}
             </Text>
-            <Text style={styles.dialogText}>
-              <Text style={styles.dialogLabel}>Opis: </Text>
+            <Text style={styles.dialogText(theme)}>
+              <Text style={styles.dialogLabel}>Opis:{"  "}</Text>
               {selectedPolitician?.description || "Brak opisu"}
             </Text>
-            <Text style={styles.dialogText}>
-              <Text style={styles.dialogLabel}>Partia: </Text>
+            <Text style={styles.dialogText(theme)}>
+              <Text style={styles.dialogLabel}>Partia:{"  "}</Text>
               {selectedPolitician?.party || "Brak informacji"}
             </Text>
           </Dialog.Content>
@@ -140,145 +186,122 @@ export default function SummaryScreen({navigation}) {
   );
 }
 
+
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  totalRatingsContainer: {
-    marginBottom: 15,
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 2},
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  totalRatingsText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#555",
-  },
-  ratingContainer: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 2},
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  ratingText: {
-    fontSize: 18,
-    color: "#333",
-  },
-  scrollContainer: {
-    marginTop: 20,
-  },
-  ratingItem: {
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 2},
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  ratingItemText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
+  loaderContainer: {
+    height: "74%",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    paddingTop: "20%",
   },
-  modalContent: {
-    width: "80%",
-    padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    elevation: 10,
-    shadowColor: "#000",
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    maxHeight: "80%",
-  },
-  closeIcon: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "transparent",
-    zIndex: 2,
+  loaderLabel: {
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 5,
   },
 
-  closeIconText: {
-    fontSize: 18,
-    color: "#888",
+  noRatingsContainer: (theme) => ({
+    position: "absolute",
+    width: "100%",
+    alignSelf: "center",
+    top: "13%",
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+
+    backgroundColor: theme.colors.secondaryContainer,
+
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 5,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 15,
+
+    shadowColor: theme.colors.shadow,
+    shadowOpacity: 0.5,
+    shadowOffset: {width: 2, height: 2},
+    shadowRadius: 5,
+    elevation: 8,
+  }),
+
+  summaryTile: (theme) => ({
+    padding: 15,
+    gap: 10,
+    marginVertical: 10,
+
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 5,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 20,
+
+    backgroundColor: theme.colors.secondaryContainer,
+
+    shadowColor: theme.colors.shadow,
+    shadowOpacity: 0.5,
+    shadowOffset: {width: 2, height: 2},
+    shadowRadius: 5,
+    elevation: 8,
+  }),
+  highestLowestTile: (theme) => ({
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: theme.colors.inverseOnSurface,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 5,
+    shadowColor: theme.colors.shadow,
+    shadowOpacity: 0.5,
+    shadowOffset: {width: 2, height: 2},
+    shadowRadius: 5,
+    elevation: 4,
+  }),
+
+  list: {
+    marginVertical: 5,
+    flexGrow: 0,
+    paddingHorizontal: 5,
+    marginHorizontal: -5,
   },
-  modalTitle: {
-    fontSize: 21,
-    fontWeight: "bold",
-    marginBottom: 15,
-    textAlign: "center",
-    color: "#333",
-  },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 10,
-    lineHeight: 22,
-    color: "#555",
-  },
-  modalLabel: {
-    fontWeight: "bold",
-    color: "#333",
-  },
-  actionButton: {
-    marginTop: 20,
-    paddingVertical: 12,
-    backgroundColor: "#007BFF",
-    borderRadius: 8,
+  ratingItem: (theme) => ({
+    flexDirection: "row",
     alignItems: "center",
-  },
-  actionButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  imageContainer: {
-    marginRight: 10,
-  },
+    justifyContent: "space-between",
+
+    marginVertical: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+
+    backgroundColor: theme.colors.inverseOnSurface,
+
+    borderRadius: 10,
+    shadowColor: theme.colors.shadow,
+    shadowOpacity: 0.5,
+    shadowOffset: {width: 2, height: 2},
+    shadowRadius: 5,
+    elevation: 3,
+  }),
   ratingImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25, // Zaokrąglone zdjęcie
+    aspectRatio: 1,
+    width: 60,
+    borderRadius: 25,
   },
-  dialogText: {
-    fontSize: 16,
-    marginBottom: 10,
-    color: "#555",
-  },
+
+
+  dialogText: (theme) => ({
+    padding: 10,
+    fontSize: 18,
+
+    backgroundColor: theme.colors.inverseOnSurface,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 5,
+    shadowColor: theme.colors.shadow,
+    shadowOpacity: 0.5,
+    shadowOffset: {width: 2, height: 2},
+    shadowRadius: 5,
+    elevation: 3,
+  }),
   dialogLabel: {
     fontWeight: "bold",
-    color: "#333",
   },
+
 });
