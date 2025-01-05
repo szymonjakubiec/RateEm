@@ -179,15 +179,15 @@ export default function LoggingScreen({navigation}) {
         <_Button text="Zaloguj" onPress={() => handleLogin()} style={{marginTop: 25}}/>
 
         {/* PK: Password reset button */}
-        <_Button text="Zapomniałeś hasła?"
-                 onPress={() => {
-                   setEmail('');
-                   setWrongEmailInfo('');
-                   setPassword('');
-                   setWrongPasswordInfo('');
-                   navigation.navigate("ResetNav", {_title});
-                 }}
-                 mode="onlyText" style={{marginTop: 20}}/>
+        <_Button
+          text="Zapomniałeś hasła?" mode="text" style={{marginTop: 20}}
+          onPress={() => {
+            setEmail('');
+            setWrongEmailInfo('');
+            setPassword('');
+            setWrongPasswordInfo('');
+            navigation.navigate("ResetNav", {_title});
+          }}/>
 
         {/* PK: Register button */}
         <View
@@ -197,14 +197,15 @@ export default function LoggingScreen({navigation}) {
             Nie masz jeszcze konta?
           </Text>
 
-          <_Button text="Zarejestruj" onPress={() => {
-            setEmail('');
-            setWrongEmailInfo('');
-            setPassword('');
-            setWrongPasswordInfo('');
-            navigation.navigate("RegisterNav", {_title});
-          }}
-                   mode="onlyText" style={{marginLeft: 5}}/>
+          <_Button
+            text="Zarejestruj" mode="text" style={{marginLeft: 5}}
+            onPress={() => {
+              setEmail('');
+              setWrongEmailInfo('');
+              setPassword('');
+              setWrongPasswordInfo('');
+              navigation.navigate("RegisterNav", {_title});
+            }}/>
 
         </View>
 

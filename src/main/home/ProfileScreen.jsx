@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     margin: 10,
-    gap: 20,
+    gap: 15,
 
     backgroundColor: theme.colors.primaryContainer2,
 
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "baseline",
     paddingRight: "2%",
-    marginBottom: 3,
+    marginBottom: 4,
   },
   ratingLabel: {
     fontSize: 22,

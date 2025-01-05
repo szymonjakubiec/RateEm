@@ -8,7 +8,7 @@ import {Icon, useTheme} from "react-native-paper";
  * @param {string} text - text for button.
  * @param {function()} onPress - what happens on press.
  * @param {StyleProp<TextStyle>} [textStyle] - additional text styles.
- * @param {'standard'|'onlyText'|'tile'} [mode='standard'] - button's mode.
+ * @param {'standard'|'text'|'tile'} [mode='standard'] - button's mode.
  * @param {StyleProp<ViewStyle>} [style] - additional button styles.
  * @param {object} [iconLeft] - icon to display on the left of text.
  * @param {string} iconLeft.icon - icon to display on the left of text.
@@ -69,13 +69,14 @@ export default function _Button({
         fontSize: mode === "tile" ? 18 : 16,
         textShadowColor: '#00000066',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 4,
+        textShadowRadius: 2,
       },
       onlyText: {
         fontSize: 14,
-        fontWeight: "400",
-        color: "blue",
-        textShadowColor: '#0000ff22',
+        fontWeight: "500",
+        color: theme.colors.primary,
+        textShadowRadius: 10,
+        textShadowColor: theme.colors.inversePrimary,
       }
     });
 
@@ -157,7 +158,7 @@ export default function _Button({
           ) : null}
         </View>
       </TouchableOpacity>
-      : mode === "onlyText" ?
+      : mode === "text" ?
         <TouchableOpacity
           activeOpacity={0.4}
           disabled={disabled}

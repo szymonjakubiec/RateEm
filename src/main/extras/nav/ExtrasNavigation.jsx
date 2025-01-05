@@ -60,7 +60,7 @@ export default function ExtrasNavigation({route}) {
         name="Summary"
         component={SummaryScreen}
         options={() => ({
-          headerTitle: "Podsumowanie",
+          headerTitle: "Podsumowanie ocen",
           headerTitleAlign: "center",
         })}
       />
