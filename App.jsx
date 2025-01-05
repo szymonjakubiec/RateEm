@@ -4,7 +4,7 @@ import {NavigationContainer} from "@react-navigation/native";
 import LoggingScreen from "./src/main/login/LoggingScreen";
 import MainNavigation from "./src/main/nav/MainNavigation";
 import RegisterNavigation from "./src/main/login/register/nav/RegisterNavigation";
-import {DefaultTheme, PaperProvider, useTheme} from "react-native-paper";
+import {DefaultTheme, PaperProvider} from "react-native-paper";
 import ResetPassNavigation from "./src/main/login/resetPass/nav/ResetPassNavigation";
 
 
@@ -14,7 +14,7 @@ const Stack = createStackNavigator();
 // Setting global parameters
 
 // MM
-global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
+// global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
 
 // PK
 // global.SERVER_URL = "http://10.10.17.22:3000/api"; // ms
@@ -23,7 +23,7 @@ global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
 
 // MS
 //global.SERVER_URL = "http://157.158.168.61:3000/api"; // aka
-// global.SERVER_URL = "http://192.168.1.136:3000/api"; // home
+global.SERVER_URL = "http://192.168.1.136:3000/api"; // home
 
 
 console.log(global["SERVER_URL"]);

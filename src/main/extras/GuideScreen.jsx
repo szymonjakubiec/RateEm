@@ -24,8 +24,6 @@ export default function GuideScreen({navigation}) {
   }, [navigation]);
 
   const [sliderState, setSliderState] = useState({currentPage: 0});
-  const [politicianSliderState, setPoliticianSliderState] = useState({currentPage: 0});
-
   const setSliderPage = (event) => {
     const {currentPage} = sliderState;
 
@@ -38,32 +36,6 @@ export default function GuideScreen({navigation}) {
       });
     }
   };
-
-  const setPoliticiansSliderPage = (event) => {
-    const {currentPage} = sliderState;
-
-    const {x} = event.nativeEvent.contentOffset;
-    const indexOfNextScreen = Math.round(x / width);
-    if (indexOfNextScreen !== currentPage) {
-      setPoliticianSliderState({
-        ...politicianSliderState,
-        currentPage: indexOfNextScreen,
-      });
-    }
-  };
-
-  const politicians = [
-    {name: "Andrzej Pobreża", global_rating: 1},
-    {name: "Jan Paweł Adamczewski", global_rating: 5},
-  ];
-
-  const images = {
-    'Jan Paweł Adamczewski': require('./../../../assets/Jan_Paweł_Adamczewski.png'),
-    'Andrzej Pobreża': require('./../../../assets/Andrzej_Pobreża.jpg'),
-  };
-
-  const {currentPage: pageIndex} = sliderState;
-
   return (
     <_Container style={{paddingHorizontal: 0}}>
       <StatusBar barStyle="dark-content"/>

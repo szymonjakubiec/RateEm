@@ -58,7 +58,7 @@ const getRating = async (user_id, politician_id) => {
  */
 const getRatingsUserId = async (userId) => {
   // następca getUserRatings
-  const url = `${global.SERVER_URL}/ratings-user-id?user_id=${userId}`; // Zmiana URL, aby uwzględnić userId
+  const url = `${global.SERVER_URL}/ratings-user-id?user_id=${userId}`;
 
   try {
     const response = await fetch(url);
@@ -169,7 +169,6 @@ const addRating = async (
       throw new Error(`Error: ${response.status} - ${errorMessage}`);
     }
 
-    // Reading the added rating data
     const newRating = await response.json();
     return newRating;
   } catch (error) {

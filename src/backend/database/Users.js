@@ -60,12 +60,12 @@ export const getUserIdByEmail = (email) => {
  * @returns {Promise<object|undefined>} New user data object
  */
 export const addUser = async (name, email, password, phone_number, verified, communication_method, login_method) => {
-  const url = `${global.SERVER_URL}/users`; // Endpoint URL
+  const url = `${global.SERVER_URL}/users`;
   try {
     const response = await fetch(url, {
-      method: "POST", // Using POST method
+      method: "POST",
       headers: {
-        "Content-Type": "application/json", // Indicating JSON format
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         name,
@@ -75,7 +75,7 @@ export const addUser = async (name, email, password, phone_number, verified, com
         verified,
         communication_method,
         login_method,
-      }), // Sending data in JSON format
+      }),
     });
 
     if (!response.ok) {
@@ -83,7 +83,6 @@ export const addUser = async (name, email, password, phone_number, verified, com
       throw new Error(`Error: ${response.status} - ${errorMessage}`);
     }
 
-    // Reading the added user data
     const newUser = await response.json();
     return newUser;
   } catch (error) {

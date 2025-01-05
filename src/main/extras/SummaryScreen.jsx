@@ -45,7 +45,7 @@ export default function SummaryScreen({navigation}) {
         setHighestRating(fetchedRatings.find((rating) => rating.value === highest));
         setLowestRating(fetchedRatings.find((rating) => rating.value === lowest));
 
-        setTotalRatings(fetchedRatings.length); // Ustawienie łącznej liczby ocen
+        setTotalRatings(fetchedRatings.length);
       }
     };
     fetchRatings();
@@ -155,7 +155,6 @@ export default function SummaryScreen({navigation}) {
         />
       )}
 
-      {/* Modal z informacjami o polityku */}
       <Portal>
         <Dialog
           style={{backgroundColor: theme.colors.surfaceVariant}}

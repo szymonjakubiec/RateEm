@@ -64,13 +64,12 @@ app.use(express.json());
 
   // --- select USER_ID -------------------------------------------------------------------
   app.get("/api/ratings-user-id", async (req, res) => {
-    const userId = req.query.user_id; // Pobieranie user_id z parametrów zapytania
+    const userId = req.query.user_id;
     let connection;
 
     try {
       connection = await mysql.createConnection(config);
 
-      // Sprawdzenie, czy user_id jest podane
       if (!userId) {
         return res.status(400).json({error: "User ID is required."});
       }
@@ -118,9 +117,8 @@ app.use(express.json());
 
   // --- select USER_ID POLITICIAN_ID -----------------------------------------------------
   app.get("/api/ratings-user-id-politician-id", async (req, res) => {
-    const {user_id, politician_id} = req.query; // Używamy req.query do pobrania parametrów
+    const {user_id, politician_id} = req.query;
 
-    // Walidacja danych
     if (!user_id || !politician_id) {
       return res.status(400).json({
         message: "Both user_id and politician_id must be provided",
@@ -139,7 +137,6 @@ app.use(express.json());
         [user_id, politician_id]
       );
 
-      // Sprawdzenie, czy wynik nie jest pusty
       if (rows.length === 0) {
         return res.status(404).json({message: "Rating not found"});
       }
@@ -159,9 +156,9 @@ app.use(express.json());
 
   // --- calculate ownRating USER_ID POLITICIAN_ID -----------------------------------------------------
   app.get("/api/calculate-own-rating", async (req, res) => {
-    const {user_id, politician_id} = req.query; // Używamy req.query do pobrania parametrów
+    const {user_id, politician_id} = req.query;
 
-    // Walidacja danych
+
     if (!user_id || !politician_id) {
       return res.status(400).json({
         message: "Both user_id and politician_id must be provided",
@@ -180,7 +177,6 @@ app.use(express.json());
         [user_id, politician_id]
       );
 
-      // Sprawdzenie, czy wynik nie jest pusty
       if (rows.length === 0) {
         return res.status(404).json({message: "Rating not found"});
       }
@@ -552,7 +548,6 @@ app.use(express.json());
     try {
       connection = await mysql.createConnection(config);
 
-      // Aktualizujemy rating na podstawie `politician_id` i `user_id`
       const query = "UPDATE own_ratings SET value = ? WHERE politician_id = ? AND user_id = ?";
       const [result] = await connection.execute(query, [value, politician_id, user_id]);
 
@@ -574,7 +569,7 @@ app.use(express.json());
   });
   // --- delete ---------------------------------------------------------------------------
   app.delete("/api/own-ratings", async (req, res) => {
-    // const { id } = req.params;
+
     const {user_id, politician_id} = req.body;
 
     let connection;
@@ -660,7 +655,6 @@ app.get("/api/politicians", async (req, res) => {
     connection = await mysql.createConnection(config);
     const [rows] = await connection.execute("SELECT * FROM politicians WHERE id = ?", [politician_id]);
 
-    // Sprawdzenie, czy wynik nie jest pusty
     if (rows.length === 0) {
       return res.status(404).json({message: "Politician not found"});
     }
@@ -783,12 +777,6 @@ app.put("/api/politicians/:id", async (req, res) => {
       connection = await mysql.createConnection(config);
       const [rows, fields] = await connection.execute("SELECT * FROM users");
 
-      // rows.forEach((row) => {
-      //   row.name = decrypt(row.name);
-      //   row.email = decrypt(row.email);
-      //   row.password = decrypt(row.password);
-      //   row.phone_number = decrypt(row.phone_number);
-      // });
 
       res.json(rows);
     } catch (err) {
