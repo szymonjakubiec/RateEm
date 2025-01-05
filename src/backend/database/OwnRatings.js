@@ -93,14 +93,14 @@ const calcGlobalRating = async (politician_id) => {
  * @returns {Promise<object|undefined>} New rating data object
  */
 const addOwnRating = async (user_id, politician_id, value) => {
-  const url = `${global.SERVER_URL}/own-ratings`; // Endpoint URL
+  const url = `${global.SERVER_URL}/own-ratings`;
   try {
     const response = await fetch(url, {
-      method: "POST", // Using POST method
+      method: "POST",
       headers: {
-        "Content-Type": "application/json", // Indicate JSON format
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({user_id, politician_id, value}), // Send data in JSON format
+      body: JSON.stringify({user_id, politician_id, value}),
     });
 
     const newRating = await response.json();
@@ -159,7 +159,7 @@ const deleteOwnRating = async (user_id, politician_id) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({user_id, politician_id}), // Send data in JSON format
+      body: JSON.stringify({user_id, politician_id}),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

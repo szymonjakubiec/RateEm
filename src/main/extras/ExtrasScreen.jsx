@@ -24,7 +24,7 @@ export default function ExtrasScreen({navigation}) {
                mode="tile"
                style={{backgroundColor: useTheme().colors.error, marginTop: 50, width: "auto"}}
                onPress={() => {
-                 navigation.popToTop(); //todo większa logika
+                 navigation.popToTop();
                }}/>
     </_Container>
   );

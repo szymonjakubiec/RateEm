@@ -29,7 +29,7 @@ export default function SummaryScreen({navigation}) {
   const [lowestRating, setLowestRating] = useState(null);
   const [selectedPolitician, setSelectedPolitician] = useState(null);
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [totalRatings, setTotalRatings] = useState(0); // Dodano stan dla łącznej liczby ocen
+  const [totalRatings, setTotalRatings] = useState(0);
   const {userId} = useContext(GlobalContext);
 
   useEffect(() => {
@@ -172,7 +172,7 @@ export default function SummaryScreen({navigation}) {
               {selectedPolitician?.description || "Brak opisu"}
             </Text>
             <Text style={styles.dialogText(theme)}>
-              <Text style={styles.dialogLabel}>Partia:{"  "}</Text>
+              <Text style={styles.dialogLabel}>Nazwa:{"  "}</Text>
               {selectedPolitician?.party || "Brak informacji"}
             </Text>
           </Dialog.Content>
