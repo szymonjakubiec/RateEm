@@ -76,15 +76,9 @@ export default memo(function Item({
           style={styles.politicianItemImage}
         />
         <View style={styles.politicianInfo}>
-          {/* {sortOrder === "name" ? ( */}
           <Text style={styles.politicianItemText}>
             {name} {surname}
           </Text>
-          {/* ) : ( */}
-          {/* <Text style={styles.politicianItemText}> */}
-          {/*   {surname} {name} */}
-          {/* </Text> */}
-          {/* )} */}
           <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
           <Text style={styles.politicianScore}>
             {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}

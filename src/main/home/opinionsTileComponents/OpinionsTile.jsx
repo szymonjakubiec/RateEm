@@ -414,13 +414,25 @@ function ConfirmationPopup({popupVisible, popupType, handleConfirmation, handleR
             chcesz {popupType === ConfirmPopupTypes.Update ? "zmienić" : "usunąć"} tę ocenę?</Text>
 
           <View style={styles.buttonsRow}>
-            <_Button
-              text="Usuń"
-              iconLeft={{icon: "delete", size: 17}}
-              onPress={handleConfirmation}
-              style={[styles.button(theme), {backgroundColor: theme.colors.error}]}
-              textStyle={styles.buttonText}
-            />
+            {popupType === ConfirmPopupTypes.Update ? (
+              <_Button
+                iconLeft={{icon: "pencil", size: 17}}
+                text="Edytuj"
+                onPress={handleConfirmation}
+                style={[styles.button(theme), {backgroundColor: theme.colors.error}]}
+                textStyle={styles.buttonText}
+              />
+            ) : (
+              <_Button
+                iconLeft={{icon: "delete", size: 17}}
+                text="Usuń"
+                onPress={handleConfirmation}
+                style={[styles.button(theme), {backgroundColor: theme.colors.error}]}
+                textStyle={styles.buttonText}
+              />
+            )}
+            
+            
             <_Button
               text="Anuluj"
               iconLeft={{icon: "close", size: 18}}
