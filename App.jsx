@@ -11,21 +11,8 @@ import ResetPassNavigation from "./src/main/login/resetPass/nav/ResetPassNavigat
 
 const Stack = createStackNavigator();
 
-// Setting global parameters
 
-// MM
-// global.SERVER_URL = "http://10.0.2.2:3000/api"; // emu
-
-// PK
-// global.SERVER_URL = "http://10.10.17.22:3000/api"; // ms
-// global.SERVER_URL = "http://157.158.168.62:3000/api"; // aka
-// global.SERVER_URL = "http://192.168.1.68:3000/api"; // cn
-
-// MS
-//global.SERVER_URL = "http://157.158.168.61:3000/api"; // aka
-global.SERVER_URL = "http://192.168.1.136:3000/api"; // home
-
-
+global.SERVER_URL = "http://10.0.2.2:3000/api";
 console.log(global["SERVER_URL"]);
 
 
@@ -71,23 +58,19 @@ export default function App() {
           <Stack.Screen
             name="RegisterNav"
             component={RegisterNavigation}
-            // initialParams={{_title}}
             options={() => ({
-              title: "Zarejestruj", // tytuł na dole ekranu
+              title: "Zarejestruj",
               headerShown: false,
-              // headerLeft: () => null,
-              gestureEnabled: false, // wyłącza swipe back na IOS
+              gestureEnabled: false,
             })}
           />
           <Stack.Screen
             name="ResetNav"
             component={ResetPassNavigation}
-            // initialParams={{_title}}
             options={() => ({
-              title: "Zresetuj hasło", // tytuł na dole ekranu
+              title: "Zresetuj hasło",
               headerShown: false,
-              // headerLeft: () => null,
-              gestureEnabled: false, // wyłącza swipe back na IOS
+              gestureEnabled: false,
             })}
           />
         </Stack.Navigator>
