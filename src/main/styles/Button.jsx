@@ -75,6 +75,7 @@ export default function _Button({
         fontSize: 14,
         fontWeight: "500",
         color: theme.colors.primary,
+        textShadowRadius: 10,
         textShadowColor: theme.colors.inversePrimary,
       }
     });
