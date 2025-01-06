@@ -164,16 +164,16 @@ export default function SummaryScreen({navigation}) {
           <Dialog.Title style={{fontSize: 26}}>{selectedPolitician?.names_surname || "Szczegóły oceny"}</Dialog.Title>
           <Dialog.Content style={{gap: 8}}>
             <Text style={styles.dialogText(theme)}>
+              <Text style={styles.dialogLabel}>Tytuł:{"  "}</Text>
+              {selectedPolitician?.title || "Brak informacji"}
+            </Text>
+            <Text style={styles.dialogText(theme)}>
               <Text style={styles.dialogLabel}>Ocena:{"  "}</Text>
               {selectedPolitician?.value}
             </Text>
             <Text style={styles.dialogText(theme)}>
               <Text style={styles.dialogLabel}>Opis:{"  "}</Text>
               {selectedPolitician?.description || "Brak opisu"}
-            </Text>
-            <Text style={styles.dialogText(theme)}>
-              <Text style={styles.dialogLabel}>Nazwa:{"  "}</Text>
-              {selectedPolitician?.party || "Brak informacji"}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
