@@ -165,7 +165,7 @@ export default function SummaryScreen({navigation}) {
           <Dialog.Content style={{gap: 8}}>
             <Text style={styles.dialogText(theme)}>
               <Text style={styles.dialogLabel}>Tytuł:{"  "}</Text>
-              {selectedPolitician?.title || "Brak informacji"}
+              {selectedPolitician?.title}
             </Text>
             <Text style={styles.dialogText(theme)}>
               <Text style={styles.dialogLabel}>Ocena:{"  "}</Text>
@@ -173,7 +173,7 @@ export default function SummaryScreen({navigation}) {
             </Text>
             <Text style={styles.dialogText(theme)}>
               <Text style={styles.dialogLabel}>Opis:{"  "}</Text>
-              {selectedPolitician?.description || "Brak opisu"}
+              {selectedPolitician?.description}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
