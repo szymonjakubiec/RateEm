@@ -4,27 +4,32 @@
     "slug": "RateEm",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/RE-iconPLUS.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/RE-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
-      "permissions": ["LOCATION"]
+      "permissions": [
+        "LOCATION"
+      ]
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/RE-adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
       "package": "com.anonymous.RateEm"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/RE-favicon.png"
     },
     "android.config.googleMaps.apiKey": "AIzaSyBIHMXgF1F5nHAR8SE-W273o2C7dCjzvbQ"
   }
