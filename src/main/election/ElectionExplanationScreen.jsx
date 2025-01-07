@@ -18,23 +18,21 @@ export default function ElectionExplanation({navigation}) {
 
       <_Button text="Wybory do Sejmu" mode="tile"
                iconLeft={{icon: "circle-slice-8", color: useTheme().colors.sejm}}
-               style={{alignItems: "flex-start"}}
                onPress={() => navigation.navigate("SejmExplanation")}/>
 
       <_Button text="Wybory Prezydenta RP" mode="tile"
                iconLeft={{icon: "circle-slice-8", color: useTheme().colors.prezydent}}
-               style={{alignItems: "flex-start"}}
+               style={{paddingLeft: "15%"}}
                onPress={() => navigation.navigate("PrezydentExplanation")}/>
 
       <_Button text="Wybory do Parlamentu Europejskiego" mode="tile"
                multiline
                iconLeft={{icon: "circle-slice-8", color: useTheme().colors.parlament}}
-               style={{alignItems: "flex-start"}}
+               style={{paddingLeft: "15%"}}
                onPress={() => navigation.navigate("EuExplanation")}/>
 
       <_Button text="Metoda d'Hondta" mode="tile"
                iconLeft={{icon: "circle-slice-8", color: "black"}}
-               style={{alignItems: "flex-start"}}
                onPress={() => navigation.navigate("DhondtExplanation")}/>
 
     </_Container>
