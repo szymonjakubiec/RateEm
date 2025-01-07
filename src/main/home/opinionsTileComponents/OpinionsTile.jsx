@@ -324,7 +324,7 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, itemTitle = "", item
    * Enables/disables the button setting the rating update and changes its color.
    */
   useEffect(() => {
-    setButtonDisabled(itemWeight === 1 && (title === "" || rating === 0 || description === ""));
+    setButtonDisabled((itemWeight === 1 && (title === "" || rating === 0 || description === "")) || (itemWeight === 10 && rating === 0) );
   }, [title, rating, description]);
 
   const theme = useTheme();
@@ -347,6 +347,7 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, itemTitle = "", item
               value={title}
               autoCapitalize="sentences"
               onChangeText={setTitle}
+              maxLength={100}
             />}
           <StarRating
             rating={rating}
@@ -367,6 +368,7 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, itemTitle = "", item
               autoCapitalize="sentences"
               onChangeText={setDescription}
               multiline={true}
+              maxLength={350}
             />}
           <View style={styles.buttonsRow}>
             <_Button
