@@ -307,7 +307,7 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, itemTitle = "", item
    */
   function handleConfirmation() {
     setConfirmPopupVisible(false);
-    handleSingleRatingUpdate(itemId, itemWeight, title, rating, description);
+    handleSingleRatingUpdate(itemId, itemWeight, title.trim(), rating, description.trim());
     handleRatingPopupClose();
   }
 
@@ -324,7 +324,7 @@ function RatingPopup({popupVisible, itemId = 0, itemWeight, itemTitle = "", item
    * Enables/disables the button setting the rating update and changes its color.
    */
   useEffect(() => {
-    setButtonDisabled((itemWeight === 1 && (title === "" || rating === 0 || description === "")) || (itemWeight === 10 && rating === 0) );
+    setButtonDisabled((itemWeight === 1 && (title.trim() === "" || rating === 0 || description.trim() === "")) || (itemWeight === 10 && rating === 0) );
   }, [title, rating, description]);
 
   const theme = useTheme();
