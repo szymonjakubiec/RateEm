@@ -81,7 +81,7 @@ export default memo(function Item({
           </Text>
           <Text style={styles.politicianScore}>Ocena globalna: {globalRating ? globalRating.toFixed(2) : "—"}</Text>
           <Text style={styles.politicianScore}>
-            {isTrending ? "Ilość ostatnich ocen" : "Ilość ocen"}: {ratingCount ? ratingCount : "—"}
+            {isTrending ? "Liczba ostatnich ocen" : "Liczba ocen"}: {ratingCount ? ratingCount : "—"}
           </Text>
         </View>
       </>
