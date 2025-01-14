@@ -29,7 +29,6 @@ export default function SummaryScreen({navigation}) {
   const [lowestRating, setLowestRating] = useState(null);
   const [selectedPolitician, setSelectedPolitician] = useState(null);
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [totalRatings, setTotalRatings] = useState(0);
   const {userId} = useContext(GlobalContext);
 
   useEffect(() => {
@@ -44,8 +43,6 @@ export default function SummaryScreen({navigation}) {
 
         setHighestRating(fetchedRatings.find((rating) => rating.value === highest));
         setLowestRating(fetchedRatings.find((rating) => rating.value === lowest));
-
-        setTotalRatings(fetchedRatings.length);
       }
     };
     fetchRatings();
@@ -57,7 +54,7 @@ export default function SummaryScreen({navigation}) {
     <TouchableHighlight
       style={styles.ratingItem(theme)}
       underlayColor={theme.colors.primaryContainer}
-      onPress={() => handleratingClick(item)}
+      onPress={() => handleRatingClick(item)}
     >
       <>
         <Image
@@ -82,7 +79,7 @@ export default function SummaryScreen({navigation}) {
       </>
     </TouchableHighlight>
   );
-  const handleratingClick = (item) => {
+  const handleRatingClick = (item) => {
     setSelectedPolitician(item);
     setDialogVisible(true);
   };
@@ -110,7 +107,7 @@ export default function SummaryScreen({navigation}) {
             <TouchableOpacity
               activeOpacity={0.7}
               style={styles.highestLowestTile(theme)}
-              onPress={() => handleratingClick(highestRating)}
+              onPress={() => handleRatingClick(highestRating)}
             >
               <View style={{gap: 3}}>
                 <Text style={{fontSize: 18, fontWeight: "bold"}}>Najwyższa ocena:</Text>
@@ -127,7 +124,7 @@ export default function SummaryScreen({navigation}) {
             <TouchableOpacity
               activeOpacity={0.7}
               style={styles.highestLowestTile(theme)}
-              onPress={() => handleratingClick(lowestRating)}
+              onPress={() => handleRatingClick(lowestRating)}
             >
               <Text style={{fontSize: 18, fontWeight: "bold"}}>Najniższa ocena:</Text>
               <View style={{flexDirection: "row", alignItems: "center", justifyContent: "flex-end", marginRight: 5}}>
@@ -139,12 +136,12 @@ export default function SummaryScreen({navigation}) {
 
           <View style={{flexDirection: "row", gap: 15, alignItems: "center", marginLeft: 8}}>
             <Text style={{fontSize: 20, fontWeight: "500"}}>Łączna liczba ocen:</Text>
-            <Text style={{fontSize: 24, fontWeight: "bold"}}>{totalRatings}</Text>
+            <Text style={{fontSize: 24, fontWeight: "bold"}}>{ratings.length}</Text>
           </View>
 
         </View>
       )}
-      {ratings && (
+      {ratings?.length > 0 && (
         <FlatList
           data={ratings}
           renderItem={renderRatingItem}
@@ -165,7 +162,7 @@ export default function SummaryScreen({navigation}) {
           <Dialog.Content style={{gap: 8}}>
             <Text style={styles.dialogText(theme)}>
               <Text style={styles.dialogLabel}>Tytuł:{"  "}</Text>
-              {selectedPolitician?.title}
+              {selectedPolitician?.title || "Brak informacji"}
             </Text>
             <Text style={styles.dialogText(theme)}>
               <Text style={styles.dialogLabel}>Ocena:{"  "}</Text>
@@ -173,7 +170,7 @@ export default function SummaryScreen({navigation}) {
             </Text>
             <Text style={styles.dialogText(theme)}>
               <Text style={styles.dialogLabel}>Opis:{"  "}</Text>
-              {selectedPolitician?.description}
+              {selectedPolitician?.description || "Brak opisu"}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
@@ -255,7 +252,7 @@ const styles = StyleSheet.create({
 
   list: {
     marginVertical: 5,
-    flexGrow: 0,
+    flex: 1,
     paddingHorizontal: 5,
     marginHorizontal: -5,
   },
