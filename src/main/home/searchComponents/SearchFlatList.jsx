@@ -203,7 +203,7 @@ function SearchFlatList({handleOnPress}) {
           right={<TextInput.Icon disabled={isLoading} icon="close" style={{opacity: opacityAnim}}
                                  onPress={() => ClearTextInput()}/>}
           onChangeText={(text) => {
-            setSearchText(text.trim());
+            setSearchText(text);
             handleInput(text.trim());
           }}
         />
