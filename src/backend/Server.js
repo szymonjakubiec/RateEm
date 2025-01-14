@@ -621,7 +621,7 @@ app.use(express.json());
                 p.facebook_link,
                 p.twitter_link
          FROM politicians as p
-         ORDER BY ${order} ${reverseOrder}, name${req.query.limit !== "0" ? ` LIMIT ${req.query.limit}` : ''};`
+         ORDER BY ${order} ${reverseOrder}${order === "name" ? "" : ", name"};`
       );
 
       res.json(rows);

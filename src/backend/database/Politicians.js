@@ -5,12 +5,11 @@
  * @function
  * @param order
  * @param reverseOrder
- * @param [limit=0]
  * @returns {Promise<Object[]>} Array of politician objects
  */
-const getAllPoliticians = async (order, reverseOrder, limit = 0) => {
+const getAllPoliticians = async (order, reverseOrder) => {
   const reverse = reverseOrder ? "DESC" : "ASC";
-  const url = `${global.SERVER_URL}/all-politicians?order=${order}&reverseOrder=${reverse}&limit=${limit}`;
+  const url = `${global.SERVER_URL}/all-politicians?order=${order}&reverseOrder=${reverse}`;
 
   try {
     const response = await fetch(url);
