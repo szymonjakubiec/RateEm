@@ -322,7 +322,7 @@ function SearchFlatList({handleOnPress}) {
           <ActivityIndicator size={45} animating={true} color={theme.colors.primary}/>
           <Text style={styles.errorText}>Ładowanie...</Text>
         </View>
-      ) : filteredData.length !== 0 ? (
+      ) : filteredData && filteredData.length !== 0 ? (
         <FlatList
           keyboardShouldPersistTaps="always"
           keyboardDismissMode="on-drag"
