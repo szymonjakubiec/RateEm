@@ -78,20 +78,20 @@ function SearchFlatList({handleOnPress}) {
 
       const data = isTrending
         ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
-        : await getAllPoliticians(sortOrder, !reverseOrder, 100);
+        : await getAllPoliticians(sortOrder, !reverseOrder);
 
       setInitialData(data || []);
       setFilteredData(data || []);
       setIsLoading(false);
 
-      const dataFull = isTrending
-        ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
-        : await getAllPoliticians(sortOrder, !reverseOrder);
+      // const dataFull = isTrending
+      //   ? await getTrendingPoliticians(numberOfDays, sortOrder, !reverseOrder)
+      //   : await getAllPoliticians(sortOrder, !reverseOrder);
 
-      // console.log(data[0]);
-      // console.log(dataFull[0]);
-      setInitialData(dataFull || []);
-      setFilteredData(dataFull || []);
+      // // console.log(data[0]);
+      // // console.log(dataFull[0]);
+      // setInitialData(dataFull || []);
+      // setFilteredData(dataFull || []);
     }
 
     ClearTextInput();
