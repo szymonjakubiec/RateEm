@@ -12,25 +12,28 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "permissions": [
-        "LOCATION"
-      ]
+      "supportsTablet": true
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBIHMXgF1F5nHAR8SE-W273o2C7dCjzvbQ"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/RE-adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
-      ],
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
       "package": "com.anonymous.RateEm"
     },
     "web": {
       "favicon": "./assets/RE-favicon.png"
     },
-    "android.config.googleMaps.apiKey": "AIzaSyBIHMXgF1F5nHAR8SE-W273o2C7dCjzvbQ"
+    "extra": {
+      "eas": {
+        "projectId": "72bf4b36-8cdb-4349-86c7-102b3a0cdb53"
+      }
+    }
   }
 }
